@@ -54,38 +54,6 @@ If the amount of data involved is potentially large, and could be produced incre
 
 Note that in some cases, you could provide a promise API alongside a streaming API, as a convenience for those cases when buffering all the data into memory is not a concern. But this would be a supporting, not primary, role.
 
-## Shorthand Phrases
-
-When writing such specifications, it's convenient to be able to refer to common promise operations concisely. We define here a set of shorthands that allow you to do so.
-
-### Creating Promises
-
-**"A newly-created promise"** gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling `new Promise(() => {})`, using the initial value of `Promise`.
-
-**"A promise resolved with _x_"** is shorthand for the result of `Promise.resolve(x)`, using the initial value of `Promise.resolve`.
-
-**"A promise rejected with _r_"** is shorthand for the result of `Promise.reject(r)`, using the initial value of `Promise.reject`.
-
-**"_x_ cast to a promise"** is shorthand for the result of `Promise.cast(x)`, using the initial value of `Promise.cast`.
-
-### Manipulating Promises
-
-**"Resolve _p_ with _x_"** is shorthand for calling ResolvePromise(_p_, _x_).
-
-**"Reject _p_ with _r_"** is shorthand for calling RejectPromise(_p_, _r_).
-
-**"Transforming _p_ with _onFulfilled_ and _onRejected_"** is shorthand for the result of `p.then(onFulfilled, onRejected)`, using the initial value of `Promise.prototype.then`.
-
-### Aggregating Promises
-
-**"Racing _p1_, _p2_, _p3_, …"** is shorthand for the result of `Promise.race([p1, p2, p3, …])`, using the initial value of `Promise.race`.
-
-**"Racing _iterable_"** is shorthand for the result of `Promise.race(iterable)`, using the initial value of `Promise.race`.
-
-**"Waiting for all of _p1_, _p2_, _p3_, …"** is shorthand for the result of `Promise.all([p1, p2, p3, …])`, using the initial value of `Promise.all`.
-
-**"Waiting for all of _iterable_"** is shorthand for the result of `Promise.all(iterable)`, using the initial value of `Promise.all`.
-
 ## Guidance
 
 ### Promise Arguments Should Be Cast
@@ -127,6 +95,38 @@ An antipattern that has been prevalent in async web specifications has been retu
 ### Do Not Queue Needless Tasks
 
 Sometimes specs explicitly [queue a task](http://www.whatwg.org/specs/web-apps/current-work/#task-queue) to perform async work. This is never necessary with promises! Promises ensure all invariants you would otherwise gain by doing this. Instead, just appeal to environmental asynchrony (like user input or the network stack), and from there resolve the promise.
+
+## Shorthand Phrases
+
+When writing such specifications, it's convenient to be able to refer to common promise operations concisely. We define here a set of shorthands that allow you to do so.
+
+### Creating Promises
+
+**"A newly-created promise"** gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling `new Promise(() => {})`, using the initial value of `Promise`.
+
+**"A promise resolved with _x_"** is shorthand for the result of `Promise.resolve(x)`, using the initial value of `Promise.resolve`.
+
+**"A promise rejected with _r_"** is shorthand for the result of `Promise.reject(r)`, using the initial value of `Promise.reject`.
+
+**"_x_ cast to a promise"** is shorthand for the result of `Promise.cast(x)`, using the initial value of `Promise.cast`.
+
+### Manipulating Promises
+
+**"Resolve _p_ with _x_"** is shorthand for calling ResolvePromise(_p_, _x_).
+
+**"Reject _p_ with _r_"** is shorthand for calling RejectPromise(_p_, _r_).
+
+**"Transforming _p_ with _onFulfilled_ and _onRejected_"** is shorthand for the result of `p.then(onFulfilled, onRejected)`, using the initial value of `Promise.prototype.then`.
+
+### Aggregating Promises
+
+**"Racing _p1_, _p2_, _p3_, …"** is shorthand for the result of `Promise.race([p1, p2, p3, …])`, using the initial value of `Promise.race`.
+
+**"Racing _iterable_"** is shorthand for the result of `Promise.race(iterable)`, using the initial value of `Promise.race`.
+
+**"Waiting for all of _p1_, _p2_, _p3_, …"** is shorthand for the result of `Promise.all([p1, p2, p3, …])`, using the initial value of `Promise.all`.
+
+**"Waiting for all of _iterable_"** is shorthand for the result of `Promise.all(iterable)`, using the initial value of `Promise.all`.
 
 ## Examples
 
