@@ -54,37 +54,35 @@ If the amount of data involved is potentially large, and could be produced incre
 
 Note that in some cases, you could provide a promise API alongside a streaming API, as a convenience for those cases when buffering all the data into memory is not a concern. But this would be a supporting, not primary, role.
 
-## Guidance
+## API Design Guidance
 
-### Promise Arguments Should Be Cast
+There are a few subtle aspects of using or accepting promises in your API. Here we attempt to address commonly-encountered questions and situations.
 
-In general, when an argument is expected to be a promise, you should also allow thenables and non-promise values by casting the argument to a promise before using it.
+### Errors
 
-You should *never* do a type-detection on the incoming value, or overload between promises and other values, or put promises in a union type.
+#### Promise-Returning Functions Should Never Throw
 
-### Rejections Should Be `Error`s
+Promise-returning functions should never synchronously throw errors, since that would force duplicate error-handling logic on the consumer. Even argument validation errors are not OK. Instead, they should return rejected promises.
 
-Promise rejections should always be instances of the ECMAScript `Error` type, just like synchronously-thrown exceptions should always be instances of `Error` as well.
+For WebIDL-based specs, this is taken care of automatically [by the WebIDL specification](http://heycam.github.io/webidl/#es-operations): any exceptions thrown by WebIDL operations, or by the WebIDL overload resolution algorithm itself, are automatically converted into rejections.
 
-In particular, for DOM or other web platform specs, this means you should never use `DOMError`, but instead use `DOMException`, which [per WebIDL](http://heycam.github.io/webidl/#es-exceptions) extends `Error`.
+#### Rejection Reasons Should Be `Error`s
 
-### Rejections Should Be Used for Exceptional Situations
+Promise rejection reasons should always be instances of the ECMAScript `Error` type, just like synchronously-thrown exceptions should always be instances of `Error` as well.
+
+In particular, for DOM or other web platform specs, this means you should never use `DOMError`, but instead use `DOMException`, which [per WebIDL](http://heycam.github.io/webidl/#es-exceptions) extends `Error`. You can of course also use one of the [built-in ECMAScript error types](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-error-objects).
+
+#### Rejections Should Be Used for Exceptional Situations
 
 What exactly you consider "exceptional" is up for debate, as always. But, you should always ask, before rejecting a promise: if this function was synchronous, would I expect a thrown exception under this circumstance? Or perhaps a failure value (like `null` or `false`)?
 
 For example, perhaps a user denying permission to use an API shouldn't be considered exceptional. Or perhaps it should! Just think about which behavior is more useful for consumers of your API, and if you're not sure, pretend your API is synchronous and then think if your users would want a thrown exception or not.
 
-### Promise-Returning Functions Should Never Throw
+### Asynchronous Algorithms
 
-Promise-returning functions should never synchronously throw errors, since that would force duplicate error-handling logic on the consumer. Even argument validation errors are not OK. Instead, they should return rejected promises.
+_NOTE: This section has some issues; see [#7](https://github.com/w3ctag/promises-guide/issues/7)._
 
-For WebIDL-based specs, this will require [fixes to WebIDL](https://www.w3.org/Bugs/Public/show_bug.cgi?id=24000), which are underway. (See also [W3C bug #21740](https://www.w3.org/Bugs/Public/show_bug.cgi?id=21740).)
-
-### No Need to Create Callbacks
-
-Another guideline geared toward WebIDL-based specs. Unlike in the old world of callbacks, there's no need to create separate callback types for your success and error cases. Instead, just use the verbiage above. Create _promise_ as one of your first steps, using "let _promise_ be a newly-created promise," then later, when it's time to resolve or reject it, say e.g. "resolve _promise_ with _value_" or "reject _promise_ with a new DOMException whose name is `"AbortError"`."
-
-### Maintain a Normal Control Flow
+#### Maintain a Normal Control Flow
 
 An antipattern that has been prevalent in async web specifications has been returning a value, then "continue running these steps asynchronously." This is hard to deal with for readers, because JavaScript doesn't let you do anything after returning from a function! Use promises to simplify your control flow into a normal linear sequence of steps:
 
@@ -92,9 +90,36 @@ An antipattern that has been prevalent in async web specifications has been retu
 - Then, describe how you'll perform the async operation—these are often "magic," e.g. asking for user input or appealing to the network stack. Say that if the operation succeeds, you'll resolve the promise, possibly with an appropriate value, and that if it fails, you'll reject it with an appropriate error.
 - Finally, return the created promise.
 
-### Do Not Queue Needless Tasks
+#### Do Not Queue Needless Tasks
 
 Sometimes specs explicitly [queue a task](http://www.whatwg.org/specs/web-apps/current-work/#task-queue) to perform async work. This is never necessary with promises! Promises ensure all invariants you would otherwise gain by doing this. Instead, just appeal to environmental asynchrony (like user input or the network stack), and from there resolve the promise.
+
+#### No Need to Create Callbacks
+
+Another guideline geared toward WebIDL-based specs. Unlike in the old world of callbacks, there's no need to create separate callback types for your success and error cases. Instead, just use the verbiage above. Create _promise_ as one of your first steps, using "let _promise_ be a newly-created promise," then later, when it's time to resolve or reject it, say e.g. "resolve _promise_ with _value_" or "reject _promise_ with a new DOMException whose name is `"AbortError"`."
+
+### Promise Arguments
+
+#### Promise Arguments Should Be Cast
+
+In general, when an argument is expected to be a promise, you should also allow thenables and non-promise values by *casting* the argument to a promise before using it. You should *never* do a type-detection on the incoming value, or overload between promises and other values, or put promises in a union type.
+
+In WebIDL-using specs, this is automatically taken care of by the [WebIDL promise type](http://heycam.github.io/webidl/#es-promise). To see what it means in JavaScript, consider the following function, which adds a delay of `ms` milliseconds to a promise:
+
+```js
+function addDelay(promise, ms) {
+    return Promise.cast(promise).then(v =>
+        new Promise(resolve =>
+            setTimeout(() => resolve(v), ms);
+        );
+    );
+}
+
+var p1 = addDelay(doAsyncOperation(), 500);
+var p2 = addDelay("value", 1000);
+```
+
+In this example, `p1` will be fulfilled 500 ms after the promise returned by `doAsyncOperation()` fulfills, with that operation's value. (Or `p1` will reject as soon as that promise rejects.) And, since we cast the incoming argument to a promise, the function can also work when you pass it the string `"value"`: `p2` will be fulfilled with `"value"` after 1000 ms. That is, we "cast" the incoming string into a promise, essentially treating it as an immediately-fulfilled promise for that value.
 
 ## Shorthand Phrases
 
