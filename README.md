@@ -127,31 +127,31 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 ### Creating Promises
 
-**"A newly-created promise"** gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling `new Promise(() => {})`, using the initial value of `Promise`.
+**"A newly-created promise"** gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling `new Promise((resolve, reject) => { ... })`, using the initial value of [the `Promise` constructor](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor). Here `...` stands in for code that saves the value of `resolve` and `reject` for later use by the shorthands under "manipulating promises."
 
-**"A promise resolved with _x_"** is shorthand for the result of `Promise.resolve(x)`, using the initial value of `Promise.resolve`.
+**"A promise resolved with _x_"** is shorthand for the result of `Promise.resolve(x)`, using the initial value of [`Promise.resolve`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve).
 
-**"A promise rejected with _r_"** is shorthand for the result of `Promise.reject(r)`, using the initial value of `Promise.reject`.
+**"A promise rejected with _r_"** is shorthand for the result of `Promise.reject(r)`, using the initial value of [`Promise.reject`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject).
 
-**"_x_ cast to a promise"** is shorthand for the result of `Promise.cast(x)`, using the initial value of `Promise.cast`.
+**"_x_ cast to a promise"** is shorthand for the result of `Promise.cast(x)`, using the initial value of [`Promise.cast`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.cast).
 
 ### Manipulating Promises
 
-**"Resolve _p_ with _x_"** is shorthand for calling ResolvePromise(_p_, _x_).
+**"Resolve _p_ with _x_"** is shorthand for calling a previously-stored [`resolve` function](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions) from creating `p`, with argument `x`.
 
-**"Reject _p_ with _r_"** is shorthand for calling RejectPromise(_p_, _r_).
+**"Reject _p_ with _r_"** is shorthand for calling a previously-stored [`reject` function](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions) from creating `p`, with arguemnt `r`.
 
-**"Transforming _p_ with _onFulfilled_ and _onRejected_"** is shorthand for the result of `p.then(onFulfilled, onRejected)`, using the initial value of `Promise.prototype.then`.
+**"Transforming _p_ with _onFulfilled_ and _onRejected_"** is shorthand for the result of calling `p.then(onFulfilled, onRejected)`, using the initial value of [`Promise.prototype.then`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then).
 
 ### Aggregating Promises
 
-**"Racing _p1_, _p2_, _p3_, …"** is shorthand for the result of `Promise.race([p1, p2, p3, …])`, using the initial value of `Promise.race`.
+**"Racing _p1_, _p2_, _p3_, …"** is shorthand for the result of `Promise.race([p1, p2, p3, …])`, using the initial value of [`Promise.race`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.race).
 
-**"Racing _iterable_"** is shorthand for the result of `Promise.race(iterable)`, using the initial value of `Promise.race`.
+**"Racing the elements of _iterable_"** is shorthand for the result of `Promise.race(iterable)`, using the initial value of [`Promise.race`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.race).
 
-**"Waiting for all of _p1_, _p2_, _p3_, …"** is shorthand for the result of `Promise.all([p1, p2, p3, …])`, using the initial value of `Promise.all`.
+**"Waiting for all of _p1_, _p2_, _p3_, …"** is shorthand for the result of `Promise.all([p1, p2, p3, …])`, using the initial value of [`Promise.all`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.all).
 
-**"Waiting for all of _iterable_"** is shorthand for the result of `Promise.all(iterable)`, using the initial value of `Promise.all`.
+**"Waiting for all of the elements of _iterable_"** is shorthand for the result of `Promise.all(iterable)`, using the initial value of [`Promise.all`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.all).
 
 ## Examples
 
