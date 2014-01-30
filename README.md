@@ -10,6 +10,50 @@ Promises are now the web platform's paradigm for all "one and done" asynchronous
 
 This document gives some guidance on how to write specifications that create, accept, or manipulate promises. It also includes a series of prose shorthands you can use in your specification to work with promises.
 
+## When to Use Promises
+
+### One-and-Done Operations
+
+The primary use case for promises is returning them from a method that kicks off a single asynchronous operation. One should think of promise-returning functions as asynchronous functions, in contrast to normal synchronous functions; there is a very strong analogy here, and keeping it in mind makes such functions easier to write and reason about.
+
+For example, normal synchronous functions can either return a value or throw an exception. Asynchronous functions will, analogously, return a promise, which can either be fulfilled with a value, or rejected with a reason. Just like a synchronous function that returns "nothing" (i.e. `undefined`), promises returned by asynchronous functions can be fulfilled with nothing (`undefined`); in this case the promise fulfillment simply signals completion of the asynchronous operation.
+
+Examples of such asynchronous operations abound throughout web specifications:
+
+- Asynchronous I/O operations: methods to read or write from a storage API could return a promise.
+- Asynchronous network operations: methods to send or receive data over the network could return a promise.
+- Long-running computations: methods that take a while to compute something could do the work on another thread, returning a promise for the result.
+- User interface prompts: methods that ask the user for an answer could return a promise.
+
+Previously, web specifications did things like
+
+- IndexedDB returning [`IDBRequest`](http://www.w3.org/TR/IndexedDB/#request-api) objects, with their `onsuccess` and `onerror` events
+- The File API's [methods](http://www.w3.org/TR/file-system-api/#methods) taking various `successCallback` and `errorCallback` parameters
+- The Fullscreen API's [`requestFullscreen`](http://fullscreen.spec.whatwg.org/#dom-element-requestfullscreen) method, which triggers `onfullscreenchange` or `onfullscreenerror` events on the `document` object.
+- XMLHttpRequest's [`send`](http://xhr.spec.whatwg.org/#the-send%28%29-method) method, which triggers `onreadystatechange` and updates properties of the object with status information.
+
+Now that we have promises as a platform primitive, such approaches are no longer necessary.
+
+### One-Time "Events"
+
+Because promises can be subscribed to even after they've already been fulfilled or rejected, they can be very useful for a certain class of "event." When something only happens once, and authors often want to observe the status of it after it's already occurred, providing a promise that becomes fulfilled when that eventuality comes to pass gives a very convenient API.
+
+The prototypical example of such an "event" is a loaded indicator: a resource such as an image, font, or even document, could provided a `ready` property that is a promise that becomes fulfilled only when the resource has fully loaded (or becomes rejected if there's an error loading the resource). Then, authors can always queue up actions to be executed once the resource is ready by doing `resource.ready.then(onReady, onFailure)`—even if the resource was loaded already. This is in contrast to an event model, where if the author is not subscribed at the time the event fires, that information is lost.
+
+## When Not to Use Promises
+
+Although promises are widely applicable to asynchronous operations of many sorts, there are still situations where they are not appropriate, even for asynchronicity.
+
+### Recurring Events
+
+Any event that can occur more than once is not a good candidate for the "one and done" model of promises. There is no single asynchronous operation for the promise to represent, but instead a series of events. Conventional `EventTarget` usage is just fine here.
+
+### Streaming Data
+
+If the amount of data involved is potentially large, and could be produced incrementally, promises are probably not the right solution. Instead, you'll want to use the under-development [streams API](https://github.com/whatwg/streams), which allows authors to process and compose data streams incrementally, without buffering the entire contents of the stream into memory.
+
+Note that in some cases, you could provide a promise API alongside a streaming API, as a convenience for those cases when buffering all the data into memory is not a concern. But this would be a supporting, not primary, role.
+
 ## Shorthand Phrases
 
 When writing such specifications, it's convenient to be able to refer to common promise operations concisely. We define here a set of shorthands that allow you to do so.
