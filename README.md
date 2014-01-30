@@ -155,15 +155,79 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 ## Examples
 
-#### delay( ms )
+### delay( ms )
 
 `delay` is a function that returns a promise that will be fulfilled in _ms_ milliseconds. It illustrates how simply you can resolve a promise, with one line of prose.
 
+1. Let _ms_ be ToNumber(_ms_).
+1. If _ms_ is **NaN**, let _ms_ be **+0**; otherwise let _ms_ be the maximum of _ms_ and **+0**.
 1. Let _p_ be a newly-created promise.
-1. In _ms_ milliseconds, resolve _p_ with **undefined**.
+1. Run the following steps asynchronously:
+   1. Wait _ms_ milliseconds.
+   1. Resolve _p_ with **undefined**.
 1. Return _p_.
 
-#### environment.ready
+The equivalent function in JavaScript would be
+
+```js
+function delay(ms) {
+    ms = Number(ms);
+    ms = Number.isNaN(ms) ? +0 : Math.max(ms, +0);
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+```
+
+or, in a more one-to-one correspondence with the specified steps,
+
+```js
+function delay(ms) {
+    // Steps 1, 2
+    ms = Number(ms);
+    ms = Number.isNaN(ms) ? +0 : Math.max(ms, +0);
+
+    // Step 3
+    let resolve;
+    const p = new Promise(r => { resolve = r });
+
+    // Step 4
+    setTimeout(() => resolve(undefined), ms);
+
+    // Step 5
+    return p;
+}
+```
+
+### validatedDelay( ms )
+
+The `validatedDelay` function is much like the `delay` function, except it will validate its arguments. This shows how to use rejected promises to signal immediate failure before even starting any asynchronous operations.
+
+1. Let _ms_ be ToNumber(_ms_).
+1. If _ms_ is **NaN**, return a promise rejected with a **TypeError**.
+1. If _ms_ is less than zero, return a promise rejected with a **RangeError**.
+1. Let _p_ be a newly-created promise.
+1. Run the following steps asynchronously:
+   1. Wait _ms_ milliseconds.
+   1. Resolve _p_ with **undefined**.
+1. Return _p_.
+
+The equivalent function in JavaScript would be
+
+```js
+function delay(ms) {
+    ms = Number(ms);
+
+    if (Number.isNaN(ms)) {
+        return Promise.reject(new TypeError("Not a number."));
+    }
+    if (ms < 0) {
+        return Promise.reject(new RangeError("ms must be at least zero."));
+    }
+
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+```
+
+### environment.ready
 
 environment.ready is a property that signals when some part of some environment becomes "ready," e.g. a DOM document. Notice how it appeals to environmental asynchrony.
 
@@ -171,7 +235,7 @@ environment.ready is a property that signals when some part of some environment 
 1. When/if the environment becomes ready, resolve Environment.ready with **undefined**.
 1. When/if the environment fails to load, reject Environment.ready with an **Error** instance explaining the load failure.
 
-#### addDelay( promise, ms )
+### addDelay( promise, ms )
 
 `addDelay` is a function that adds an extra _ms_ milliseconds of delay between _promise_ settling and the returned promise settling. Notice how it casts the incoming argument to a promise, so that you could pass it a non-promise value or a thenable.
 
@@ -182,7 +246,7 @@ environment.ready is a property that signals when some part of some environment 
 1. Transform _castToPromise_ with _onFulfilled_ and _onRejected_.
 1. Return _p_.
 
-#### addBookmark ( )
+### addBookmark ( )
 
 `addBookmark` is a function that requests that the user add the current web page as a bookmark. It's drawn from some iterative design work in [#85](https://github.com/domenic/promises-unwrapping/issues/85).
 
