@@ -29,8 +29,9 @@ Previously, web specifications did things like
 
 - IndexedDB returning [`IDBRequest`](http://www.w3.org/TR/IndexedDB/#request-api) objects, with their `onsuccess` and `onerror` events
 - The File API's [methods](http://www.w3.org/TR/file-system-api/#methods) taking various `successCallback` and `errorCallback` parameters
-- The Fullscreen API's [`requestFullscreen`](http://fullscreen.spec.whatwg.org/#dom-element-requestfullscreen) method, which triggers `onfullscreenchange` or `onfullscreenerror` events on the `document` object.
-- XMLHttpRequest's [`send`](http://xhr.spec.whatwg.org/#the-send%28%29-method) method, which triggers `onreadystatechange` and updates properties of the object with status information.
+- The Notifications API's [`requestPermission`](http://notifications.spec.whatwg.org/#dom-notification-requestpermission) method, which calls its callback with `"granted"` or `"denied"`
+- The Fullscreen API's [`requestFullscreen`](http://fullscreen.spec.whatwg.org/#dom-element-requestfullscreen) method, which triggers `onfullscreenchange` or `onfullscreenerror` events on the `document` object that must be listened to in order to detect success or failure.
+- XMLHttpRequest's [`send`](http://xhr.spec.whatwg.org/#the-send%28%29-method) method, which triggers `onreadystatechange` multiple times and updates properties of the object with status information which must be consulted in order to accurately detect success or failure of the ultimate state transition
 
 Now that we have promises as a platform primitive, such approaches are no longer necessary.
 
