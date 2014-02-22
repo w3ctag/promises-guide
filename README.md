@@ -259,24 +259,41 @@ function delay(ms) {
 }
 ```
 
-### environment.ready
-
-environment.ready is a property that signals when some part of some environment becomes "ready," e.g. a DOM document. Notice how it appeals to environmental asynchrony.
-
-1. Let Environment.ready be a new promise.
-1. When/if the environment becomes ready, resolve Environment.ready with **undefined**.
-1. When/if the environment fails to load, reject Environment.ready with an **Error** instance explaining the load failure.
-
 ### addDelay( promise, ms )
 
 `addDelay` is a function that adds an extra _ms_ milliseconds of delay between _promise_ settling and the returned promise settling. Notice how it casts the incoming argument to a promise, so that you could pass it a non-promise value or a thenable.
 
+1. Let _ms_ be ToNumber(_ms_).
+1. If _ms_ is **NaN**, let _ms_ be **+0**; otherwise let _ms_ be the maximum of _ms_ and **+0**.
 1. Let _p_ be a new promise.
-1. Let onFulfilled(_v_) be a function that waits _ms_ milliseconds, then resolves _p_ with _v_.
-1. Let onRejected(_r_) be a function that waits _ms_ milliseconds, then rejects _p_ with _r_.
 1. Let _castToPromise_ be the result of casting _promise_ to a promise.
-1. Transform _castToPromise_ with _onFulfilled_ and _onRejected_.
+1. Upon fulfillment of _promise_ with value _v_, perform the following steps asynchronously:
+    1. Wait _ms_ milliseconds.
+    1. Resolve _p_ with _v_.
+1. Upon rejection of _promise_ with reason _r_, perform the following steps asynchronously:
+    1. Wait _ms_ milliseconds.
+    1. Reject _p_ with _r_.
 1. Return _p_.
+
+The equivalent function in JavaScript would be
+
+```js
+function addDelay(promise, ms) {
+    ms = Number(ms);
+    ms = Number.isNaN(ms) ? +0 : Math.max(ms, +0);
+
+    let resolve, reject;
+    const p = new Promise((r, rr) => { resolve = r; reject = rr; });
+
+    const castToPromise = Promise.cast(promise);
+    castToPromise.then(
+        v => setTimeout(() => resolve(v), ms),
+        r => setTimeout(() => reject(r), ms)
+    );
+
+    return p;
+}
+```
 
 ### resource.open ( resourcePath, openingOperation )
 
@@ -313,15 +330,25 @@ resource.open(synchronouslyOpenTheResource);
 
 would fail. It would not return a promise, so calling `then` on the return value would fail. Even if we accounted for that, what if `synchronouslyOpenTheResource` threw an error? We would want that to result in an `"errored"` status, but without promise-calling, that would not be the case: the error would simply cause `resource.open` to exit. So you can see that promise-calling is quite helpful here.
 
+### environment.ready
+
+environment.ready is a property that signals when some part of some environment becomes "ready," e.g. a DOM document. It illustrates how to appeal to environmental asynchrony.
+
+1. Let `Environment.ready` be a new promise.
+1. Asynchronously wait for one of the following to become true:
+    1. When/if the environment becomes ready, resolve `Environment.ready` with **undefined**.
+    1. When/if the environment fails to load, reject `Environment.ready` with an **Error** instance explaining the load failure.
+
 ### addBookmark ( )
 
-`addBookmark` is a function that requests that the user add the current web page as a bookmark. It's drawn from some iterative design work in [#85](https://github.com/domenic/promises-unwrapping/issues/85).
+`addBookmark` is a function that requests that the user add the current web page as a bookmark. It's drawn from some iterative design work in [#85](https://github.com/domenic/promises-unwrapping/issues/85) and illustrates a more real-world scenario of appealing to environmental asynchrony, as well as immediate rejections.
 
 1. If this method was not invoked as a result of explicit user action, return a promise rejected with a new `DOMException` whose name is `"SecurityError"`.
 1. If the document's mode of operation is standalone, return a promise rejected with a new `DOMException` whose name is `"NotSupported"`.
 1. Let _promise_ be a new promise.
 1. Let _info_ be the result of getting a web application's metadata.
-1. Using _info_, and in a manner that is user-agent specific, allow the end user to make a choice as to whether they want to add the bookmark.
-    1. If the end-user aborts the request to add the bookmark (e.g., they hit escape, or press a "cancel" button), reject _promise_ with a new `DOMException` whose name is `"AbortError"`.
-    1. Otherwise, resolve _promise_ with **undefined**.
+1. Run the following steps asynchronously:
+    1. Using _info_, and in a manner that is user-agent specific, allow the end user to make a choice as to whether they want to add the bookmark.
+        1. If the end-user aborts the request to add the bookmark (e.g., they hit escape, or press a "cancel" button), reject _promise_ with a new `DOMException` whose name is `"AbortError"`.
+        1. Otherwise, resolve _promise_ with **undefined**.
 1. Return _promise_.
