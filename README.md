@@ -96,7 +96,7 @@ Sometimes specs explicitly [queue a task](http://www.whatwg.org/specs/web-apps/c
 
 #### No Need to Create Callbacks
 
-Another guideline geared toward WebIDL-based specs. Unlike in the old world of callbacks, there's no need to create separate callback types for your success and error cases. Instead, just use the verbiage above. Create _promise_ as one of your first steps, using "let _promise_ be a newly-created promise," then later, when it's time to resolve or reject it, say e.g. "resolve _promise_ with _value_" or "reject _promise_ with a new DOMException whose name is `"AbortError"`."
+Another guideline geared toward WebIDL-based specs. Unlike in the old world of callbacks, there's no need to create separate callback types for your success and error cases. Instead, just use the verbiage above. Create _promise_ as one of your first steps, using "let _promise_ be a new promise," then later, when it's time to resolve or reject it, say e.g. "resolve _promise_ with _value_" or "reject _promise_ with a new DOMException whose name is `"AbortError"`."
 
 ### Accepting Promises
 
@@ -145,7 +145,7 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 ### Creating Promises
 
-**"A newly-created promise"** gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling `new Promise((resolve, reject) => { ... })`, using the initial value of [the `Promise` constructor](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor). Here `...` stands in for code that saves the value of `resolve` and `reject` for later use by the shorthands under "manipulating promises."
+**"A new promise"** gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling `new Promise((resolve, reject) => { ... })`, using the initial value of [the `Promise` constructor](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor). Here `...` stands in for code that saves the value of `resolve` and `reject` for later use by the shorthands under "manipulating promises."
 
 **"A promise resolved with _x_"** is shorthand for the result of `Promise.resolve(x)`, using the initial value of [`Promise.resolve`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve).
 
@@ -192,7 +192,7 @@ The result of **promise-calling _f_(..._args_)** is:
 
 1. Let _ms_ be ToNumber(_ms_).
 1. If _ms_ is **NaN**, let _ms_ be **+0**; otherwise let _ms_ be the maximum of _ms_ and **+0**.
-1. Let _p_ be a newly-created promise.
+1. Let _p_ be a new promise.
 1. Run the following steps asynchronously:
    1. Wait _ms_ milliseconds.
    1. Resolve _p_ with **undefined**.
@@ -235,7 +235,7 @@ The `validatedDelay` function is much like the `delay` function, except it will 
 1. Let _ms_ be ToNumber(_ms_).
 1. If _ms_ is **NaN**, return a promise rejected with a **TypeError**.
 1. If _ms_ is less than zero, return a promise rejected with a **RangeError**.
-1. Let _p_ be a newly-created promise.
+1. Let _p_ be a new promise.
 1. Run the following steps asynchronously:
    1. Wait _ms_ milliseconds.
    1. Resolve _p_ with **undefined**.
@@ -262,7 +262,7 @@ function delay(ms) {
 
 environment.ready is a property that signals when some part of some environment becomes "ready," e.g. a DOM document. Notice how it appeals to environmental asynchrony.
 
-1. Let Environment.ready be a newly-created promise.
+1. Let Environment.ready be a new promise.
 1. When/if the environment becomes ready, resolve Environment.ready with **undefined**.
 1. When/if the environment fails to load, reject Environment.ready with an **Error** instance explaining the load failure.
 
@@ -270,7 +270,7 @@ environment.ready is a property that signals when some part of some environment 
 
 `addDelay` is a function that adds an extra _ms_ milliseconds of delay between _promise_ settling and the returned promise settling. Notice how it casts the incoming argument to a promise, so that you could pass it a non-promise value or a thenable.
 
-1. Let _p_ be a newly-created promise.
+1. Let _p_ be a new promise.
 1. Let onFulfilled(_v_) be a function that waits _ms_ milliseconds, then resolves _p_ with _v_.
 1. Let onRejected(_r_) be a function that waits _ms_ milliseconds, then rejects _p_ with _r_.
 1. Let _castToPromise_ be the result of casting _promise_ to a promise.
@@ -318,7 +318,7 @@ would fail. It would not return a promise, so calling `then` on the return value
 
 1. If this method was not invoked as a result of explicit user action, return a promise rejected with a new `DOMException` whose name is `"SecurityError"`.
 1. If the document's mode of operation is standalone, return a promise rejected with a new `DOMException` whose name is `"NotSupported"`.
-1. Let _promise_ be a newly-created promise.
+1. Let _promise_ be a new promise.
 1. Let _info_ be the result of getting a web application's metadata.
 1. Using _info_, and in a manner that is user-agent specific, allow the end user to make a choice as to whether they want to add the bookmark.
     1. If the end-user aborts the request to add the bookmark (e.g., they hit escape, or press a "cancel" button), reject _promise_ with a new `DOMException` whose name is `"AbortError"`.
