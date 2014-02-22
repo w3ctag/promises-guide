@@ -365,3 +365,15 @@ environment.ready is a property that signals when some part of some environment 
         1. If the end-user aborts the request to add the bookmark (e.g., they hit escape, or press a "cancel" button), reject _promise_ with a new `DOMException` whose name is `"AbortError"`.
         1. Otherwise, resolve _promise_ with **undefined**.
 1. Return _promise_.
+
+## Referencing Promises
+
+When writing a spec that references promises, the correct form is something like the following:
+
+> Promise objects are defined in [ECMASCRIPT]
+
+With an entry in your references section that looks something like:
+
+> **[ECMASCRIPT]** [ECMA-262 ECMAScript Language Specification, Edition 6](http://people.mozilla.org/~jorendorff/es6-draft.html). Draft. URL: http://people.mozilla.org/~jorendorff/es6-draft.html
+
+Promises previously appeared in the DOM specification, but have been moved in to the ECMAScript language; it is no longer correct to reference the DOM specification. Relatedly, ECMAScript promises were for a while drafted at [domenic/promises-unwrapping](https://github.com/domenic/promises-unwrapping), but have since progressed into the official ECMAScript drafts; domenic/promises-unwrapping should not be used as a normative reference.
