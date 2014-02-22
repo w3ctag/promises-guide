@@ -75,9 +75,22 @@ In particular, for DOM or other web platform specs, this means you should never 
 
 #### Rejections Should Be Used for Exceptional Situations
 
-What exactly you consider "exceptional" is up for debate, as always. But, you should always ask, before rejecting a promise: if this function was synchronous, would I expect a thrown exception under this circumstance? Or perhaps a failure value (like `null` or `false`)?
+What exactly you consider "exceptional" is up for debate, as always. But, you should always ask, before rejecting a promise: if this function was synchronous, would I expect a thrown exception under this circumstance? Or perhaps a failure value (like `null`, `false`, or `undefined`)? You should think about which behavior is more useful for consumers of your API. If you're not sure, pretend your API is synchronous and then think if your users would expect a thrown exception.
 
-For example, perhaps a user denying permission to use an API shouldn't be considered exceptional. Or perhaps it should! Just think about which behavior is more useful for consumers of your API, and if you're not sure, pretend your API is synchronous and then think if your users would want a thrown exception or not.
+Good cases for rejections include:
+
+- A failed I/O operation, like writing to storage or reading from the network.
+- When it will be impossible to complete the requested task: for example if the operation is `accessUsersContacts()` and the user denies permission, then it should return a rejected promise.
+- Any situation where something is internally broken while attempting an asynchronous operation: for example if the user passes in invalid data, or the environment is in an invalid state for this operation.
+
+Bad uses of rejections include:
+
+- When a value is asked for asynchronously and is not found: for example `asyncMap.get("key")` should return a promise for `undefined` when there is no entry for `"key"`, and similarly `asyncMap.has("key")` should return a promise for `false`. The absence of `"key"` would be unexceptional, and so a rejected promise would be a poor choice.
+- When the operation is phrased as a question, and the answer is negative: for example if the operation is `hasPermissionToAccessUsersContacts()` and the user has denied permission, then it should return a promise fulfilled with `false`; it should not reject.
+
+Cases where a judgement call will be necessary include:
+
+- APIs that are more ambiguous about being a question versus a demand: for example `requestUsersContacts()` could return a promise fulfilled with `null` if the user denies permission, or it could return a promise rejected with an error stating that the user denied permission.
 
 ### Asynchronous Algorithms
 
