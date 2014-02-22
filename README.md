@@ -98,7 +98,7 @@ Sometimes specs explicitly [queue a task](http://www.whatwg.org/specs/web-apps/c
 
 Another guideline geared toward WebIDL-based specs. Unlike in the old world of callbacks, there's no need to create separate callback types for your success and error cases. Instead, just use the verbiage above. Create _promise_ as one of your first steps, using "let _promise_ be a newly-created promise," then later, when it's time to resolve or reject it, say e.g. "resolve _promise_ with _value_" or "reject _promise_ with a new DOMException whose name is `"AbortError"`."
 
-### Promise Arguments
+### Accepting Promises
 
 #### Promise Arguments Should Be Cast
 
@@ -121,6 +121,24 @@ var p2 = addDelay("value", 1000);
 
 In this example, `p1` will be fulfilled 500 ms after the promise returned by `doAsyncOperation()` fulfills, with that operation's value. (Or `p1` will reject as soon as that promise rejects.) And, since we cast the incoming argument to a promise, the function can also work when you pass it the string `"value"`: `p2` will be fulfilled with `"value"` after 1000 ms. That is, we "cast" the incoming string into a promise, essentially treating it as an immediately-fulfilled promise for that value.
 
+#### User-Supplied Promise-Returning Functions Should Be "Promise-Called"
+
+If the user supplies you with a function that you expect to return a promise, you should also allow it to return a thenable or non-promise value, or even throw an exception, and treat all these cases as if they had returned an analogous promise. We can encapsulate this process in an operation called "promise-calling" the supplied function. This allows us to have the same reaction to synchronous forms of success and failure that we would to asynchronous forms.
+
+In JavaScript, you might express promise-calling this way:
+
+```js
+function promiseCall(func, ...args) {
+    try {
+        return Promise.cast(func(...args));
+    } catch (e) {
+        return Promise.reject(e);
+    }
+}
+```
+
+See the `resource.open` example below for further discussion of how and why this should be used.
+
 ## Shorthand Phrases
 
 When writing such specifications, it's convenient to be able to refer to common promise operations concisely. We define here a set of shorthands that allow you to do so.
@@ -139,9 +157,15 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 **"Resolve _p_ with _x_"** is shorthand for calling a previously-stored [`resolve` function](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions) from creating `p`, with argument `x`.
 
-**"Reject _p_ with _r_"** is shorthand for calling a previously-stored [`reject` function](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions) from creating `p`, with arguemnt `r`.
+**"Reject _p_ with _r_"** is shorthand for calling a previously-stored [`reject` function](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions) from creating `p`, with argument `r`.
+
+### Reacting to Promises
 
 **"Transforming _p_ with _onFulfilled_ and _onRejected_"** is shorthand for the result of calling `p.then(onFulfilled, onRejected)`, using the initial value of [`Promise.prototype.then`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then).
+
+**Upon fulfillment of _p_ with value _v_** is shorthand saying that the successive nested steps should be executed inside a function `onFulfilled` that is passed to `p.then(onFulfilled)`, using the initial value of `Promise.prototype.then`. The steps then have access to `onFulfilled`'s argument as _v_.
+
+**Upon rejection of _p_ with reason _r_** is shorthand saying that the successive nested steps should be executed inside a function `onRejected` that is passed to `p.then(undefined, onRejected)`, using the initial value of `Promise.prototype.then`. The steps then have access to `onRejected`'s argument as _r_.
 
 ### Aggregating Promises
 
@@ -152,6 +176,13 @@ When writing such specifications, it's convenient to be able to refer to common 
 **"Waiting for all of _p1_, _p2_, _p3_, …"** is shorthand for the result of `Promise.all([p1, p2, p3, …])`, using the initial value of [`Promise.all`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.all).
 
 **"Waiting for all of the elements of _iterable_"** is shorthand for the result of `Promise.all(iterable)`, using the initial value of [`Promise.all`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.all).
+
+### Promise-Calling
+
+The result of **promise-calling _f_(..._args_)** is:
+
+- If the call returns a value _v_, the result of casting _v_ to a promise.
+- If the call throws an exception _e_, a promise rejected with _e_.
 
 ## Examples
 
@@ -245,6 +276,41 @@ environment.ready is a property that signals when some part of some environment 
 1. Let _castToPromise_ be the result of casting _promise_ to a promise.
 1. Transform _castToPromise_ with _onFulfilled_ and _onRejected_.
 1. Return _p_.
+
+### resource.open ( resourcePath, openingOperation )
+
+`resource.open` is a method that executes the passed function _openingOperation_ to do most of its work, but then updates the `resource`'s properties to reflect the result of this operation. It is a simplified version of some of the techniques used in the streams specification. The method is meant to illustrate how and why you might promise-call another function.
+
+1. Let _resourcePath_ be ToString(_resourcePath_).
+1. Promise-call _openingOperation_(_resourcePath_):
+    1. Upon fulfillment, set `this.status` to `"opened"`.
+    1. Upon rejection with reason _r_, set `this.status` to `"errored"` and `this.error` to _r_.
+
+The equivalent function in JavaScript would be
+
+```js
+resource.open = function (resourcePath, openingOperation) {
+    resourcePath = String(resourcePath);
+
+    promiseCall(openingOperation, resourcePath).then(
+        v => {
+            this.status = "opened";
+        },
+        r => {
+            this.status = "errored";
+            this.error = r;
+        }
+    );
+};
+```
+
+using the `promiseCall` function defined above. If we had instead just called `openingOperation`, i.e. done `openingOperation(resourcePath)` directly, then code like
+
+```js
+resource.open(synchronouslyOpenTheResource);
+```
+
+would fail. It would not return a promise, so calling `then` on the return value would fail. Even if we accounted for that, what if `synchronouslyOpenTheResource` threw an error? We would want that to result in an `"errored"` status, but without promise-calling, that would not be the case: the error would simply cause `resource.open` to exit. So you can see that promise-calling is quite helpful here.
 
 ### addBookmark ( )
 
