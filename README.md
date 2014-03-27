@@ -364,6 +364,81 @@ environment.ready is a property that signals when some part of some environment 
         1. Otherwise, resolve _promise_ with **undefined**.
 1. Return _promise_.
 
+## WebIDL and Promises
+
+[WebIDL](http://heycam.github.io/webidl/) provides a [`Promise<T>`](http://heycam.github.io/webidl/#es-promise) type which can be used when writing specifications that expose their API through WebIDL. We summarize the impact of `Promise<T>` here for easy reference.
+
+### `Promise<T>` Return Values
+
+Like all WebIDL return values, declaring a return value of type `Promise<T>` has no impact on the algorithm's actual return steps. It is simply a form of documentation, and if you return something that is not a promise or is a promise with a fulfillment value that is not of WebIDL-type `T`, then you have written incorrect documentation into your spec.
+
+However, declaring that your method or accessor returns a promise does have one important impact: it ensures that any exceptions that it would otherwise throw, e.g. as a result of failed type conversions, are caught and turned into rejected promises. (See the ["Operations" section](http://heycam.github.io/webidl/#es-operations), "If _O_ has a return type that is a promise type …", and similar phrases scattered throughout the document.) This automatically takes care of the "Promise-Returning Functions Should Never Throw" advice from above.
+
+### `Promise<T>` Parameters
+
+When a parameter of a WebIDL method is declared as `Promise<T>`, it will automatically resolve any arguments passed in that position. This will take care of the "Promise Arguments Should Be Resolved" advice above.
+
+If you have a WebIDL `Promise<T>` argument, you can use the WebIDL ["perform some steps once a promise is settled"](http://heycam.github.io/webidl/#dfn-perform-steps-once-promise-is-settled) algorithm. This is much like our "upon fulfillment …" and "upon rejection …" shorthand phrases above, but it will add an additional step of converting the promise's fulfillment value to the WebIDL type `T` before running any upon-fulfillment steps. Additionally it causes your algorithm to return a promise derived from running those steps. If the type conversion fails, your algorithm will return a promise rejected with the error causing that failure.
+
+Note that the `T` here refers to a WebIDL type *for the fulfillment value*. Furthermore, it only has impact if you use the WebIDL "perform some steps …" algorithm, and not if you use the promise in other ways (such as passing it along to another function). If that is not relevant, we advise using `Promise<any>` for parameters.
+
+As a consequence of the resolution behavior, `Promise<T>` parameters cannot be overloaded with any other parameters. For example, you cannot do:
+
+```webidl
+// INVALID WEBIDL
+void f(Promise<DOMString> x);
+void f(DOMString y);
+```
+
+### User Functions Returning Promises
+
+In WebIDL, you consume JavaScript functions by declaring them as WebIDL [callback functions](http://heycam.github.io/webidl/#dfn-callback-function) (or, in rare cases, via [callback interfaces](http://heycam.github.io/webidl/#dfn-callback-interface)) and later [invoking them](http://heycam.github.io/webidl/#es-invoking-callback-functions) with a list of WebIDL values.
+
+If you use WebIDL's mechanisms for calling JavaScript functions, the invocation algorithm will automatically resolve return values and convert thrown exceptions into rejected promises. This automatically takes care of the "User-Supplied Promise-Returning Functions Should Be 'Promise-Called'" advice from above.
+
+### Examples
+
+```webidl
+// Promise-returning methods
+
+interface ProtectedResource {
+  Promise<void> requestAccess();
+  ...
+};
+
+interface Quoter {
+  Promise<DOMString> getInterestingQuote();
+}
+```
+
+```webidl
+// Promise-returning properties
+
+interface StateMachine {
+  readonly attribute Promise<void> loaded;
+
+  Promise<void> load();
+}
+```
+
+```webidl
+// Promise-accepting methods
+
+interface Waiter {
+  void waitUntil(Promise<any> promise);
+}
+```
+
+```webidl
+// Promise-returning user functions
+
+callback Promise<DOMString> ResourceLoader();
+
+interface ResourceUser {
+  void loadAndUseResource(ResourceLoader loader);
+};
+```
+
 ## Referencing Promises
 
 When writing a spec that references promises, the correct form is something like the following:
