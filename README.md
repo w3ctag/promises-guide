@@ -114,15 +114,15 @@ Another guideline geared toward WebIDL-based specs. Unlike in the old world of c
 
 ### Accepting Promises
 
-#### Promise Arguments Should Be Cast
+#### Promise Arguments Should Be Resolved
 
-In general, when an argument is expected to be a promise, you should also allow thenables and non-promise values by *casting* the argument to a promise before using it. You should *never* do a type-detection on the incoming value, or overload between promises and other values, or put promises in a union type.
+In general, when an argument is expected to be a promise, you should also allow thenables and non-promise values by *resolving* the argument to a promise before using it. You should *never* do a type-detection on the incoming value, or overload between promises and other values, or put promises in a union type.
 
 In WebIDL-using specs, this is automatically taken care of by the [WebIDL promise type](http://heycam.github.io/webidl/#es-promise). To see what it means in JavaScript, consider the following function, which adds a delay of `ms` milliseconds to a promise:
 
 ```js
 function addDelay(promise, ms) {
-    return Promise.cast(promise).then(v =>
+    return Promise.resolve(promise).then(v =>
         new Promise(resolve =>
             setTimeout(() => resolve(v), ms);
         );
@@ -133,7 +133,7 @@ var p1 = addDelay(doAsyncOperation(), 500);
 var p2 = addDelay("value", 1000);
 ```
 
-In this example, `p1` will be fulfilled 500 ms after the promise returned by `doAsyncOperation()` fulfills, with that operation's value. (Or `p1` will reject as soon as that promise rejects.) And, since we cast the incoming argument to a promise, the function can also work when you pass it the string `"value"`: `p2` will be fulfilled with `"value"` after 1000 ms. That is, we "cast" the incoming string into a promise, essentially treating it as an immediately-fulfilled promise for that value.
+In this example, `p1` will be fulfilled 500 ms after the promise returned by `doAsyncOperation()` fulfills, with that operation's value. (Or `p1` will reject as soon as that promise rejects.) And, since we resolve the incoming argument to a promise, the function can also work when you pass it the string `"value"`: `p2` will be fulfilled with `"value"` after 1000 ms. In this way, we essentially treat it as an immediately-fulfilled promise for that value.
 
 #### User-Supplied Promise-Returning Functions Should Be "Promise-Called"
 
@@ -144,7 +144,7 @@ In JavaScript, you might express promise-calling this way:
 ```js
 function promiseCall(func, ...args) {
     try {
-        return Promise.cast(func(...args));
+        return Promise.resolve(func(...args));
     } catch (e) {
         return Promise.reject(e);
     }
@@ -161,11 +161,9 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 **"A new promise"** gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling `new Promise((resolve, reject) => { ... })`, using the initial value of [the `Promise` constructor](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor). Here `...` stands in for code that saves the value of `resolve` and `reject` for later use by the shorthands under "manipulating promises."
 
-**"A promise resolved with _x_"** is shorthand for the result of `Promise.resolve(x)`, using the initial value of [`Promise.resolve`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve).
+**"A promise resolved with _x_"** or **"_x_ resolved to a promise"** is shorthand for the result of `Promise.resolve(x)`, using the initial value of [`Promise.resolve`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve).
 
 **"A promise rejected with _r_"** is shorthand for the result of `Promise.reject(r)`, using the initial value of [`Promise.reject`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject).
-
-**"_x_ cast to a promise"** is shorthand for the result of `Promise.cast(x)`, using the initial value of [`Promise.cast`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.cast).
 
 ### Manipulating Promises
 
@@ -195,7 +193,7 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 The result of **promise-calling _f_(..._args_)** is:
 
-- If the call returns a value _v_, the result of casting _v_ to a promise.
+- If the call returns a value _v_, the result of resolving _v_ to a promise.
 - If the call throws an exception _e_, a promise rejected with _e_.
 
 ## Examples
@@ -274,12 +272,12 @@ function delay(ms) {
 
 ### addDelay( promise, ms )
 
-`addDelay` is a function that adds an extra _ms_ milliseconds of delay between _promise_ settling and the returned promise settling. Notice how it casts the incoming argument to a promise, so that you could pass it a non-promise value or a thenable.
+`addDelay` is a function that adds an extra _ms_ milliseconds of delay between _promise_ settling and the returned promise settling. Notice how it resolves the incoming argument to a promise, so that you could pass it a non-promise value or a thenable.
 
 1. Let _ms_ be ToNumber(_ms_).
 1. If _ms_ is **NaN**, let _ms_ be **+0**; otherwise let _ms_ be the maximum of _ms_ and **+0**.
 1. Let _p_ be a new promise.
-1. Let _castToPromise_ be the result of casting _promise_ to a promise.
+1. Let _resolvedToPromise_ be the result of resolving _promise_ to a promise.
 1. Upon fulfillment of _promise_ with value _v_, perform the following steps asynchronously:
     1. Wait _ms_ milliseconds.
     1. Resolve _p_ with _v_.
@@ -298,8 +296,8 @@ function addDelay(promise, ms) {
     let resolve, reject;
     const p = new Promise((r, rr) => { resolve = r; reject = rr; });
 
-    const castToPromise = Promise.cast(promise);
-    castToPromise.then(
+    const resolvedToPromise = Promise.resolve(promise);
+    resolvedToPromise.then(
         v => setTimeout(() => resolve(v), ms),
         r => setTimeout(() => reject(r), ms)
     );
