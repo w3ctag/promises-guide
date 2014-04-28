@@ -155,6 +155,8 @@ See the `resource.open` example below for further discussion of how and why this
 
 ## Shorthand Phrases
 
+_NOTE: this section should move to WebIDL, where it belongs. See [#10](https://github.com/w3ctag/promises-guide/issues/10)._
+
 When writing such specifications, it's convenient to be able to refer to common promise operations concisely. We define here a set of shorthands that allow you to do so.
 
 ### Creating Promises
