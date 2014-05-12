@@ -94,23 +94,27 @@ Cases where a judgement call will be necessary include:
 
 ### Asynchronous Algorithms
 
-_NOTE: This section has some issues; see [#7](https://github.com/w3ctag/promises-guide/issues/7)._
+#### Note Asynchronous Steps Explicitly
 
-#### Maintain a Normal Control Flow
+It is important to note which steps in your algorithms will be run asynchronously, without blocking script execution. This instructs implementers as to which operations will need to use e.g. a background thread or asychronous I/O calls. And it helps authors to know the expected sequencing of _their_ operations with respect to those of your algorithm.
 
-An antipattern that has been prevalent in async web specifications has been returning a value, then "continue running these steps asynchronously." This is hard to deal with for readers, because JavaScript doesn't let you do anything after returning from a function! Use promises to simplify your control flow into a normal linear sequence of steps:
+As an example, the following steps will give a promise that is resolved after _ms_ milliseconds:
 
-- First, create the promise
-- Then, describe how you'll perform the async operation—these are often "magic," e.g. asking for user input or appealing to the network stack. Say that if the operation succeeds, you'll resolve the promise, possibly with an appropriate value, and that if it fails, you'll reject it with an appropriate error.
-- Finally, return the created promise.
+1. Let _p_ be a new promise.
+1. Run the following steps asynchronously:
+   1. Wait _ms_ milliseconds.
+   1. Resolve _p_ with **undefined**.
+1. Return _p_.
 
-#### Do Not Queue Needless Tasks
+If we had omitted the "Run the following steps asynchronously" heading, then the algorithm would have instructed implementers to block the main thread for _ms_ milliseconds, which is very bad! Whereas as written, this algorithm correctly describes a non-blocking wait.
 
-Sometimes specs explicitly [queue a task](http://www.whatwg.org/specs/web-apps/current-work/#task-queue) to perform async work. This is never necessary with promises! Promises ensure all invariants you would otherwise gain by doing this. Instead, just appeal to environmental asynchrony (like user input or the network stack), and from there resolve the promise.
+#### No Need to Queue a Task
+
+Sometimes specs explicitly [queue a task](http://www.whatwg.org/specs/web-apps/current-work/#task-queue) to perform async work. With promises, this is not necessary; they automatically ensure all invariants you would otherwise gain by doing this.
 
 #### No Need to Create Callbacks
 
-Another guideline geared toward WebIDL-based specs. Unlike in the old world of callbacks, there's no need to create separate callback types for your success and error cases. Instead, just use the verbiage above. Create _promise_ as one of your first steps, using "let _promise_ be a new promise," then later, when it's time to resolve or reject it, say e.g. "resolve _promise_ with _value_" or "reject _promise_ with a new DOMException whose name is `"AbortError"`."
+Another guideline geared toward WebIDL-based specs. Unlike in the old world of callbacks, there's no need to create separate callback types for your success and error cases. Instead, just resolve or reject your promise.
 
 ### Accepting Promises
 
