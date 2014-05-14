@@ -94,6 +94,10 @@ Cases where a judgement call will be necessary include:
 
 ### Asynchronous Algorithms
 
+#### No Need to Create Callbacks
+
+Unlike in the old world of callbacks, there's no need to create separate callback types (e.g. in WebIDL) for your success and error cases. Instead, just resolve or reject your promise.
+
 #### Note Asynchronous Steps Explicitly
 
 It is important to note which steps in your algorithms will be run asynchronously, without blocking script execution. This instructs implementers as to which operations will need to use e.g. a background thread or asychronous I/O calls. And it helps authors to know the expected sequencing of _their_ operations with respect to those of your algorithm.
@@ -123,10 +127,6 @@ As an example, the following steps will return a promise resolved after _ms_ mil
    1. [Queue a task](http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#queue-a-task) to [fire an event](http://dom.spec.whatwg.org/#concept-event-fire) named `timerfinished` at the [browsing context](https://w3c.github.io/screen-orientation/#dfn-browsing-context) [active document](https://w3c.github.io/screen-orientation/#dfn-active-document)'s [Window](https://w3c.github.io/screen-orientation/#dfn-window) object.
 1. Return _p_.
 
-
-#### No Need to Create Callbacks
-
-Another guideline geared toward WebIDL-based specs. Unlike in the old world of callbacks, there's no need to create separate callback types for your success and error cases. Instead, just resolve or reject your promise.
 
 ### Accepting Promises
 
