@@ -108,9 +108,21 @@ As an example, the following steps will give a promise that is resolved after _m
 
 If we had omitted the "Run the following steps asynchronously" heading, then the algorithm would have instructed implementers to block the main thread for _ms_ milliseconds, which is very bad! Whereas as written, this algorithm correctly describes a non-blocking wait.
 
-#### No Need to Queue a Task
+#### Queue Tasks to Invoke User Code
 
-Sometimes specs explicitly [queue a task](http://www.whatwg.org/specs/web-apps/current-work/#task-queue) to perform async work. With promises, this is not necessary; they automatically ensure all invariants you would otherwise gain by doing this.
+Promises abstract away many of the details regarding notifying the user about async operations. For example, you can say "resolve _p_ with _x_" instead of e.g. "[queue a task](http://www.whatwg.org/specs/web-apps/current-work/#task-queue) to call the callback _cb_ with _x_," and it's understood that this will use the normal promise mechanisms. (Namely, the user can wait for fulfillment or rejection by passing callbacks to the promise's `then` method, which will call those callbacks in the next microtask.) So in most cases, you will not need to explicitly queue tasks inside your promise-based asynchronous algorithms.
+
+However, in cases where you need to interface with user code in more ways than can be mediated via the promise, you'll still need to queue a task. For example, you may want to fire an event, which can call into user event handlers. Or you may need to perform a structured clone operation, which [can trigger getters](http://lists.w3.org/Archives/Public/public-webcrypto/2014Mar/0141.html). If these things must be done inside the asynchronous portion of your algorithm, you need to specify that they are done via a queued task, and with a specific task queue. This nails down the exact time such user-observable operations happen both in relation to other queued tasks, and to the microtask queue used by promises.
+
+As an example, the following steps will return a promise resolved after _ms_ milliseconds, but also fire an event named `timerfinished` on `window`:
+
+1. Let _p_ be a new promise.
+1. Run the following steps asynchronously:
+   1. Wait _ms_ milliseconds.
+   1. Resolve _p_ with **undefined**.
+   1. [Queue a task](http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#queue-a-task) to [fire an event](http://dom.spec.whatwg.org/#concept-event-fire) named `timerfinished` at the [browsing context](https://w3c.github.io/screen-orientation/#dfn-browsing-context) [active document](https://w3c.github.io/screen-orientation/#dfn-active-document)'s [Window](https://w3c.github.io/screen-orientation/#dfn-window) object.
+1. Return _p_.
+
 
 #### No Need to Create Callbacks
 
