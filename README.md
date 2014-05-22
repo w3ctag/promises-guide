@@ -39,7 +39,43 @@ Now that we have promises as a platform primitive, such approaches are no longer
 
 Because promises can be subscribed to even after they've already been fulfilled or rejected, they can be very useful for a certain class of "event." When something only happens once, and authors often want to observe the status of it after it's already occurred, providing a promise that becomes fulfilled when that eventuality comes to pass gives a very convenient API.
 
-The prototypical example of such an "event" is a loaded indicator: a resource such as an image, font, or even document, could provided a `ready` property that is a promise that becomes fulfilled only when the resource has fully loaded (or becomes rejected if there's an error loading the resource). Then, authors can always queue up actions to be executed once the resource is ready by doing `resource.ready.then(onReady, onFailure)`—even if the resource was loaded already. This is in contrast to an event model, where if the author is not subscribed at the time the event fires, that information is lost.
+The prototypical example of such an "event" is a loaded indicator: a resource such as an image, font, or even document, could provided a `loaded` property that is a promise that becomes fulfilled only when the resource has fully loaded (or becomes rejected if there's an error loading the resource). Then, authors can always queue up actions to be executed once the resource is ready by doing `resource.loaded.then(onLoaded, onFailure)`. This will work even if the resource was loaded already, queueing a microtask to execute `onLoaded` . This is in contrast to an event model, where if the author is not subscribed at the time the event fires, that information is lost.
+
+### More General State Transitions
+
+In certain cases, promises can be useful as a general mechanism for signaling state transitions. This usage is subtle, but can provide a very nice API for consumers when done correctly.
+
+One can think of this pattern as a generalization of the one-time "events" use case. For example, take `<img>` elements. By resetting their `src` property, they can be re-loaded; that is, they can transition back from a loaded state to an unloaded state. Thus becoming loaded is not a one-time occassion: instead, the image actually consists of a state machine that moves back and forth between loaded and unloaded states. In such a scenario, it is still useful to give images a promise-returning `loaded` property, which will signal the next state transition to a loaded state (or fulfill immediately if the image is already in a loaded state). This property should return the same promise every time it is retrieved, until the image moves backward from the loaded state into the unloaded state. Once that occurs, a new promise is created, representing the _next_ transition to loaded. In code:
+
+```js
+var img = new HypotheticalImageElement(); // i.e. one with promises
+var promise1 = img.loaded;
+var promise2 = img.loaded;
+assert(promise1 === promise2);
+
+img.src = "/path/to/image.png";
+var promise3 = img.loaded;
+assert(promise3 === promise1);
+
+img.loaded.then(() => {
+  console.log("I will log once image.png fully loads");
+  var promise4 = img.loaded;
+  assert(promise4 === promise1);
+
+  img.src = "/path/to/different/image.png";
+  var promise5 = img.loaded;
+  assert(promise5 !== promise1);
+});
+```
+
+There are many places in the platform where this can be useful, not only for resources which can become fully loaded, but e.g. for animations that can become fully finished, or resources that can become fully disposed-of.
+
+A slight variant of this pattern occurs when your class contains a method that causes a state transition, and you want to indicate when that state transition completes. In that case you can return a promise from the method, with many of the same semantics. The [streams API](https://github.com/whatwg/streams/) uses this with its `wait()` and `close()` methods. In general, methods should be used for actions, and properties for informational state transitions.
+
+To close, we must caution against over-using this pattern. Not every state transition needs a corresponding promise-property. Indicators that it might be useful include:
+
+- Authors are almost always interested in the _next_ instance of that state transition, and rarely need recurring notification every time it occurs. For example, rarely do authors care to know every time an image element is reloaded; usually they simply care about the initial load of the image, or the next one that occurs after resetting its `src`.
+- Authors are often interested in reacting to transitions that have already occurred. For example, authors often want to run some code once an image is loaded; if the image is already loaded, they want to run the code as soon as possible.
 
 ## When Not to Use Promises
 
