@@ -10,6 +10,8 @@ Promises are now the web platform's paradigm for all "one and done" asynchronous
 
 This document gives some guidance on how to write specifications that create, accept, or manipulate promises. It also includes a series of prose shorthands you can use in your specification to work with promises.
 
+Although the primary audience of this document is specification writers, it is also useful for JavaScript developers who want to write libraries or applications using promises. We will  call out sections that are spec-writer specific so developers can skip them more easily.
+
 ## When to Use Promises
 
 ### One-and-Done Operations
@@ -111,6 +113,8 @@ Cases where a judgement call will be necessary include:
 
 ### Asynchronous Algorithms
 
+_This section is primarily for spec writers, dealing with the vagaries of clearly manifesting asynchronous algorithm flow in prose._
+
 #### Simply Resolve or Reject the Promise
 
 Unlike in the old world of callbacks, there's no need to create separate callback types (e.g. in WebIDL) for your success and error cases. Instead, just resolve or reject your promise.
@@ -188,6 +192,8 @@ See the `resource.open` example below for further discussion of how and why this
 
 ## Shorthand Phrases
 
+_This section is primarily for spec writers, dealing with ways of performing common promise operations in prose._
+
 _NOTE: this section should move to WebIDL, where it belongs. See [#10](https://github.com/w3ctag/promises-guide/issues/10)._
 
 When writing such specifications, it's convenient to be able to refer to common promise operations concisely. We define here a set of shorthands that allow you to do so.
@@ -248,6 +254,8 @@ assert(windowA.f().constructor === oldPromise);
 For more information, see [this www-tag thread](http://lists.w3.org/Archives/Public/www-tag/2014Jan/0108.html), especially the replies.
 
 ## Examples
+
+_This section is mostly for spec writers, although it does give examples of the spec prose translated into JavaScript._
 
 ### delay( ms )
 
@@ -417,6 +425,8 @@ would fail. It would not return a promise, so calling `then` on the return value
 
 ## WebIDL and Promises
 
+_This section is primarily for spec writers, dealing with how promises integrate with an interface definition language often used in web specs._
+
 [WebIDL](http://heycam.github.io/webidl/) provides a [`Promise<T>`](http://heycam.github.io/webidl/#es-promise) type which can be used when writing specifications that expose their API through WebIDL. We summarize the impact of `Promise<T>` here for easy reference.
 
 ### `Promise<T>` Return Values
@@ -492,7 +502,7 @@ interface ResourceUser {
 
 ## Referencing Promises
 
-When writing a spec that references promises, the correct form is something like the following:
+When referencing the promises specification, the correct form is something like the following:
 
 > Promise objects are defined in [ECMASCRIPT]
 
@@ -501,6 +511,8 @@ With an entry in your references section that looks something like:
 > **[ECMASCRIPT]** [ECMA-262 ECMAScript Language Specification, Edition 6](http://people.mozilla.org/~jorendorff/es6-draft.html). Draft. URL: http://people.mozilla.org/~jorendorff/es6-draft.html
 
 Promises previously appeared in the DOM specification, but have been moved in to the ECMAScript language; it is no longer correct to reference the DOM specification. Relatedly, ECMAScript promises were for a while drafted at [domenic/promises-unwrapping](https://github.com/domenic/promises-unwrapping), but have since progressed into the official ECMAScript drafts; domenic/promises-unwrapping should not be used as a normative reference.
+
+If you wish to refer to the community usage of promises, throughout a variety of JavaScript libraries, you might want to include a reference to the [Promises/A+ specification](http://promisesaplus.com/). However, Promises/A+ does not normatively govern the behavior of browsers like the ECMAScript specification does, and is unlikely to be useful when writing specs.
 
 ## Appendix: Legacy APIs for Asynchronicity
 
