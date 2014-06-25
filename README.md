@@ -219,6 +219,34 @@ The result of **promise-calling _f_(..._args_)** is:
 - If the call returns a value _v_, the result of resolving _v_ to a promise.
 - If the call throws an exception _e_, a promise rejected with _e_.
 
+### A Note on Realms
+
+In all cases, when we use phrases like "the initial value of `Promise.resolve`," we mean the initial value within the [realm](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-code-realms) associated to the function being specified. So for example, if `window.f()` is specified to return "a promise resolved with **1**," then:
+
+```js
+assert(windowA.f().constructor === windowA.Promise);
+assert(windowB.f().constructor === windowB.Promise);
+
+// The realm of the object the function is being invoked on has no effect;
+// the function's realm is all that matters.
+assert(windowA.f.call(windowB).constructor === windowA.Promise);
+
+// This means mutations to the Promise constructor also propagate.
+windowA.Promise.prototype.foo = "bar";
+assert(windowA.f().foo === "bar");
+assert(windowB.f().foo === undefined);
+
+// But since the algorithm for Promise.resolve uses the un-modifiable %Promise%
+// intrinsic, instead of consulting the global, modifying the global property named
+// "Promise" does not impact the return value.
+const oldPromise = windowA.Promise;
+windowA.Promise = () => throw new Error("I break user code, but not platform code!");
+assert(windowA.f().constructor !== windowA.Promise);
+assert(windowA.f().constructor === oldPromise);
+```
+
+For more information, see [this www-tag thread](http://lists.w3.org/Archives/Public/www-tag/2014Jan/0108.html), especially the replies.
+
 ## Examples
 
 ### delay( ms )
