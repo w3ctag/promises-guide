@@ -25,15 +25,7 @@ Examples of such asynchronous operations abound throughout web specifications:
 - Long-running computations: methods that take a while to compute something could do the work on another thread, returning a promise for the result.
 - User interface prompts: methods that ask the user for an answer could return a promise.
 
-Previously, web specifications did things like
-
-- IndexedDB returning [`IDBRequest`](http://www.w3.org/TR/IndexedDB/#request-api) objects, with their `onsuccess` and `onerror` events
-- The File API's [methods](http://www.w3.org/TR/file-system-api/#methods) taking various `successCallback` and `errorCallback` parameters
-- The Notifications API's [`requestPermission`](http://notifications.spec.whatwg.org/#dom-notification-requestpermission) method, which calls its callback with `"granted"` or `"denied"`
-- The Fullscreen API's [`requestFullscreen`](http://fullscreen.spec.whatwg.org/#dom-element-requestfullscreen) method, which triggers `onfullscreenchange` or `onfullscreenerror` events on the `document` object that must be listened to in order to detect success or failure.
-- XMLHttpRequest's [`send`](http://xhr.spec.whatwg.org/#the-send%28%29-method) method, which triggers `onreadystatechange` multiple times and updates properties of the object with status information which must be consulted in order to accurately detect success or failure of the ultimate state transition
-
-Now that we have promises as a platform primitive, such approaches are no longer necessary.
+Previously, web specifications used a large variety of differing patterns for asynchronous operations. We've documented these in an appendix below, so you can get an idea of what is now considered legacy. Now that we have promises as a platform primitive, such approaches are no longer necessary.
 
 ### One-Time "Events"
 
@@ -483,3 +475,15 @@ With an entry in your references section that looks something like:
 > **[ECMASCRIPT]** [ECMA-262 ECMAScript Language Specification, Edition 6](http://people.mozilla.org/~jorendorff/es6-draft.html). Draft. URL: http://people.mozilla.org/~jorendorff/es6-draft.html
 
 Promises previously appeared in the DOM specification, but have been moved in to the ECMAScript language; it is no longer correct to reference the DOM specification. Relatedly, ECMAScript promises were for a while drafted at [domenic/promises-unwrapping](https://github.com/domenic/promises-unwrapping), but have since progressed into the official ECMAScript drafts; domenic/promises-unwrapping should not be used as a normative reference.
+
+## Appendix: Legacy APIs for Asynchronicity
+
+Many web platform APIs were written before the advent of promises, and thus came up with their own ad-hoc ways of signaling asynchronous operation completion or failure. These include:
+
+- IndexedDB returning [`IDBRequest`](http://www.w3.org/TR/IndexedDB/#request-api) objects, with their `onsuccess` and `onerror` events
+- The File API's [methods](http://www.w3.org/TR/file-system-api/#methods) taking various `successCallback` and `errorCallback` parameters
+- The Notifications API's [`requestPermission`](http://notifications.spec.whatwg.org/#dom-notification-requestpermission) method, which calls its callback with `"granted"` or `"denied"`
+- The Fullscreen API's [`requestFullscreen`](http://fullscreen.spec.whatwg.org/#dom-element-requestfullscreen) method, which triggers `onfullscreenchange` or `onfullscreenerror` events on the `document` object that must be listened to in order to detect success or failure.
+- XMLHttpRequest's [`send`](http://xhr.spec.whatwg.org/#the-send%28%29-method) method, which triggers `onreadystatechange` multiple times and updates properties of the object with status information which must be consulted in order to accurately detect success or failure of the ultimate state transition
+
+If you find yourself doing something even remotely similar to these, stop, and instead use promises.
