@@ -196,7 +196,7 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 **"A new promise"** gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling `new Promise((resolve, reject) => { ... })`, using the initial value of [the `Promise` constructor](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor). Here `...` stands in for code that saves the value of `resolve` and `reject` for later use by the shorthands under "manipulating promises."
 
-**"A promise resolved with _x_"** or **"_x_ resolved to a promise"** is shorthand for the result of `Promise.resolve(x)`, using the initial value of [`Promise.resolve`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve).
+**"A promise resolved with _x_"** or **"_x_ resolved as a promise"** is shorthand for the result of `Promise.resolve(x)`, using the initial value of [`Promise.resolve`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve).
 
 **"A promise rejected with _r_"** is shorthand for the result of `Promise.reject(r)`, using the initial value of [`Promise.reject`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject).
 
