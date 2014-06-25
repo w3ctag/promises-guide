@@ -378,7 +378,7 @@ would fail. It would not return a promise, so calling `then` on the return value
 
 ### environment.ready
 
-environment.ready is a property that signals when some part of some environment becomes "ready," e.g. a DOM document. It illustrates how to appeal to environmental asynchrony.
+`environment.ready` is a property that signals when some part of some environment becomes "ready," e.g. a DOM document. It illustrates how to appeal to environmental asynchrony.
 
 1. Let `Environment.ready` be a new promise.
 1. Asynchronously wait for one of the following to become true:
