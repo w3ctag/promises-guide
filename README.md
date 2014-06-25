@@ -68,11 +68,21 @@ There are a few subtle aspects of using or accepting promises in your API. Here 
 
 ### Errors
 
-#### Promise-Returning Functions Should Never Throw
+#### Promise-Returning Functions Should Always Return Promises
 
-Promise-returning functions should never synchronously throw errors, since that would force duplicate error-handling logic on the consumer. Even argument validation errors are not OK. Instead, they should return rejected promises.
+Promise-returning functions should always return a promise, under all circumstances. Even if the result is available synchronously, or the inputs can be detected as invalid synchronously, this information needs to be communicated through a uniform channel so that a developer can be sure that by doing
 
-For WebIDL-based specs, this is taken care of automatically [by the WebIDL specification](http://heycam.github.io/webidl/#es-operations): any exceptions thrown by WebIDL operations, or by the WebIDL overload resolution algorithm itself, are automatically converted into rejections.
+```js
+promiseFunction()
+  .then(onSuccess)
+  .catch(onFailure);
+```
+
+they are handling all successes and all errors.
+
+In particular, promise-returning functions should never synchronously throw errors, since that would force duplicate error-handling logic on the consumer. Even argument validation errors are not OK. Instead, they should return rejected promises.
+
+For WebIDL-based specs, this is taken care of automatically [by the WebIDL specification](http://heycam.github.io/webidl/#es-operations): any exceptions thrown by WebIDL operations, or by the WebIDL overload resolution algorithm itself, are automatically converted into rejections. For an example of how to do manual validation, see the `validatedDelay` example below.
 
 #### Rejection Reasons Should Be `Error`s
 
@@ -101,7 +111,7 @@ Cases where a judgement call will be necessary include:
 
 ### Asynchronous Algorithms
 
-#### No Need to Create Callbacks
+#### Simply Resolve or Reject the Promise
 
 Unlike in the old world of callbacks, there's no need to create separate callback types (e.g. in WebIDL) for your success and error cases. Instead, just resolve or reject your promise.
 
@@ -397,7 +407,7 @@ environment.ready is a property that signals when some part of some environment 
 
 Like all WebIDL return values, declaring a return value of type `Promise<T>` has no impact on the algorithm's actual return steps. It is simply a form of documentation, and if you return something that is not a promise or is a promise with a fulfillment value that is not of WebIDL-type `T`, then you have written incorrect documentation into your spec.
 
-However, declaring that your method or accessor returns a promise does have one important impact: it ensures that any exceptions that it would otherwise throw, e.g. as a result of failed type conversions, are caught and turned into rejected promises. (See the ["Operations" section](http://heycam.github.io/webidl/#es-operations), "If _O_ has a return type that is a promise type …", and similar phrases scattered throughout the document.) This automatically takes care of the "Promise-Returning Functions Should Never Throw" advice from above.
+However, declaring that your method or accessor returns a promise does have one important impact: it ensures that any exceptions that it would otherwise throw, e.g. as a result of failed type conversions, are caught and turned into rejected promises. (See the ["Operations" section](http://heycam.github.io/webidl/#es-operations), "If _O_ has a return type that is a promise type …", and similar phrases scattered throughout the document.) This automatically takes care of the "Promise-Returning Functions Should Always Return Promises" advice from above, at least for exceptions.
 
 ### `Promise<T>` Parameters
 
