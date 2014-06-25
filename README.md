@@ -208,8 +208,6 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 ### Reacting to Promises
 
-**"Transforming _p_ with _onFulfilled_ and _onRejected_"** is shorthand for the result of calling `p.then(onFulfilled, onRejected)`, using the initial value of [`Promise.prototype.then`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then).
-
 **Upon fulfillment of _p_ with value _v_** is shorthand saying that the successive nested steps should be executed inside a function `onFulfilled` that is passed to `p.then(onFulfilled)`, using the initial value of `Promise.prototype.then`. The steps then have access to `onFulfilled`'s argument as _v_.
 
 **Upon rejection of _p_ with reason _r_** is shorthand saying that the successive nested steps should be executed inside a function `onRejected` that is passed to `p.then(undefined, onRejected)`, using the initial value of `Promise.prototype.then`. The steps then have access to `onRejected`'s argument as _r_.
