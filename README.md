@@ -214,16 +214,6 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 **Upon rejection of _p_ with reason _r_** is shorthand saying that the successive nested steps should be executed inside a function `onRejected` that is passed to `p.then(undefined, onRejected)`, using the initial value of `Promise.prototype.then`. The steps then have access to `onRejected`'s argument as _r_.
 
-### Aggregating Promises
-
-**"Racing _p1_, _p2_, _p3_, …"** is shorthand for the result of `Promise.race([p1, p2, p3, …])`, using the initial value of [`Promise.race`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.race).
-
-**"Racing the elements of _iterable_"** is shorthand for the result of `Promise.race(iterable)`, using the initial value of [`Promise.race`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.race).
-
-**"Waiting for all of _p1_, _p2_, _p3_, …"** is shorthand for the result of `Promise.all([p1, p2, p3, …])`, using the initial value of [`Promise.all`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.all).
-
-**"Waiting for all of the elements of _iterable_"** is shorthand for the result of `Promise.all(iterable)`, using the initial value of [`Promise.all`](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.all).
-
 ### Promise-Calling
 
 The result of **promise-calling _f_(..._args_)** is:
