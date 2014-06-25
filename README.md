@@ -194,7 +194,7 @@ See the `resource.open` example below for further discussion of how and why this
 
 _This section is primarily for spec writers, dealing with ways of performing common promise operations in prose._
 
-_NOTE: this section should move to WebIDL, where it belongs. See [#10](https://github.com/w3ctag/promises-guide/issues/10)._
+_NOTE: this section should move to WebIDL, where it belongs. See [#27](https://github.com/w3ctag/promises-guide/issues/27)._
 
 When writing such specifications, it's convenient to be able to refer to common promise operations concisely. We define here a set of shorthands that allow you to do so.
 
