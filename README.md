@@ -82,7 +82,7 @@ promiseFunction()
 
 they are handling all successes and all errors.
 
-In particular, promise-returning functions should never synchronously throw errors, since that would force duplicate error-handling logic on the consumer. Even argument validation errors are not OK. Instead, they should return rejected promises.
+In particular, promise-returning functions should never synchronously throw errors, since that would force duplicate error-handling logic on the consumer: once in a `catch (e) { ... }` block, and once in a `.catch(e => { ... })` block. Even argument validation errors are not OK. Instead, all errors should be signaled by returning rejected promises.
 
 For WebIDL-based specs, this is taken care of automatically [by the WebIDL specification](http://heycam.github.io/webidl/#es-operations): any exceptions thrown by WebIDL operations, or by the WebIDL overload resolution algorithm itself, are automatically converted into rejections. For an example of how to do manual validation, see the `validatedDelay` example below.
 
