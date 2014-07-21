@@ -4,7 +4,7 @@
 
 A _promise_ is an object that represents the eventual result of a single asynchronous operation. They can be returned from asynchronous functions, thus allowing consumers to not only queue up callbacks to be called when the operation succeeds or fails, but also to manipulate the returned promise object, opening up a variety of possibilities.
 
-Promises have been battle-tested in many JavaScript libraries, including as part of popular frameworks like Dojo, jQuery, YUI, Ember, Angular, WinJS, and others. This culminated in the [Promises/A+ community specification](http://promisesaplus.com/) which most libraries conformed to. Now, a standard `Promise` class is included [in the next version of ECMAScript](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects), allowing web platform APIs to return promises for their asynchronous operations.
+Promises have been battle-tested in many JavaScript libraries, including as part of popular frameworks like Dojo, jQuery, YUI, Ember, Angular, WinJS, Q, and others. This culminated in the [Promises/A+ community specification](http://promisesaplus.com/) which most libraries conformed to. Now, a standard `Promise` class is included [in the next version of ECMAScript](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects), allowing web platform APIs to return promises for their asynchronous operations.
 
 Promises are now the web platform's paradigm for all "one and done" asynchronous operations. Previously, specifications used a variety of mismatched mechanisms for such operations. Going forward, all asynchronous operations of this type should be specified to instead return promises, giving our platform a unified primitive for asynchronicity.
 
