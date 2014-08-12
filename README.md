@@ -113,7 +113,7 @@ Cases where a judgement call will be necessary include:
 
 ### Asynchronous Algorithms
 
-_This section is primarily for spec writers, dealing with the vagaries of clearly manifesting asynchronous algorithm flow in prose._
+_This section is primarily for spec writers, dealing with the vagaries of clearly manifesting asynchronous algorithm flow in prose. For more background on this subject, see [Anne's blog post on asynchronicity](http://annevankesteren.nl/2014/08/asynchronicity)._
 
 #### Simply Resolve or Reject the Promise
 
