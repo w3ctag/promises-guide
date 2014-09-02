@@ -1,0 +1,5 @@
+script: bash ./deploy-gh-pages.sh
+env:
+  global:
+  - GH_REF: github.com/w3ctag/promises-guide.git
+  - secure: vahWX5irDT0RnSrg3+gzLUDvPl/G19uYrPYpN0Cyc+lw02bfl5yYcKEkXaSlQCIOZHTXB2Inb8N08oHrCdgzJTvwmUBZg0Yf4+axgZAhva2BFwy2YE5jmYz1ryXvd0y71LGz0JI16eKjAVpnqznYmI9Syxauf9/1odctuE8NKtk=
