@@ -139,6 +139,7 @@ As an example, the following steps will give a promise that is resolved after <v
 
 1. Let <var>p</var> be a new promise.
 1. Run the following steps asynchronously:
+
     1. Wait <var>p</var> milliseconds.
     1. Resolve <var>p</var> with <b>undefined</b>.
 1. Return <var>p</var>.
@@ -155,6 +156,7 @@ As an example, the following steps will return a promise resolved after <var>ms<
 
 1. Let <var>p</var> be a new promise.
 1. Run the following steps asynchronously:
+
     1. Wait <var>ms</var> milliseconds.
     1. Resolve <var>p</var> with <b>undefined</b>.
     1. <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#queue-a-task">Queue a task</a> to <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#fire-a-simple-event">fire a simple event</a> named <code>timerfinished</code> at the <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context">browsing context</a> <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#active-document">active document</a>'s <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window"><code>Window</code> object.
@@ -323,6 +325,7 @@ The <code>validatedDelay</code> function is much like <a href="#example-delay">t
 1. If <var>ms</var> is less than zero, return a promise rejected with a <b>RangeError</b>.
 1. Let <var>p</var> be a new promise.
 1. Run the following steps asynchronously:
+
     1. Wait <var>ms</var> milliseconds.
     1. Resolve <var>p</var> with <b>undefined</b>.
 1. Return <var>p</var>.
@@ -353,9 +356,11 @@ function delay(ms) {
 1. Let <var>p</var> be a new promise.
 1. Let <var>resolvedToPromise</var> be the result of resolving <var>promise</var> to a promise.
 1. Upon fulfillment of <var>promise</var> with value <var>v</var>, perform the following steps asynchronously:
+
     1. Wait <var>ms</var> milliseconds.
     1. Resolve <var>p</var> with <var>v</var>.
 1. Upon rejection of <var>promise</var> with reason <var>r</var>, perform the following steps asynchronously:
+
     1. Wait <var>ms</var> milliseconds.
     1. Reject <var>p</var> with <var>r</var>.
 1. Return <var>p</var>.
@@ -425,6 +430,7 @@ using <a href="#promise-call-in-js">the <code>promiseCall</code> function define
 
 1. Let <code>environment.ready</code> be a new promise.
 1. Asynchronously wait for one of the following to become true:
+
     1. When/if the environment becomes ready, resolve <code>environment.ready</code> with <b>undefined</b>.
     1. When/if the environment fails to load, reject <code>environment.ready</code> with an <b>Error</b> instance explaining the load failure.
 
@@ -437,7 +443,9 @@ using <a href="#promise-call-in-js">the <code>promiseCall</code> function define
 1. Let <var>promise</var> be a new promise.
 1. Let <var>info</var> be the result of getting a web application's metadata.
 1. Run the following steps asynchronously:
+
     1. Using <var>info</var>, and in a manner that is user-agent specific, allow the end user to make a choice as to whether they want to add the bookmark.
+
         1. If the end-user aborts the request to add the bookmark (e.g., they hit escape, or press a "cancel" button), reject <var>promise</var> with a new <code>DOMException</code> whose name is <code>"AbortError"</code>.
         1. Otherwise, resolve <var>promise</var> with <b>undefined</b>.
 1. Return <var>promise</var>.
