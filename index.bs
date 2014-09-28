@@ -96,13 +96,13 @@ they are handling all successes and all errors.
 
 In particular, promise-returning functions should never synchronously throw errors, since that would force duplicate error-handling logic on the consumer: once in a <code>catch (e) { ... }</code> block, and once in a <code>.catch(e => { ... })</code> block. Even argument validation errors are not OK. Instead, all errors should be signaled by returning rejected promises.
 
-For WebIDL-based specs, this is taken care of automatically <a href="http://heycam.github.io/webidl/#es-operations">by the WebIDL specification</a>: any exceptions thrown by WebIDL operations, or by the WebIDL overload resolution algorithm itself, are automatically converted into rejections. For an example of how to do manual validation, see the <code>validatedDelay</code> example below.
+For WebIDL-based specs, this is taken care of automatically <a href="https://heycam.github.io/webidl/#es-operations">by the WebIDL specification</a>: any exceptions thrown by WebIDL operations, or by the WebIDL overload resolution algorithm itself, are automatically converted into rejections. For an example of how to do manual validation, see the <code>validatedDelay</code> example below.
 
 <h4 id="reasons-should-be-errors">Rejection Reasons Should Be <code>Error</code>s</h4>
 
 Promise rejection reasons should always be instances of the ECMAScript <code>Error</code> type, just like synchronously-thrown exceptions should always be instances of <code>Error</code> as well.
 
-In particular, for DOM or other web platform specs, this means you should never use <code>DOMError</code>, but instead use <code>DOMException</code>, which <a href="http://heycam.github.io/webidl/#es-exceptions">per WebIDL</a> extends <code>Error</code>. You can of course also use one of the <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-error-objects">built-in ECMAScript error types</a>.
+In particular, for DOM or other web platform specs, this means you should never use <code>DOMError</code>, but instead use <code>DOMException</code>, which <a href="https://heycam.github.io/webidl/#es-exceptions">per WebIDL</a> extends <code>Error</code>. You can of course also use one of the <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-error-objects">built-in ECMAScript error types</a>.
 
 <h4 id="rejections-should-be-exceptional">Rejections Should Be Used for Exceptional Situations</h4>
 
@@ -125,7 +125,7 @@ Cases where a judgement call will be necessary include:
 
 <h3 id="async-algorithms">Asynchronous Algorithms</h3>
 
-<div class="note">This section is primarily for spec writers, dealing with the vagaries of clearly manifesting asynchronous algorithm flow in prose. For more background on this subject, see <a href="http://annevankesteren.nl/2014/08/asynchronicity">Anne's blog post on asynchronicity</a>.</div>
+<div class="note">This section is primarily for spec writers, dealing with the vagaries of clearly manifesting asynchronous algorithm flow in prose. For more background on this subject, see <a href="https://annevankesteren.nl/2014/08/asynchronicity">Anne's blog post on asynchronicity</a>.</div>
 
 <h4 id="simply-resolve-or-reject">Simply Resolve or Reject the Promise</h4>
 
@@ -148,7 +148,7 @@ If we had omitted the "Run the following steps asynchronously" heading, then the
 
 <h4 id="queue-tasks">Queue Tasks to Invoke User Code</h4>
 
-Promises abstract away many of the details regarding notifying the user about async operations. For example, you can say "resolve <var>p</var> with <var>x</var>" instead of e.g. "<a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#queue-a-task">queue a task</a> to call the callback <var>cb</var> with <var>x</var>," and it's understood that this will use the normal promise mechanisms. (Namely, the user can wait for fulfillment or rejection by passing callbacks to the promise's <code>then</code> method, which will call those callbacks in the next microtask.) So in most cases, you will not need to explicitly queue tasks inside your promise-based asynchronous algorithms.
+Promises abstract away many of the details regarding notifying the user about async operations. For example, you can say "resolve <var>p</var> with <var>x</var>" instead of e.g. "<a href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> to call the callback <var>cb</var> with <var>x</var>," and it's understood that this will use the normal promise mechanisms. (Namely, the user can wait for fulfillment or rejection by passing callbacks to the promise's <code>then</code> method, which will call those callbacks in the next microtask.) So in most cases, you will not need to explicitly queue tasks inside your promise-based asynchronous algorithms.
 
 However, in cases where you need to interface with user code in more ways than can be mediated via the promise, you'll still need to queue a task. For example, you may want to fire an event, which can call into user event handlers. Or you may need to perform a structured clone operation, which <a href="http://lists.w3.org/Archives/Public/public-webcrypto/2014Mar/0141.html">can trigger getters</a>. If these things must be done inside the asynchronous portion of your algorithm, you need to specify that they are done via a queued task, and with a specific task queue. This nails down the exact time such user-observable operations happen both in relation to other queued tasks, and to the microtask queue used by promises.
 
@@ -159,7 +159,7 @@ As an example, the following steps will return a promise resolved after <var>ms<
 
     1. Wait <var>ms</var> milliseconds.
     1. Resolve <var>p</var> with <b>undefined</b>.
-    1. <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#queue-a-task">Queue a task</a> to <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#fire-a-simple-event">fire a simple event</a> named <code>timerfinished</code> at the <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#browsing-context">browsing context</a> <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#active-document">active document</a>'s <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window"><code>Window</code> object.
+    1. <a href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">Queue a task</a> to <a href="https://html.spec.whatwg.org/multipage/webappapis.html#fire-a-simple-event">fire a simple event</a> named <code>timerfinished</code> at the <a href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">browsing context</a> <a href="https://html.spec.whatwg.org/multipage/browsers.html#active-document">active document</a>'s <a href="https://html.spec.whatwg.org/multipage/browsers.html#window"><code>Window</code> object.
 1. Return <var>p</var>.
 
 <h3 id="accepting-promises">Accepting Promises</h3>
@@ -168,7 +168,7 @@ As an example, the following steps will return a promise resolved after <var>ms<
 
 In general, when an argument is expected to be a promise, you should also allow thenables and non-promise values by <em>resolving</em> the argument to a promise before using it. You should <em>never</em> do a type-detection on the incoming value, or overload between promises and other values, or put promises in a union type.
 
-In WebIDL-using specs, this is automatically taken care of by the <a href="http://heycam.github.io/webidl/#es-promise">WebIDL promise type</a>. To see what it means in JavaScript, consider the following function, which adds a delay of <var>ms</var> milliseconds to a promise:
+In WebIDL-using specs, this is automatically taken care of by the <a href="https://heycam.github.io/webidl/#es-promise">WebIDL promise type</a>. To see what it means in JavaScript, consider the following function, which adds a delay of <var>ms</var> milliseconds to a promise:
 
 <div class="example">
     <pre>
@@ -454,19 +454,19 @@ using <a href="#promise-call-in-js">the <code>promiseCall</code> function define
 
 <div class="note">This section is primarily for spec writers, dealing with how promises integrate with an interface definition language often used in web specs.</div>
 
-[[!WEBIDL]] provides a <a href="http://heycam.github.io/webidl/#es-promise"><code>Promise&lt;T&gt;</code></a> type which can be used when writing specifications that expose their API through WebIDL. We summarize the impact of <code>Promise&lt;T&gt;</code> here for easy reference.
+[[!WEBIDL]] provides a <a href="https://heycam.github.io/webidl/#es-promise"><code>Promise&lt;T&gt;</code></a> type which can be used when writing specifications that expose their API through WebIDL. We summarize the impact of <code>Promise&lt;T&gt;</code> here for easy reference.
 
 <h3 id="webidl-promise-return-values"><code>Promise&lt;T&gt;</code> Return Values</h3>
 
 Like all WebIDL return values, declaring a return value of type <code>Promise&lt;T&gt;</code> has no impact on the algorithm's actual return steps. It is simply a form of documentation, and if you return something that is not a promise or is a promise with a fulfillment value that is not of WebIDL-type <code>T</code>, then you have written incorrect documentation into your spec.
 
-However, declaring that your method or accessor returns a promise does have one important impact: it ensures that any exceptions that it would otherwise throw, e.g. as a result of failed type conversions, are caught and turned into rejected promises. (See the <a href="http://heycam.github.io/webidl/#es-operations">"Operations" section</a>, "If <var>O</var> has a return type that is a promise type …", and similar phrases scattered throughout the document.) This automatically takes care of the <a href="#always-return-promises">"Promise-Returning Functions Should Always Return Promises"</a> advice from above, at least for exceptions.
+However, declaring that your method or accessor returns a promise does have one important impact: it ensures that any exceptions that it would otherwise throw, e.g. as a result of failed type conversions, are caught and turned into rejected promises. (See the <a href="https://heycam.github.io/webidl/#es-operations">"Operations" section</a>, "If <var>O</var> has a return type that is a promise type …", and similar phrases scattered throughout the document.) This automatically takes care of the <a href="#always-return-promises">"Promise-Returning Functions Should Always Return Promises"</a> advice from above, at least for exceptions.
 
 <h3 id="webidl-promise-parameters"><code>Promise&lt;T&gt;</code> Parameters</h3>
 
 When a parameter of a WebIDL method is declared as <code>Promise&lt;T&gt;</code>, it will automatically resolve any arguments passed in that position. This will take care of the "Promise Arguments Should Be Resolved" advice above.
 
-If you have a WebIDL <code>Promise&lt;T&gt;</code> argument, you can use the WebIDL <a href="http://heycam.github.io/webidl/#dfn-perform-steps-once-promise-is-settled">perform some steps once a promise is settled</a> algorithm. This is much like our <a href="#upon-fulfillment">upon fulfillment …</a> and <a href="#upon-rejection">upon rejection …</a> shorthand phrases above, but it will add an additional step of converting the promise's fulfillment value to the WebIDL type <code>T</code> before running any upon-fulfillment steps. Additionally it causes your algorithm to return a promise derived from running those steps. If the type conversion fails, your algorithm will return a promise rejected with the error causing that failure.
+If you have a WebIDL <code>Promise&lt;T&gt;</code> argument, you can use the WebIDL <a href="https://heycam.github.io/webidl/#dfn-perform-steps-once-promise-is-settled">perform some steps once a promise is settled</a> algorithm. This is much like our <a href="#upon-fulfillment">upon fulfillment …</a> and <a href="#upon-rejection">upon rejection …</a> shorthand phrases above, but it will add an additional step of converting the promise's fulfillment value to the WebIDL type <code>T</code> before running any upon-fulfillment steps. Additionally it causes your algorithm to return a promise derived from running those steps. If the type conversion fails, your algorithm will return a promise rejected with the error causing that failure.
 
 Note that the <code>T</code> here refers to a WebIDL type <em>for the fulfillment value</em>. Furthermore, it only has impact if you use the WebIDL "perform some steps …" algorithm, and not if you use the promise in other ways (such as passing it along to another function). If that is not relevant, we advise using <code>Promise&lt;any&gt;</code> for parameters.
 
@@ -482,7 +482,7 @@ Note that the <code>T</code> here refers to a WebIDL type <em>for the fulfillmen
 
 <h3 id="webidl-user-functions-returning-promises">User Functions Returning Promises</h3>
 
-In WebIDL, you consume JavaScript functions by declaring them as WebIDL <a href="http://heycam.github.io/webidl/#dfn-callback-function">callback functions</a> (or, in rare cases, via <a href="http://heycam.github.io/webidl/#dfn-callback-interface">callback interfaces</a>) and later <a href="http://heycam.github.io/webidl/#es-invoking-callback-functions">invoking them</a> with a list of WebIDL values.
+In WebIDL, you consume JavaScript functions by declaring them as WebIDL <a href="https://heycam.github.io/webidl/#dfn-callback-function">callback functions</a> (or, in rare cases, via <a href="https://heycam.github.io/webidl/#dfn-callback-interface">callback interfaces</a>) and later <a href="https://heycam.github.io/webidl/#es-invoking-callback-functions">invoking them</a> with a list of WebIDL values.
 
 If you use WebIDL's mechanisms for calling JavaScript functions, the invocation algorithm will automatically resolve return values and convert thrown exceptions into rejected promises. This automatically takes care of the <a href="#should-promise-call">"User-Supplied Promise-Returning Functions Should Be &quot;Promise-Called&quot;"</a> advice from above.
 
