@@ -3,7 +3,7 @@ Title: Writing Promise-Using Specifications
 Group: W3C TAG
 Shortname: promises-guide
 Status: DREAM
-ED: https://w3ctag.github.io/promises-guide
+ED: http://www.w3.org/2001/tag/doc/promises-guide
 Editor: Domenic Denicola, Google https://www.google.com/, http://domenic.me, domenic@domenicdenicola.com
 Abstract: This document gives guidance on how to write specifications that create, accept, or manipulate promises.
 Abstract: It also includes a series of prose shorthands you can use in your specification to work with promises.
