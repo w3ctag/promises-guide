@@ -159,7 +159,7 @@ As an example, the following steps will return a promise resolved after <var>ms<
 
     1. Wait <var>ms</var> milliseconds.
     1. Resolve <var>p</var> with <b>undefined</b>.
-    1. <a href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">Queue a task</a> to <a href="https://html.spec.whatwg.org/multipage/webappapis.html#fire-a-simple-event">fire a simple event</a> named <code>timerfinished</code> at the <a href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">browsing context</a> <a href="https://html.spec.whatwg.org/multipage/browsers.html#active-document">active document</a>'s <a href="https://html.spec.whatwg.org/multipage/browsers.html#window"><code>Window</code> object.
+    1. <a href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">Queue a task</a> to <a href="https://html.spec.whatwg.org/multipage/webappapis.html#fire-a-simple-event">fire a simple event</a> named <code>timerfinished</code> at the <a href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">browsing context</a> <a href="https://html.spec.whatwg.org/multipage/browsers.html#active-document">active document</a>'s <a href="https://html.spec.whatwg.org/multipage/browsers.html#window"><code>Window</code></a> object.
 1. Return <var>p</var>.
 
 <h3 id="accepting-promises">Accepting Promises</h3>
