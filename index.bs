@@ -189,7 +189,7 @@ In this example, <code>p1</code> will be fulfilled 500 ms after the promise retu
 
 If the user supplies you with a function that you expect to return a promise, you should also allow it to return a thenable or non-promise value, or even throw an exception, and treat all these cases as if they had returned an analogous promise. We can encapsulate this process in an operation called <a href="#promise-calling">promise-calling</a> the supplied function. This allows us to have the same reaction to synchronous forms of success and failure that we would to asynchronous forms.
 
-See the <code>resource.open</code> example below for further discussion of how and why this should be used.
+See the <a href="#example-resource-open"><code>resource.open</code> example</a> below for further discussion of how and why this should be used.
 
 <h2 id="shorthand-phrases">Shorthand Phrases</h2>
 
@@ -218,6 +218,32 @@ When writing such specifications, it's convenient to be able to refer to common 
 <dfn id="upon-fulfillment">Upon fulfillment of <var>p</var> with value <var>v</var></dfn> is shorthand saying that the successive nested steps should be executed inside a function <code>onFulfilled</code> that is passed to <code>p.then(onFulfilled)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>'s argument as <var>v</var>.
 
 <dfn id="upon-rejection">Upon rejection of <var>p</var> with reason <var>r</var></dfn> is shorthand saying that the successive nested steps should be executed inside a function <code>onRejected</code> that is passed to <code>p.then(undefined, onRejected)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>'s argument as <var>r</var>.
+
+<dfn id="transforming-by">Transforming <var>p</var> with a fulfillment and/or rejection handler</dfn> is shorthand for the result of <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.
+
+<div class="example">
+    Some examples of the latter phrase would be
+
+    1. Return the result of transforming <var>p</var> by a fulfillment handler that returns <b>undefined</b>.
+
+    or
+
+    1. Return the result of transforming <var>p</var> by a fulfillment handler that returns twice its first argument.
+
+    These correspond to
+
+    <pre>
+    return p.then(() => undefined);
+    </pre>
+
+    and
+
+    <pre>
+    return p.then(x => 2 * x);
+    </pre>
+
+    respectively. (More complicated transforms are of course possible as well, as shown in the <a href="#example-resource-open"><code>resource.open</code> example</a> below.)
+</div>
 
 <h3 id="shorthand-promise-calling">Promise-Calling</h3>
 
@@ -385,9 +411,10 @@ function addDelay(promise, ms) {
 <code>resource.open</code> is a method that executes the passed function <code>openingOperation</code> to do most of its work, but then updates the <code>resource</code>'s properties to reflect the result of this operation. It is a simplified version of some of the techniques used in the streams specification. The method is meant to illustrate how and why you might <a href="#promise-calling">promise-call</a> another function.
 
 1. Let <var>resourcePath</var> be ToString(<var>resourcePath</var>).
-1. Promise-call <var>openingOperation</var>(<var>resourcePath</var>):
-    1. Upon fulfillment, set <code>this.status</code> to <code>"opened"</code>.
-    1. Upon rejection with reason <var>r</var>, set <code>this.status</code> to <cod>"errored"</code> and <code>this.error</code> to <var>r</var>.
+1. Let <var>openingPromise</var> be the result of <a href="#promise-calling">promise-calling</a> <var>openingOperation</var>(<var>resourcePath</var>).
+1. Return the result of transforming <var>openingPromise</var> with:
+    1. A fulfillment handler that sets <code>this.status</code> to <code>"opened"</code>.
+    1. A rejection handler that, when called with argument <var>r</var>, set <code>this.status</code> to <cod>"errored"</code> and <code>this.error</code> to <var>r</var>.
 
 The equivalent function in JavaScript would be
 
