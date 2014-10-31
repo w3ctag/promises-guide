@@ -139,7 +139,7 @@ As an example, the following steps will give a promise that is resolved after <v
 
 1. Let <var>p</var> be a new promise.
 1. Run the following steps asynchronously:
-    1. Wait <var>p</var> milliseconds.
+    1. Wait <var>ms</var> milliseconds.
     1. Resolve <var>p</var> with <b>undefined</b>.
 1. Return <var>p</var>.
 
