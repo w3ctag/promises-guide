@@ -195,7 +195,7 @@ See the <a href="#example-resource-open"><code>resource.open</code> example</a> 
 
 <div class="note">This section is primarily for spec writers, dealing with ways of performing common promise operations in prose.</div>
 
-<div class="issue">This section should move to WebIDL, where it belongs. See <a href="https://github.com/w3ctag/promises-guide/issues/27">#27</a>.</div>
+<div class="note">This section should eventually move to WebIDL, where it belongs. See <a href="https://github.com/w3ctag/promises-guide/issues/27">#27</a>.</div>
 
 When writing such specifications, it's convenient to be able to refer to common promise operations concisely. We define here a set of shorthands that allow you to do so.
 
