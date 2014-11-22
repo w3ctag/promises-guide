@@ -201,7 +201,7 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 <h3 id="shorthand-creating">Creating Promises</h3>
 
-<dfn id="a-new-promise">A new promise</dfn> gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under <a href="#shorthand-manipulating">manipulating promises</a>.
+<dfn id="a-new-promise">A new promise</dfn> gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under [[#shorthand-manipulating]].
 
 <dfn id="a-promise-resolved-with">A promise resolved with <var>x</var></dfn> or <dfn id="resolved-as-a-promise"><var>x</var> resolved as a promise</dfn> is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve"><code>Promise.resolve</code></a>.
 
@@ -479,7 +479,7 @@ using <a href="#promise-call-in-js">the <code>promiseCall</code> function define
 
 Like all WebIDL return values, declaring a return value of type <code>Promise&lt;T&gt;</code> has no impact on the algorithm's actual return steps. It is simply a form of documentation, and if you return something that is not a promise or is a promise with a fulfillment value that is not of WebIDL-type <code>T</code>, then you have written incorrect documentation into your spec.
 
-However, declaring that your method or accessor returns a promise does have one important impact: it ensures that any exceptions that it would otherwise throw, e.g. as a result of failed type conversions, are caught and turned into rejected promises. (See the <a href="https://heycam.github.io/webidl/#es-operations">"Operations" section</a>, "If <var>O</var> has a return type that is a promise type …", and similar phrases scattered throughout the document.) This automatically takes care of the <a href="#always-return-promises">"Promise-Returning Functions Should Always Return Promises"</a> advice from above, at least for exceptions.
+However, declaring that your method or accessor returns a promise does have one important impact: it ensures that any exceptions that it would otherwise throw, e.g. as a result of failed type conversions, are caught and turned into rejected promises. (See the <a href="https://heycam.github.io/webidl/#es-operations">"Operations" section</a>, "If <var>O</var> has a return type that is a promise type …", and similar phrases scattered throughout the document.) This automatically takes care of the advice in [[#always-return-promises]], at least for exceptions.
 
 <h3 id="webidl-promise-parameters"><code>Promise&lt;T&gt;</code> Parameters</h3>
 
@@ -503,7 +503,7 @@ Note that the <code>T</code> here refers to a WebIDL type <em>for the fulfillmen
 
 In WebIDL, you consume JavaScript functions by declaring them as WebIDL <a href="https://heycam.github.io/webidl/#dfn-callback-function">callback functions</a> (or, in rare cases, via <a href="https://heycam.github.io/webidl/#dfn-callback-interface">callback interfaces</a>) and later <a href="https://heycam.github.io/webidl/#es-invoking-callback-functions">invoking them</a> with a list of WebIDL values.
 
-If you use WebIDL's mechanisms for calling JavaScript functions, the invocation algorithm will automatically resolve return values and convert thrown exceptions into rejected promises. This automatically takes care of the <a href="#should-promise-call">"User-Supplied Promise-Returning Functions Should Be &quot;Promise-Called&quot;"</a> advice from above.
+If you use WebIDL's mechanisms for calling JavaScript functions, the invocation algorithm will automatically resolve return values and convert thrown exceptions into rejected promises. This automatically takes care of the advice in [[#should-promise-call]].
 
 <h3 id="webidl-examples">Examples</h3>
 
