@@ -247,6 +247,14 @@ When writing such specifications, it's convenient to be able to refer to common 
     respectively. (More complicated transforms are of course possible as well, as shown in the <a href="#example-resource-open"><code>resource.open</code> example</a> below.)
 </div>
 
+<h3 id="aggregating-promises">Aggregating Promises</h3>
+
+The result of <dfn id="waiting-for-all" export>waiting for all</dfn> of a collection of promises is a promise created by calling <code>Promise.all(promiseArray)</code>, where <code>promiseArray</code> is that collection in array form and we use the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.all"><code>Promise.all</code></a>.
+
+This phrase is useful when you wish to perform multiple asynchronous operations in parallel that return promises, and then react to them all together. If all of the given promises fulfill, then the resulting promise will be fulfilled with an array corresponding to the fulfillment values. If any of them reject, then the resulting promise will be rejected with the first rejection reason to occur.
+
+An example usage of this phrase is found in [[#example-batch-request]].
+
 <h3 id="shorthand-promise-calling">Promise-Calling</h3>
 
 The result of <dfn id="promise-calling" export>promise-calling <var>f</var>(...<var>args</var>)</dfn> is:
@@ -470,6 +478,18 @@ using <a href="#promise-call-in-js">the <code>promiseCall</code> function define
         1. If the end-user aborts the request to add the bookmark (e.g., they hit escape, or press a "cancel" button), reject <var>promise</var> with a new <code>DOMException</code> whose name is <code>"AbortError"</code>.
         1. Otherwise, resolve <var>promise</var> with <b>undefined</b>.
 1. Return <var>promise</var>.
+
+<h3 id="example-batch-request">batchRequest ( urls )</h3>
+
+Several places in [[SERVICE-WORKERS]] use <a>waiting for all</a>. <code>batchRequest</code> illustrates a simplified version of one of their uses. It takes as input an iterable of URLs, and returns a promise for an array of <a href="https://fetch.spec.whatwg.org/#response"><code>Response</code></a> objects created by fetching the corresponding URL. If any of the fetches fail, it will return a promise rejected with that failure.
+
+1. Let <var>responsePromises</var> be a new empty list
+1. For each value <var>url</var> of <var>urls</var>,
+    1. Let <var>url</var> be the result of converting <var>url</var> to a <a href="http://heycam.github.io/webidl/#es-USVString">USVString</a>.
+    1. Let <var>req</var> be the result of creating a new <a href="https://fetch.spec.whatwg.org/#dom-request"><code>Request</code></a> passing <var>url</var> to the constructor.
+    1. Let <var>p</var> be the result of calling <a href="https://fetch.spec.whatwg.org/#dom-global-fetch"><code>fetch</code></a> with <var>req</var>.
+    1. Add <var>p</var> to <var>responsePromises</var>.
+1. Return the result of <a>waiting for all</a> of <var>responses</var>.
 
 <h2 id="webidl">WebIDL and Promises</h2>
 
