@@ -203,25 +203,25 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 <h3 id="shorthand-creating">Creating Promises</h3>
 
-<dfn id="a-new-promise">A new promise</dfn> gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under [[#shorthand-manipulating]].
+<dfn id="a-new-promise" export>A new promise</dfn> gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under [[#shorthand-manipulating]].
 
-<dfn id="a-promise-resolved-with">A promise resolved with <var>x</var></dfn> or <dfn id="resolved-as-a-promise"><var>x</var> resolved as a promise</dfn> is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve"><code>Promise.resolve</code></a>.
+<dfn id="a-promise-resolved-with" export>A promise resolved with <var>x</var></dfn> or <dfn id="resolved-as-a-promise" export><var>x</var> resolved as a promise</dfn> is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve"><code>Promise.resolve</code></a>.
 
-<dfn id="a-promise-rejected-with">A promise rejected with <var>r</var></dfn> is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject"><code>Promise.reject</code></a>.
+<dfn id="a-promise-rejected-with" export>A promise rejected with <var>r</var></dfn> is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject"><code>Promise.reject</code></a>.
 
 <h3 id="shorthand-manipulating">Manipulating Promises</h3>
 
-<dfn id="resolve-promise">Resolve <var>p</var> with <var>x</var></dfn> is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.
+<dfn id="resolve-promise" export>Resolve <var>p</var> with <var>x</var></dfn> is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.
 
-<dfn id="reject-promise">Reject <var>p</var> with <var>r</var></dfn> is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.
+<dfn id="reject-promise" export>Reject <var>p</var> with <var>r</var></dfn> is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.
 
 <h3 id="shorthand-reacting">Reacting to Promises</h3>
 
-<dfn id="upon-fulfillment">Upon fulfillment of <var>p</var> with value <var>v</var></dfn> is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>'s argument as <var>v</var>.
+<dfn id="upon-fulfillment" export>Upon fulfillment of <var>p</var> with value <var>v</var></dfn> is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>'s argument as <var>v</var>.
 
-<dfn id="upon-rejection">Upon rejection of <var>p</var> with reason <var>r</var></dfn> is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>'s argument as <var>r</var>.
+<dfn id="upon-rejection" export>Upon rejection of <var>p</var> with reason <var>r</var></dfn> is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>'s argument as <var>r</var>.
 
-<dfn id="transforming-by">Transforming <var>p</var> with a fulfillment and/or rejection handler</dfn> is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.
+<dfn id="transforming-by" export>Transforming <var>p</var> with a fulfillment and/or rejection handler</dfn> is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.
 
 <div class="example">
     Some examples of the latter phrase would be
@@ -249,7 +249,7 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 <h3 id="shorthand-promise-calling">Promise-Calling</h3>
 
-The result of <dfn id="promise-calling">promise-calling <var>f</var>(...<var>args</var>)</dfn> is:
+The result of <dfn id="promise-calling" export>promise-calling <var>f</var>(...<var>args</var>)</dfn> is:
 
 - If the call returns a value <var>v</var>, the result of <a href="#resolved-as-a-promise">resolving</a> <var>v</var> as a promise.
 - If the call throws an exception <var>e</var>, a promise <a href="#a-promise-rejected-with">rejected with</a> <var>e</var>.
