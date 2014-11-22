@@ -86,11 +86,11 @@ There are a few subtle aspects of using or accepting promises in your API. Here 
 
 Promise-returning functions should always return a promise, under all circumstances. Even if the result is available synchronously, or the inputs can be detected as invalid synchronously, this information needs to be communicated through a uniform channel so that a developer can be sure that by doing
 
-<pre>
+<pre><code class="lang-javascript">
 promiseFunction()
   .then(onSuccess)
   .catch(onFailure);
-</pre>
+</code></pre>
 
 they are handling all successes and all errors.
 
@@ -169,7 +169,7 @@ In general, when an argument is expected to be a promise, you should also allow 
 In WebIDL-using specs, this is automatically taken care of by the <a href="https://heycam.github.io/webidl/#es-promise">WebIDL promise type</a>. To see what it means in JavaScript, consider the following function, which adds a delay of <var>ms</var> milliseconds to a promise:
 
 <div class="example">
-    <pre>
+    <pre><code class="lang-javascript">
     function addDelay(promise, ms) {
         return Promise.resolve(promise).then(v =>
             new Promise(resolve =>
@@ -180,7 +180,7 @@ In WebIDL-using specs, this is automatically taken care of by the <a href="https
 
     var p1 = addDelay(doAsyncOperation(), 500);
     var p2 = addDelay("value", 1000);
-    </pre>
+    </code></pre>
 </div>
 
 In this example, <code>p1</code> will be fulfilled 500 ms after the promise returned by <code>doAsyncOperation()</code> fulfills, with that operation's value. (Or <code>p1</code> will reject as soon as that promise rejects.) And, since we resolve the incoming argument to a promise, the function can also work when you pass it the string <code>"value"</code>: <code>p2</code> will be fulfilled with <code>"value"</code> after 1000 ms. In this way, we essentially treat it as an immediately-fulfilled promise for that value.
@@ -232,15 +232,15 @@ When writing such specifications, it's convenient to be able to refer to common 
 
     These correspond to
 
-    <pre>
+    <pre><code class="lang-javascript">
     return p.then(() => undefined);
-    </pre>
+    </code></pre>
 
     and
 
-    <pre>
+    <pre><code class="lang-javascript">
     return p.then(x => 2 * x);
-    </pre>
+    </code></pre>
 
     respectively. (More complicated transforms are of course possible as well, as shown in the <a href="#example-resource-open"><code>resource.open</code> example</a> below.)
 </div>
@@ -255,7 +255,7 @@ The result of <dfn id="promise-calling">promise-calling <var>f</var>(...<var>arg
 <div class="note" id="promise-call-in-js">
     In JavaScript, you might express promise-calling this way:
 
-    <pre>
+    <pre><code class="lang-javascript">
     function promiseCall(f, ...args) {
         try {
             return Promise.resolve(f(...args));
@@ -263,14 +263,14 @@ The result of <dfn id="promise-calling">promise-calling <var>f</var>(...<var>arg
             return Promise.reject(e);
         }
     }
-    </pre>
+    </code></pre>
 </div>
 
 <h3 id="shorthand-note-onrealms">A Note on Realms</h3>
 
 In all cases, when we use phrases like "the initial value of <code>Promise.resolve</code>," we mean the initial value within the <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-code-realms">realm</a> associated to the function being specified. So for example, if <code>window.f()</code> is specified to return "a promise resolved with <b>1</b>," then:
 
-<pre>
+<pre><code class="lang-javascript">
 assert(windowA.f().constructor === windowA.Promise);
 assert(windowB.f().constructor === windowB.Promise);
 
@@ -290,7 +290,7 @@ const oldPromise = windowA.Promise;
 windowA.Promise = () => throw new Error("I break user code, but not platform code!");
 assert(windowA.f().constructor !== windowA.Promise);
 assert(windowA.f().constructor === oldPromise);
-</pre>
+</code></pre>
 
 For more information, see <a href="http://lists.w3.org/Archives/Public/www-tag/2014Jan/0108.html">this www-tag thread</a>, especially the replies.
 
@@ -312,17 +312,17 @@ For more information, see <a href="http://lists.w3.org/Archives/Public/www-tag/2
 
 The equivalent function in JavaScript would be
 
-<pre>
+<pre><code class="lang-javascript">
 function delay(ms) {
     ms = Number(ms);
     ms = Number.isNaN(ms) ? +0 : Math.max(ms, +0);
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-</pre>
+</code></pre>
 
 or, in a more one-to-one correspondence with the specified steps,
 
-<pre>
+<pre><code class="lang-javascript">
 function delay(ms) {
     // Steps 1, 2
     ms = Number(ms);
@@ -338,7 +338,7 @@ function delay(ms) {
     // Step 5
     return p;
 }
-</pre>
+</code></pre>
 
 <h3 id="example-validated-delay">validatedDelay ( ms )</h3>
 
@@ -355,7 +355,7 @@ The <code>validatedDelay</code> function is much like <a href="#example-delay">t
 
 The equivalent function in JavaScript would be
 
-<pre>
+<pre><code class="lang-javascript">
 function delay(ms) {
     ms = Number(ms);
 
@@ -368,7 +368,7 @@ function delay(ms) {
 
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-</pre>
+</code></pre>
 
 <h3 id="example-add-delay">addDelay ( promise, ms )</h3>
 
@@ -388,7 +388,7 @@ function delay(ms) {
 
 The equivalent function in JavaScript would be
 
-<pre>
+<pre><code class="lang-javascript">
 function addDelay(promise, ms) {
     ms = Number(ms);
     ms = Number.isNaN(ms) ? +0 : Math.max(ms, +0);
@@ -404,7 +404,7 @@ function addDelay(promise, ms) {
 
     return p;
 }
-</pre>
+</code></pre>
 
 <h3 id="example-resource-open">resource.open ( resourcePath, openingOperation )</h3>
 
@@ -418,7 +418,7 @@ function addDelay(promise, ms) {
 
 The equivalent function in JavaScript would be
 
-<pre>
+<pre><code class="lang-javascript">
 resource.open = function (resourcePath, openingOperation) {
     resourcePath = String(resourcePath);
 
@@ -432,16 +432,16 @@ resource.open = function (resourcePath, openingOperation) {
         }
     );
 };
-</pre>
+</code></pre>
 
 using <a href="#promise-call-in-js">the <code>promiseCall</code> function defined above</a>.
 
 <div class="note">
     Note how if we had instead just called <code>openingOperation</code>, i.e. done <code>openingOperation(resourcePath)</code> directly, then code like
 
-    <pre>
+    <pre><code class="lang-javascript">
     resource.open(synchronouslyOpenTheResource).then(doSomethingElse);
-    </pre>
+    </code></pre>
 
     would fail. It would not return a promise, so calling <code>then</code> on the return value would fail. Even if we accounted for that, what if <code>synchronouslyOpenTheResource</code> threw an error? We would want that to result in an <code>"errored"</code> status, but without promise-calling, that would not be the case: the error would simply cause <code>resource.open</code> to exit. So you can see that promise-calling is quite helpful here.
 </div>
