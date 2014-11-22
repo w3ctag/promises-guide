@@ -11,6 +11,8 @@ Logo: https://avatars0.githubusercontent.com/u/3874462
 !Version History: <a href="https://github.com/w3ctag/promises-guide/commits">https://github.com/w3ctag/promises-guide/commits</a>
 !Participate: <a href="https://github.com/w3ctag/promises-guide/issues/new">File an issue</a> (<a href="https://github.com/w3ctag/promises-guide/issues?state=open">open issues</a>)
 !Participate: Send feedback to <a href="mailto:www-tag@w3.org">www-tag@w3.org</a> (<a href="http://lists.w3.org/Archives/Public/www-tag/">archives</a>)
+
+Link Defaults: html5 (dfn) queue a task/browsing context/active document/in parallel
 </pre>
 
 <h2 id="intro">Introduction</h2>
@@ -131,33 +133,33 @@ Cases where a judgement call will be necessary include:
 
 Unlike in the old world of callbacks, there's no need to create separate callback types (e.g. in WebIDL) for your success and error cases. Instead, just resolve or reject your promise.
 
-<h4 id="explicit-async-steps">Note Asynchronous Steps Explicitly</h4>
+<h4 id="explicit-async-steps">Note Parallel Steps Explicitly</h4>
 
-It is important to note which steps in your algorithms will be run asynchronously, without blocking script execution. This instructs implementers as to which operations will need to use e.g. a background thread or asychronous I/O calls. And it helps authors to know the expected sequencing of <em>their</em> operations with respect to those of your algorithm.
+It is important to note which steps in your algorithms will be run in parallel with the author's JavaScript code, i.e. without blocking script execution. This instructs implementers as to which operations will need to use e.g. a background thread or asychronous I/O calls. And it helps authors to know the expected sequencing of <em>their</em> operations with respect to those of your algorithm. To do this, use the phrase <a>in parallel</a> from [[!HTML]].
 
 As an example, the following steps will give a promise that is resolved after <var>ms</var> milliseconds:
 
 1. Let <var>p</var> be a new promise.
-1. Run the following steps asynchronously:
+1. Run the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
     1. Resolve <var>p</var> with <b>undefined</b>.
 1. Return <var>p</var>.
 
-If we had omitted the "Run the following steps asynchronously" heading, then the algorithm would have instructed implementers to block the main thread for <var>ms</var> milliseconds, which is very bad! Whereas as written, this algorithm correctly describes a non-blocking wait.
+If we had omitted the "Run the following steps in parallel" heading, then the algorithm would have instructed implementers to block the main thread for <var>ms</var> milliseconds, which is very bad! Whereas as written, this algorithm correctly describes a non-blocking wait.
 
 <h4 id="queue-tasks">Queue Tasks to Invoke User Code</h4>
 
-Promises abstract away many of the details regarding notifying the user about async operations. For example, you can say "resolve <var>p</var> with <var>x</var>" instead of e.g. "<a href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> to call the callback <var>cb</var> with <var>x</var>," and it's understood that this will use the normal promise mechanisms. (Namely, the user can wait for fulfillment or rejection by passing callbacks to the promise's <code>then</code> method, which will call those callbacks in the next microtask.) So in most cases, you will not need to explicitly queue tasks inside your promise-based asynchronous algorithms.
+Promises abstract away many of the details regarding notifying the user about async operations. For example, you can say "resolve <var>p</var> with <var>x</var>" instead of e.g. "<a>queue a task</a> to call the callback <var>cb</var> with <var>x</var>," and it's understood that this will use the normal promise mechanisms. (Namely, the user can wait for fulfillment or rejection by passing callbacks to the promise's <code>then</code> method, which will call those callbacks in the next microtask.) So in most cases, you will not need to explicitly queue tasks inside your promise-based asynchronous algorithms.
 
 However, in cases where you need to interface with user code in more ways than can be mediated via the promise, you'll still need to queue a task. For example, you may want to fire an event, which can call into user event handlers. Or you may need to perform a structured clone operation, which <a href="http://lists.w3.org/Archives/Public/public-webcrypto/2014Mar/0141.html">can trigger getters</a>. If these things must be done inside the asynchronous portion of your algorithm, you need to specify that they are done via a queued task, and with a specific task queue. This nails down the exact time such user-observable operations happen both in relation to other queued tasks, and to the microtask queue used by promises.
 
 As an example, the following steps will return a promise resolved after <var>ms</var> milliseconds, but also fire an event named <code>timerfinished</code> on <code>window</code>:
 
 1. Let <var>p</var> be a new promise.
-1. Run the following steps asynchronously:
+1. Run the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
     1. Resolve <var>p</var> with <b>undefined</b>.
-    1. <a href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">Queue a task</a> to <a href="https://html.spec.whatwg.org/multipage/webappapis.html#fire-a-simple-event">fire a simple event</a> named <code>timerfinished</code> at the <a href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">browsing context</a> <a href="https://html.spec.whatwg.org/multipage/browsers.html#active-document">active document</a>'s <a href="https://html.spec.whatwg.org/multipage/browsers.html#window"><code>Window</code></a> object.
+    1. <a>Queue a task</a> to <a href="https://html.spec.whatwg.org/multipage/webappapis.html#fire-a-simple-event">fire a simple event</a> named <code>timerfinished</code> at the <a>browsing context</a> <a>active document</a>'s <a href="https://html.spec.whatwg.org/multipage/browsers.html#window"><code>Window</code></a> object.
 1. Return <var>p</var>.
 
 <h3 id="accepting-promises">Accepting Promises</h3>
@@ -305,7 +307,7 @@ For more information, see <a href="http://lists.w3.org/Archives/Public/www-tag/2
 1. Let <var>ms</var> be ToNumber(<var>ms</var>).
 1. If <var>ms</var> is <b>NaN</b>, let <var>ms</var> be <b>+0</b>; otherwise let <var>ms</var> be the maximum of <var>ms</var> and <b>+0</b>.
 1. Let <var>p</var> be a new promise.
-1. Run the following steps asynchronously:
+1. Run the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
     1. Resolve <var>p</var> with <b>undefined</b>.
 1. Return <var>p</var>.
@@ -348,7 +350,7 @@ The <code>validatedDelay</code> function is much like <a href="#example-delay">t
 1. If <var>ms</var> is <b>NaN</b>, return a promise rejected with a <b>TypeError</b>.
 1. If <var>ms</var> is less than zero, return a promise rejected with a <b>RangeError</b>.
 1. Let <var>p</var> be a new promise.
-1. Run the following steps asynchronously:
+1. Run the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
     1. Resolve <var>p</var> with <b>undefined</b>.
 1. Return <var>p</var>.
@@ -378,10 +380,10 @@ function delay(ms) {
 1. If <var>ms</var> is <b>NaN</b>, let <var>ms</var> be <b>+0</b>; otherwise let <var>ms</var> be the maximum of <var>ms</var> and <b>+0</b>.
 1. Let <var>p</var> be a new promise.
 1. Let <var>resolvedToPromise</var> be the result of resolving <var>promise</var> to a promise.
-1. Upon fulfillment of <var>promise</var> with value <var>v</var>, perform the following steps asynchronously:
+1. Upon fulfillment of <var>promise</var> with value <var>v</var>, perform the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
     1. Resolve <var>p</var> with <var>v</var>.
-1. Upon rejection of <var>promise</var> with reason <var>r</var>, perform the following steps asynchronously:
+1. Upon rejection of <var>promise</var> with reason <var>r</var>, perform the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
     1. Reject <var>p</var> with <var>r</var>.
 1. Return <var>p</var>.
@@ -451,7 +453,7 @@ using <a href="#promise-call-in-js">the <code>promiseCall</code> function define
 <code>environment.ready</code> is a property that signals when some part of some environment becomes "ready," e.g. a DOM document. It illustrates how to appeal to environmental asynchrony.
 
 1. Let <code>environment.ready</code> be a new promise.
-1. Asynchronously wait for one of the following to become true:
+1. <a>In parallel</a>, wait for one of the following to become true:
     1. When/if the environment becomes ready, resolve <code>environment.ready</code> with <b>undefined</b>.
     1. When/if the environment fails to load, reject <code>environment.ready</code> with an <b>Error</b> instance explaining the load failure.
 
@@ -463,7 +465,7 @@ using <a href="#promise-call-in-js">the <code>promiseCall</code> function define
 1. If the document's mode of operation is standalone, return a promise rejected with a new <code>DOMException</code> whose name is <code>"NotSupported"</code>.
 1. Let <var>promise</var> be a new promise.
 1. Let <var>info</var> be the result of getting a web application's metadata.
-1. Run the following steps asynchronously:
+1. Run the following steps <a>in parallel</a>:
     1. Using <var>info</var>, and in a manner that is user-agent specific, allow the end user to make a choice as to whether they want to add the bookmark.
         1. If the end-user aborts the request to add the bookmark (e.g., they hit escape, or press a "cancel" button), reject <var>promise</var> with a new <code>DOMException</code> whose name is <code>"AbortError"</code>.
         1. Otherwise, resolve <var>promise</var> with <b>undefined</b>.
