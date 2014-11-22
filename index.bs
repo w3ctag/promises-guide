@@ -215,11 +215,11 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 <h3 id="shorthand-reacting">Reacting to Promises</h3>
 
-<dfn id="upon-fulfillment">Upon fulfillment of <var>p</var> with value <var>v</var></dfn> is shorthand saying that the successive nested steps should be executed inside a function <code>onFulfilled</code> that is passed to <code>p.then(onFulfilled)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>'s argument as <var>v</var>.
+<dfn id="upon-fulfillment">Upon fulfillment of <var>p</var> with value <var>v</var></dfn> is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>'s argument as <var>v</var>.
 
-<dfn id="upon-rejection">Upon rejection of <var>p</var> with reason <var>r</var></dfn> is shorthand saying that the successive nested steps should be executed inside a function <code>onRejected</code> that is passed to <code>p.then(undefined, onRejected)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>'s argument as <var>r</var>.
+<dfn id="upon-rejection">Upon rejection of <var>p</var> with reason <var>r</var></dfn> is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>'s argument as <var>r</var>.
 
-<dfn id="transforming-by">Transforming <var>p</var> with a fulfillment and/or rejection handler</dfn> is shorthand for the result of <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.
+<dfn id="transforming-by">Transforming <var>p</var> with a fulfillment and/or rejection handler</dfn> is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.
 
 <div class="example">
     Some examples of the latter phrase would be
