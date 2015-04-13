@@ -578,3 +578,15 @@ If you use WebIDL's mechanisms for calling JavaScript functions, the invocation 
     };
     </pre>
 </div>
+
+<h2 id="legacy" class="no-num">Appendix: Legacy APIs for Asynchronicity</h2>
+
+Many web platform APIs were written before the advent of promises, and thus came up with their own ad-hoc ways of signaling asynchronous operation completion or failure. These include:
+
+- IndexedDB returning <a href="http://www.w3.org/TR/IndexedDB/#request-api"><code>IDBRequest</code></a> objects, with their <code>onsuccess</code> and <code>onerror</code> events
+- The File API's <a href="http://www.w3.org/TR/file-system-api/#methods"><code>methods</code></a> taking various <code>successCallback</code> and <code>errorCallback</code> parameters
+- The Notifications API's <a href="https://notifications.spec.whatwg.org/#dom-notification-requestpermission"><code>requestPermission</code></a> method, which calls its callback with <code>"granted"</code> or <code>"denied"</code>
+- The Fullscreen API's <a href="https://fullscreen.spec.whatwg.org/#dom-element-requestfullscreen"><code>requestFullscreen</code></a> method, which triggers <code>onfullscreenchange</code> or <code>onfullscreenerror</code> events on the nearby <code>document</code> object that must be listened to in order to detect success or failure
+- XMLHttpRequest's <a href="https://xhr.spec.whatwg.org/#the-send%28%29-method"><code>send</code></a> method, which triggers <code>onreadystatechange</code> multiple times and updates properties of the object with status information which must be consulted in order to accurately detect success or failure of the ultimate state transition
+
+If you find yourself doing something even remotely similar to these, stop, and instead use promises.
