@@ -2,17 +2,14 @@
 Title: Writing Promise-Using Specifications
 Group: W3C TAG
 Shortname: promises-guide
-Status: DREAM
-ED: http://www.w3.org/2001/tag/doc/promises-guide
+Status: FINDING
 Editor: Domenic Denicola, Google https://www.google.com/, https://domenic.me/, d@domenic.me
 Abstract: This document gives guidance on how to write specifications that create, accept, or manipulate promises.
 Abstract: It also includes a series of prose shorthands you can use in your specification to work with promises.
-Logo: https://avatars0.githubusercontent.com/u/3874462
-!Version History: <a href="https://github.com/w3ctag/promises-guide/commits">https://github.com/w3ctag/promises-guide/commits</a>
-!Participate: <a href="https://github.com/w3ctag/promises-guide/issues/new">File an issue</a> (<a href="https://github.com/w3ctag/promises-guide/issues?state=open">open issues</a>)
-!Participate: Send feedback to <a href="mailto:www-tag@w3.org">www-tag@w3.org</a> (<a href="http://lists.w3.org/Archives/Public/www-tag/">archives</a>)
+Default Biblio Status: current
+!Participate: <a href="https://github.com/w3ctag/promises-guide">GitHub w3ctag/promises-guide</a> (<a href="https://github.com/w3ctag/promises-guide/issues/new">file an issue</a>; <a href="https://github.com/w3ctag/promises-guide/issues?state=open">open issues</a>)
 
-Link Defaults: html5 (dfn) queue a task/browsing context/active document/in parallel
+Link Defaults: html (dfn) queue a task/browsing context/active document/in parallel
 </pre>
 
 <h2 id="intro">Introduction</h2>
