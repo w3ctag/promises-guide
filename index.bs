@@ -54,7 +54,7 @@ One can think of this pattern as a generalization of the one-time "events" use c
 
 There are many places in the platform where this can be useful, not only for resources which can transition to loaded, but e.g. for animations that can transition to finished, or expensive resources that can transition to disposed, or caches that can become unloaded.
 
-Aslight variant of this pattern occurs when your class contains a method that causes a state transition, and you want to indicate when that state transition completes. In that case you can return a promise from the method, instead of keeping it as a property on your object. The <a href="https://github.com/whatwg/streams/">streams API</a> uses this variant for its <code>wait()</code> and <code>close()</code> methods. In general, methods should be used for actions, and properties for informational state transitions.
+A slight variant of this pattern occurs when your class contains a method that causes a state transition, and you want to indicate when that state transition completes. In that case you can return a promise from the method, instead of keeping it as a property on your object. The <a href="https://github.com/whatwg/streams/">streams API</a> uses this variant for its <code>wait()</code> and <code>close()</code> methods. In general, methods should be used for actions, and properties for informational state transitions.
 
 To close, we must caution against over-using this pattern. Not every state transition needs a corresponding promise-property. Indicators that it might be useful include:
 
@@ -513,7 +513,7 @@ Note that the <code>T</code> here refers to a WebIDL type <em>for the fulfillmen
 
     <pre>
     // INVALID WEBIDL
-    void f(Promise<DOMString> x);
+    void f(Promise&lt;DOMString&gt; x);
     void f(DOMString y);
     </pre>
 </div>
