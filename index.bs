@@ -223,11 +223,11 @@ When writing such specifications, it's convenient to be able to refer to common 
 <div class="example">
     Some examples of the latter phrase would be
 
-    1. Return the result of transforming <var>p</var> by a fulfillment handler that returns <b>undefined</b>.
+    1. Return the result of transforming <var>p</var> with a fulfillment handler that returns <b>undefined</b>.
 
     or
 
-    1. Return the result of transforming <var>p</var> by a fulfillment handler that returns twice its first argument.
+    1. Return the result of transforming <var>p</var> with a fulfillment handler that returns twice its first argument.
 
     These correspond to
 
