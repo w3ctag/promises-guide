@@ -486,7 +486,7 @@ Several places in [[SERVICE-WORKERS]] use <a>waiting for all</a>. <code>batchReq
     1. Let <var>req</var> be the result of creating a new <a href="https://fetch.spec.whatwg.org/#dom-request"><code>Request</code></a> passing <var>url</var> to the constructor.
     1. Let <var>p</var> be the result of calling <a href="https://fetch.spec.whatwg.org/#dom-global-fetch"><code>fetch</code></a> with <var>req</var>.
     1. Add <var>p</var> to <var>responsePromises</var>.
-1. Return the result of <a>waiting for all</a> of <var>responses</var>.
+1. Return the result of <a>waiting for all</a> of <var>responsePromises</var>.
 
 <h2 id="webidl">WebIDL and Promises</h2>
 
