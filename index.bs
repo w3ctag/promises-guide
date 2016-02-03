@@ -9,7 +9,7 @@ Abstract: It also includes a series of prose shorthands you can use in your spec
 Default Biblio Status: current
 !Participate: <a href="https://github.com/w3ctag/promises-guide">GitHub w3ctag/promises-guide</a> (<a href="https://github.com/w3ctag/promises-guide/issues/new">file an issue</a>; <a href="https://github.com/w3ctag/promises-guide/issues?state=open">open issues</a>)
 
-Link Defaults: html (dfn) queue a task/browsing context/active document/in parallel
+Link Defaults: html (dfn) queue a task/browsing context/active document/in parallel/relevant settings object/responsible event loop
 </pre>
 
 <h2 id="intro">Introduction</h2>
@@ -211,6 +211,8 @@ When writing such specifications, it's convenient to be able to refer to common 
 <dfn id="resolve-promise" export>Resolve <var>p</var> with <var>x</var></dfn> is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.
 
 <dfn id="reject-promise" export>Reject <var>p</var> with <var>r</var></dfn> is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.
+
+If the algorithm using these shorthands is running <a>in parallel</a>, the shorthands <a>queue a task</a> on <var>p</var>'s <a>relevant settings object</a>'s <a>responsible event loop</a> to call the stored function.
 
 <h3 id="shorthand-reacting">Reacting to Promises</h3>
 
