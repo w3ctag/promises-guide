@@ -10,6 +10,7 @@ Default Biblio Status: current
 !Participate: <a href="https://github.com/w3ctag/promises-guide">GitHub w3ctag/promises-guide</a> (<a href="https://github.com/w3ctag/promises-guide/issues/new">file an issue</a>; <a href="https://github.com/w3ctag/promises-guide/issues?state=open">open issues</a>)
 
 Link Defaults: html (dfn) queue a task/browsing context/active document/in parallel/relevant settings object/responsible event loop
+Ignored Vars: O, f, args, x, cb
 </pre>
 
 <h2 id="intro">Introduction</h2>
@@ -307,7 +308,7 @@ For more information, see <a href="http://lists.w3.org/Archives/Public/www-tag/2
 
 <div class="note">This section is mostly for spec writers, although it does give examples of the spec prose translated into JavaScript.</div>
 
-<h3 id="example-delay">delay ( ms )</h3>
+<h3 id="example-delay">delay(<var>ms</var>)</h3>
 
 <code>delay</code> is a function that returns a promise that will be fulfilled in <var>ms</var> milliseconds. It illustrates how simply you can resolve a promise, with one line of prose.
 
@@ -349,7 +350,7 @@ function delay(ms) {
 }
 </code></pre>
 
-<h3 id="example-validated-delay">validatedDelay ( ms )</h3>
+<h3 id="example-validated-delay">validatedDelay(<var>ms</var>)</h3>
 
 The <code>validatedDelay</code> function is much like <a href="#example-delay">the <code>delay</code> function</a>, except it will validate its arguments. This shows how to use rejected promises to signal immediate failure before even starting any asynchronous operations.
 
@@ -379,7 +380,7 @@ function delay(ms) {
 }
 </code></pre>
 
-<h3 id="example-add-delay">addDelay ( promise, ms )</h3>
+<h3 id="example-add-delay">addDelay(<var>promise</var>, <var>ms</var>)</h3>
 
 <code>addDelay</code> is a function that adds an extra <var>ms</var> milliseconds of delay between <var>promise</var> settling and the returned promise settling. Notice how it resolves the incoming argument to a promise, so that you could pass it a non-promise value or a thenable.
 
@@ -387,10 +388,10 @@ function delay(ms) {
 1. If <var>ms</var> is <b>NaN</b>, let <var>ms</var> be <b>+0</b>; otherwise let <var>ms</var> be the maximum of <var>ms</var> and <b>+0</b>.
 1. Let <var>p</var> be a new promise.
 1. Let <var>resolvedToPromise</var> be the result of resolving <var>promise</var> to a promise.
-1. Upon fulfillment of <var>promise</var> with value <var>v</var>, perform the following steps <a>in parallel</a>:
+1. Upon fulfillment of <var>resolvedToPromise</var> with value <var>v</var>, perform the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
     1. Resolve <var>p</var> with <var>v</var>.
-1. Upon rejection of <var>promise</var> with reason <var>r</var>, perform the following steps <a>in parallel</a>:
+1. Upon rejection of <var>resolvedToPromise</var> with reason <var>r</var>, perform the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
     1. Reject <var>p</var> with <var>r</var>.
 1. Return <var>p</var>.
@@ -415,9 +416,9 @@ function addDelay(promise, ms) {
 }
 </code></pre>
 
-<h3 id="example-resource-open">resource.open ( resourcePath, openingOperation )</h3>
+<h3 id="example-resource-open">resource.open(<var>resourcePath</var>, <var>openingOperation</var>)</h3>
 
-<code>resource.open</code> is a method that executes the passed function <code>openingOperation</code> to do most of its work, but then updates the <code>resource</code>'s properties to reflect the result of this operation. It is a simplified version of some of the techniques used in the streams specification. The method is meant to illustrate how and why you might <a href="#promise-calling">promise-call</a> another function.
+<code>resource.open</code> is a method that executes the passed function <var>openingOperation</var> to do most of its work, but then updates the <code>resource</code>'s properties to reflect the result of this operation. It is a simplified version of some of the techniques used in the streams specification. The method is meant to illustrate how and why you might <a href="#promise-calling">promise-call</a> another function.
 
 1. Let <var>resourcePath</var> be ToString(<var>resourcePath</var>).
 1. Let <var>openingPromise</var> be the result of <a href="#promise-calling">promise-calling</a> <var>openingOperation</var>(<var>resourcePath</var>).
@@ -457,14 +458,16 @@ using <a href="#promise-call-in-js">the <code>promiseCall</code> function define
 
 <h3 id="example-environment-ready">environment.ready</h3>
 
-<code>environment.ready</code> is a property that signals when some part of some environment becomes "ready," e.g. a DOM document. It illustrates how to appeal to environmental asynchrony.
+<code>environment.ready</code> is a property that signals when some part of some environment becomes "ready," e.g. a DOM document. It illustrates how to encode environmental asynchronicity.
 
-1. Let <code>environment.ready</code> be a new promise.
-1. <a>In parallel</a>, wait for one of the following to become true:
-    1. When/if the environment becomes ready, resolve <code>environment.ready</code> with <b>undefined</b>.
-    1. When/if the environment fails to load, reject <code>environment.ready</code> with an <b>Error</b> instance explaining the load failure.
+Let every <code>Environment</code> object have a \[[ready]] internal slot, initialized with a new promise. When the getter for <code>environment.ready</code> is called, return the value of this <code>Environment</code> object's \[[ready]] internal slot.
 
-<h3 id="example-add-bookmark">addBookmark ( )</h3>
+The following steps might be inserted toward the end of some algorithm for readying <code>Environment</code> objects:
+
+1. If the environment becomes ready successfully, resolve this <code>Environment</code> object's \[[ready]] promise with <b>undefined</b>.
+1. If the environment fails to become ready, reject this <code>Environment</code> object's \[[ready]] promise with an <b>Error</b> instance explaining the load failure.
+
+<h3 id="example-add-bookmark">addBookmark()</h3>
 
 <code>addBookmark</code> is a function that requests that the user add the current web page as a bookmark. It's drawn from <a href="https://github.com/domenic/promises-unwrapping/issues/85">some iterative design work</a> and illustrates a more real-world scenario of appealing to environmental asynchrony, as well as immediate rejections.
 
@@ -478,7 +481,7 @@ using <a href="#promise-call-in-js">the <code>promiseCall</code> function define
         1. Otherwise, resolve <var>promise</var> with <b>undefined</b>.
 1. Return <var>promise</var>.
 
-<h3 id="example-batch-request">batchRequest ( urls )</h3>
+<h3 id="example-batch-request">batchRequest(<var>urls</var>)</h3>
 
 Several places in [[SERVICE-WORKERS]] use <a>waiting for all</a>. <code>batchRequest</code> illustrates a simplified version of one of their uses. It takes as input an iterable of URLs, and returns a promise for an array of <a href="https://fetch.spec.whatwg.org/#response"><code>Response</code></a> objects created by fetching the corresponding URL. If any of the fetches fail, it will return a promise rejected with that failure.
 
