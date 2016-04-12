@@ -137,26 +137,26 @@ It is important to note which steps in your algorithms will be run in parallel w
 
 As an example, the following steps will give a promise that is resolved after <var>ms</var> milliseconds:
 
-1. Let <var>p</var> be a new promise.
+1. Let <var>p</var> be <a>a new promise</a>.
 1. Run the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
-    1. Resolve <var>p</var> with <b>undefined</b>.
+    1. <a>Resolve</a> <var>p</var> with <b>undefined</b>.
 1. Return <var>p</var>.
 
 If we had omitted the "Run the following steps in parallel" heading, then the algorithm would have instructed implementers to block the main thread for <var>ms</var> milliseconds, which is very bad! Whereas as written, this algorithm correctly describes a non-blocking wait.
 
 <h4 id="queue-tasks">Queue Tasks to Invoke Developer Code</h4>
 
-Promises abstract away many of the details regarding notifying the developer about async operations. For example, you can say "resolve <var>p</var> with <var>x</var>" instead of e.g. "<a>queue a task</a> to call the callback <var>cb</var> with <var>x</var>," and it's understood that this will use the normal promise mechanisms. (Namely, the developer can wait for fulfillment or rejection by passing callbacks to the promise's <code>then</code> method, which will call those callbacks in the next microtask.) So in most cases, you will not need to explicitly queue tasks inside your promise-based asynchronous algorithms.
+Promises abstract away many of the details regarding notifying the developer about async operations. For example, you can say "<a>resolve</a> <var>p</var> with <var>x</var>" instead of e.g. "<a>queue a task</a> to call the callback <var>cb</var> with <var>x</var>," and it's understood that this will use the normal promise mechanisms. (Namely, the developer can wait for fulfillment or rejection by passing callbacks to the promise's <code>then</code> method, which will call those callbacks in the next microtask.) So in most cases, you will not need to explicitly queue tasks inside your promise-based asynchronous algorithms.
 
 However, in cases where you need to interface with developer code in more ways than can be mediated via the promise, you'll still need to queue a task. For example, you may want to fire an event, which can call into developer event handlers. Or you may need to perform a structured clone operation, which <a href="http://lists.w3.org/Archives/Public/public-webcrypto/2014Mar/0141.html">can trigger getters</a>. If these things must be done inside the asynchronous portion of your algorithm, you need to specify that they are done via a queued task, and with a specific task queue. This nails down the exact time such developer-observable operations happen both in relation to other queued tasks, and to the microtask queue used by promises.
 
 As an example, the following steps will return a promise resolved after <var>ms</var> milliseconds, but also fire an event named <code>timerfinished</code> on <code>window</code>:
 
-1. Let <var>p</var> be a new promise.
+1. Let <var>p</var> be <a>a new promise</a>.
 1. Run the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
-    1. Resolve <var>p</var> with <b>undefined</b>.
+    1. <a>Resolve</a> <var>p</var> with <b>undefined</b>.
     1. <a>Queue a task</a> to <a href="https://html.spec.whatwg.org/multipage/webappapis.html#fire-a-simple-event">fire a simple event</a> named <code>timerfinished</code> at the <a>browsing context</a> <a>active document</a>'s <a href="https://html.spec.whatwg.org/multipage/browsers.html#window"><code>Window</code></a> object.
 1. Return <var>p</var>.
 
@@ -201,36 +201,36 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 <h3 id="shorthand-creating">Creating Promises</h3>
 
-<dfn id="a-new-promise" export>A new promise</dfn> gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under [[#shorthand-manipulating]].
+"<dfn id="a-new-promise" export>A new promise</dfn>" gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under [[#shorthand-manipulating]].
 
-<dfn id="a-promise-resolved-with" export>A promise resolved with <var>x</var></dfn> or <dfn id="resolved-as-a-promise" export><var>x</var> resolved as a promise</dfn> is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve"><code>Promise.resolve</code></a>.
+"<dfn id="a-promise-resolved-with" export>A promise resolved with</dfn> <var>x</var>" or "<var>x</var> <dfn id="resolved-as-a-promise" export>resolved as a promise</dfn>" is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve"><code>Promise.resolve</code></a>.
 
-<dfn id="a-promise-rejected-with" export>A promise rejected with <var>r</var></dfn> is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject"><code>Promise.reject</code></a>.
+"<dfn id="a-promise-rejected-with" export>A promise rejected with</dfn> <var>r</var>" is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject"><code>Promise.reject</code></a>.
 
 <h3 id="shorthand-manipulating">Manipulating Promises</h3>
 
-<dfn id="resolve-promise" export>Resolve <var>p</var> with <var>x</var></dfn> is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.
+"<dfn id="resolve-promise" export>Resolve</dfn> <var>p</var> with <var>x</var>" is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.
 
-<dfn id="reject-promise" export>Reject <var>p</var> with <var>r</var></dfn> is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.
+"<dfn id="reject-promise" export>Reject</dfn> <var>p</var> with <var>r</var>" is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.
 
 If the algorithm using these shorthands is running <a>in parallel</a>, the shorthands <a>queue a task</a> on <var>p</var>'s <a>relevant settings object</a>'s <a>responsible event loop</a> to call the stored function.
 
 <h3 id="shorthand-reacting">Reacting to Promises</h3>
 
-<dfn id="upon-fulfillment" export>Upon fulfillment of <var>p</var> with value <var>v</var></dfn> is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>'s argument as <var>v</var>.
+"<dfn id="upon-fulfillment" export>Upon fulfillment</dfn> of <var>p</var> with value <var>v</var>" is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>'s argument as <var>v</var>.
 
-<dfn id="upon-rejection" export>Upon rejection of <var>p</var> with reason <var>r</var></dfn> is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>'s argument as <var>r</var>.
+"<dfn id="upon-rejection" export>Upon rejection</dfn> of <var>p</var> with reason <var>r</var>" is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>'s argument as <var>r</var>.
 
-<dfn id="transforming-by" export>Transforming <var>p</var> with a fulfillment and/or rejection handler</dfn> is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.
+"<dfn id="transforming-by" export>Transforming</dfn> <var>p</var> with a fulfillment and/or rejection handler" is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.
 
 <div class="example">
     Some examples of the latter phrase would be
 
-    1. Return the result of transforming <var>p</var> with a fulfillment handler that returns <b>undefined</b>.
+    1. Return the result of <a>transforming</a> <var>p</var> with a fulfillment handler that returns <b>undefined</b>.
 
     or
 
-    1. Return the result of transforming <var>p</var> with a fulfillment handler that returns twice its first argument.
+    1. Return the result of <a>transforming</a> <var>p</var> with a fulfillment handler that returns twice its first argument.
 
     These correspond to
 
@@ -257,7 +257,7 @@ An example usage of this phrase is found in [[#example-batch-request]].
 
 <h3 id="shorthand-promise-calling">Promise-Calling</h3>
 
-The result of <dfn id="promise-calling" export>promise-calling <var>f</var>(...<var>args</var>)</dfn> is:
+The result of <dfn id="promise-calling" export>promise-calling</dfn> <var>f</var>(...<var>args</var>) is:
 
 - If the call returns a value <var>v</var>, the result of <a href="#resolved-as-a-promise">resolving</a> <var>v</var> as a promise.
 - If the call throws an exception <var>e</var>, a promise <a href="#a-promise-rejected-with">rejected with</a> <var>e</var>.
@@ -278,7 +278,7 @@ The result of <dfn id="promise-calling" export>promise-calling <var>f</var>(...<
 
 <h3 id="shorthand-note-onrealms">A Note on Realms</h3>
 
-In all cases, when we use phrases like "the initial value of <code>Promise.resolve</code>," we mean the initial value within the <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-code-realms">realm</a> associated to the function being specified. So for example, if <code>window.f()</code> is specified to return "a promise resolved with <b>1</b>," then:
+In all cases, when we use phrases like "the initial value of <code>Promise.resolve</code>," we mean the initial value within the <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-code-realms">realm</a> associated to the function being specified. So for example, if <code>window.f()</code> is specified to return "<a>a promise resolved with</a> <b>1</b>," then:
 
 <pre><code class="lang-javascript">
 assert(windowA.f().constructor === windowA.Promise);
@@ -314,10 +314,10 @@ For more information, see <a href="http://lists.w3.org/Archives/Public/www-tag/2
 
 1. Let <var>ms</var> be ToNumber(<var>ms</var>).
 1. If <var>ms</var> is <b>NaN</b>, let <var>ms</var> be <b>+0</b>; otherwise let <var>ms</var> be the maximum of <var>ms</var> and <b>+0</b>.
-1. Let <var>p</var> be a new promise.
+1. Let <var>p</var> be <a>a new promise</a>.
 1. Run the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
-    1. Resolve <var>p</var> with <b>undefined</b>.
+    1. <a>Resolve</a> <var>p</var> with <b>undefined</b>.
 1. Return <var>p</var>.
 
 The equivalent function in JavaScript would be
@@ -355,12 +355,12 @@ function delay(ms) {
 The <code>validatedDelay</code> function is much like <a href="#example-delay">the <code>delay</code> function</a>, except it will validate its arguments. This shows how to use rejected promises to signal immediate failure before even starting any asynchronous operations.
 
 1. Let <var>ms</var> be ToNumber(<var>ms</var>).
-1. If <var>ms</var> is <b>NaN</b>, return a promise rejected with a <b>TypeError</b>.
-1. If <var>ms</var> is less than zero, return a promise rejected with a <b>RangeError</b>.
-1. Let <var>p</var> be a new promise.
+1. If <var>ms</var> is <b>NaN</b>, return <a>a promise rejected with</a> a <b>TypeError</b>.
+1. If <var>ms</var> is less than zero, return <a>a promise rejected with</a> a <b>RangeError</b>.
+1. Let <var>p</var> be <a>a new promise</a>.
 1. Run the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
-    1. Resolve <var>p</var> with <b>undefined</b>.
+    1. <a>Resolve</a> <var>p</var> with <b>undefined</b>.
 1. Return <var>p</var>.
 
 The equivalent function in JavaScript would be
@@ -386,14 +386,14 @@ function delay(ms) {
 
 1. Let <var>ms</var> be ToNumber(<var>ms</var>).
 1. If <var>ms</var> is <b>NaN</b>, let <var>ms</var> be <b>+0</b>; otherwise let <var>ms</var> be the maximum of <var>ms</var> and <b>+0</b>.
-1. Let <var>p</var> be a new promise.
+1. Let <var>p</var> be <a>a new promise</a>.
 1. Let <var>resolvedToPromise</var> be the result of resolving <var>promise</var> to a promise.
-1. Upon fulfillment of <var>resolvedToPromise</var> with value <var>v</var>, perform the following steps <a>in parallel</a>:
+1. <a>Upon fulfillment</a> of <var>resolvedToPromise</var> with value <var>v</var>, perform the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
-    1. Resolve <var>p</var> with <var>v</var>.
-1. Upon rejection of <var>resolvedToPromise</var> with reason <var>r</var>, perform the following steps <a>in parallel</a>:
+    1. <a>Resolve</a> <var>p</var> with <var>v</var>.
+1. <a>Upon rejection</a> of <var>resolvedToPromise</var> with reason <var>r</var>, perform the following steps <a>in parallel</a>:
     1. Wait <var>ms</var> milliseconds.
-    1. Reject <var>p</var> with <var>r</var>.
+    1. <a>Reject</a> <var>p</var> with <var>r</var>.
 1. Return <var>p</var>.
 
 The equivalent function in JavaScript would be
@@ -422,7 +422,7 @@ function addDelay(promise, ms) {
 
 1. Let <var>resourcePath</var> be ToString(<var>resourcePath</var>).
 1. Let <var>openingPromise</var> be the result of <a href="#promise-calling">promise-calling</a> <var>openingOperation</var>(<var>resourcePath</var>).
-1. Return the result of transforming <var>openingPromise</var> with:
+1. Return the result of <a>transforming</a> <var>openingPromise</var> with:
     1. A fulfillment handler that sets <code>this.status</code> to <code>"opened"</code>.
     1. A rejection handler that, when called with argument <var>r</var>, set <code>this.status</code> to <cod>"errored"</code> and <code>this.error</code> to <var>r</var>.
 
@@ -460,30 +460,30 @@ using <a href="#promise-call-in-js">the <code>promiseCall</code> function define
 
 <code>environment.ready</code> is a property that signals when some part of some environment becomes "ready," e.g. a DOM document. It illustrates how to encode environmental asynchronicity.
 
-Let every <code>Environment</code> object have a \[[ready]] internal slot, initialized with a new promise. When the getter for <code>environment.ready</code> is called, return the value of this <code>Environment</code> object's \[[ready]] internal slot.
+Let every <code>Environment</code> object have a \[[ready]] internal slot, initialized with <a>a new promise</a>. When the getter for <code>environment.ready</code> is called, return the value of this <code>Environment</code> object's \[[ready]] internal slot.
 
 The following steps might be inserted toward the end of some algorithm for readying <code>Environment</code> objects:
 
-1. If the environment becomes ready successfully, resolve this <code>Environment</code> object's \[[ready]] promise with <b>undefined</b>.
-1. If the environment fails to become ready, reject this <code>Environment</code> object's \[[ready]] promise with an <b>Error</b> instance explaining the load failure.
+1. If the environment becomes ready successfully, <a>resolve</a> this <code>Environment</code> object's \[[ready]] promise with <b>undefined</b>.
+1. If the environment fails to become ready, <a>reject</a> this <code>Environment</code> object's \[[ready]] promise with an <b>Error</b> instance explaining the load failure.
 
 <h3 id="example-add-bookmark">addBookmark()</h3>
 
 <code>addBookmark</code> is a function that requests that the user add the current web page as a bookmark. It's drawn from <a href="https://github.com/domenic/promises-unwrapping/issues/85">some iterative design work</a> and illustrates a more real-world scenario of appealing to environmental asynchrony, as well as immediate rejections.
 
-1. If this method was not invoked as a result of explicit user action, return a promise rejected with a new <code>DOMException</code> whose name is <code>"SecurityError"</code>.
-1. If the document's mode of operation is standalone, return a promise rejected with a new <code>DOMException</code> whose name is <code>"NotSupported"</code>.
-1. Let <var>promise</var> be a new promise.
+1. If this method was not invoked as a result of explicit user action, return <a>a promise rejected with</a> a new <code>DOMException</code> whose name is <code>"SecurityError"</code>.
+1. If the document's mode of operation is standalone, return <a>a promise rejected with</a> a new <code>DOMException</code> whose name is <code>"NotSupported"</code>.
+1. Let <var>promise</var> be <a>a new promise</a>.
 1. Let <var>info</var> be the result of getting a web application's metadata.
 1. Run the following steps <a>in parallel</a>:
     1. Using <var>info</var>, and in a manner that is user-agent specific, allow the end user to make a choice as to whether they want to add the bookmark.
-        1. If the end-user aborts the request to add the bookmark (e.g., they hit escape, or press a "cancel" button), reject <var>promise</var> with a new <code>DOMException</code> whose name is <code>"AbortError"</code>.
-        1. Otherwise, resolve <var>promise</var> with <b>undefined</b>.
+        1. If the end-user aborts the request to add the bookmark (e.g., they hit escape, or press a "cancel" button), <a>reject</a> <var>promise</var> with a new <code>DOMException</code> whose name is <code>"AbortError"</code>.
+        1. Otherwise, <a>resolve</a> <var>promise</var> with <b>undefined</b>.
 1. Return <var>promise</var>.
 
 <h3 id="example-batch-request">batchRequest(<var>urls</var>)</h3>
 
-Several places in [[SERVICE-WORKERS]] use <a>waiting for all</a>. <code>batchRequest</code> illustrates a simplified version of one of their uses. It takes as input an iterable of URLs, and returns a promise for an array of <a href="https://fetch.spec.whatwg.org/#response"><code>Response</code></a> objects created by fetching the corresponding URL. If any of the fetches fail, it will return a promise rejected with that failure.
+Several places in [[SERVICE-WORKERS]] use <a>waiting for all</a>. <code>batchRequest</code> illustrates a simplified version of one of their uses. It takes as input an iterable of URLs, and returns a promise for an array of <a href="https://fetch.spec.whatwg.org/#response"><code>Response</code></a> objects created by fetching the corresponding URL. If any of the fetches fail, it will return <a>a promise rejected with</a> that failure.
 
 1. Let <var>responsePromises</var> be a new empty list
 1. For each value <var>url</var> of <var>urls</var>,
@@ -509,7 +509,7 @@ However, declaring that your method or accessor returns a promise does have one 
 
 When a parameter of a WebIDL method is declared as <code>Promise&lt;T&gt;</code>, it will automatically resolve any arguments passed in that position. This will take care of the "Promise Arguments Should Be Resolved" advice above.
 
-If you have a WebIDL <code>Promise&lt;T&gt;</code> argument, you can use the WebIDL <a href="https://heycam.github.io/webidl/#dfn-perform-steps-once-promise-is-settled">perform some steps once a promise is settled</a> algorithm. This is much like our <a href="#upon-fulfillment">upon fulfillment …</a> and <a href="#upon-rejection">upon rejection …</a> shorthand phrases above, but it will add an additional step of converting the promise's fulfillment value to the WebIDL type <code>T</code> before running any upon-fulfillment steps. Additionally it causes your algorithm to return a promise derived from running those steps. If the type conversion fails, your algorithm will return a promise rejected with the error causing that failure.
+If you have a WebIDL <code>Promise&lt;T&gt;</code> argument, you can use the WebIDL <a href="https://heycam.github.io/webidl/#dfn-perform-steps-once-promise-is-settled">perform some steps once a promise is settled</a> algorithm. This is much like our <a href="#upon-fulfillment">upon fulfillment …</a> and <a href="#upon-rejection">upon rejection …</a> shorthand phrases above, but it will add an additional step of converting the promise's fulfillment value to the WebIDL type <code>T</code> before running any upon-fulfillment steps. Additionally it causes your algorithm to return a promise derived from running those steps. If the type conversion fails, your algorithm will return <a>a promise rejected with</a> the error causing that failure.
 
 Note that the <code>T</code> here refers to a WebIDL type <em>for the fulfillment value</em>. Furthermore, it only has impact if you use the WebIDL "perform some steps …" algorithm, and not if you use the promise in other ways (such as passing it along to another function). If that is not relevant, we advise using <code>Promise&lt;any&gt;</code> for parameters.
 
