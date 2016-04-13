@@ -1605,33 +1605,33 @@ It also includes a series of prose shorthands you can use in your specification 
    <p>As an example, the following steps will give a promise that is resolved after <var>ms</var> milliseconds:</p>
    <ol>
     <li data-md="">
-     <p>Let <var>p</var> be a new promise.</p>
+     <p>Let <var>p</var> be <a data-link-type="dfn" href="#a-new-promise" id="ref-for-a-new-promise-1">a new promise</a>.</p>
     <li data-md="">
      <p>Run the following steps <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">in parallel</a>:</p>
      <ol>
       <li data-md="">
        <p>Wait <var>ms</var> milliseconds.</p>
       <li data-md="">
-       <p>Resolve <var>p</var> with <b>undefined</b>.</p>
+       <p><a data-link-type="dfn" href="#resolve-promise" id="ref-for-resolve-promise-1">Resolve</a> <var>p</var> with <b>undefined</b>.</p>
      </ol>
     <li data-md="">
      <p>Return <var>p</var>.</p>
    </ol>
    <p>If we had omitted the "Run the following steps in parallel" heading, then the algorithm would have instructed implementers to block the main thread for <var>ms</var> milliseconds, which is very bad! Whereas as written, this algorithm correctly describes a non-blocking wait.</p>
    <h4 class="heading settled" data-level="4.2.3" id="queue-tasks"><span class="secno">4.2.3. </span><span class="content">Queue Tasks to Invoke Developer Code</span><a class="self-link" href="#queue-tasks"></a></h4>
-   <p>Promises abstract away many of the details regarding notifying the developer about async operations. For example, you can say "resolve <var>p</var> with <var>x</var>" instead of e.g. "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> to call the callback <var>cb</var> with <var>x</var>," and it’s understood that this will use the normal promise mechanisms. (Namely, the developer can wait for fulfillment or rejection by passing callbacks to the promise’s <code>then</code> method, which will call those callbacks in the next microtask.) So in most cases, you will not need to explicitly queue tasks inside your promise-based asynchronous algorithms.</p>
+   <p>Promises abstract away many of the details regarding notifying the developer about async operations. For example, you can say "<a data-link-type="dfn" href="#resolve-promise" id="ref-for-resolve-promise-2">resolve</a> <var>p</var> with <var>x</var>" instead of e.g. "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> to call the callback <var>cb</var> with <var>x</var>," and it’s understood that this will use the normal promise mechanisms. (Namely, the developer can wait for fulfillment or rejection by passing callbacks to the promise’s <code>then</code> method, which will call those callbacks in the next microtask.) So in most cases, you will not need to explicitly queue tasks inside your promise-based asynchronous algorithms.</p>
    <p>However, in cases where you need to interface with developer code in more ways than can be mediated via the promise, you’ll still need to queue a task. For example, you may want to fire an event, which can call into developer event handlers. Or you may need to perform a structured clone operation, which <a href="http://lists.w3.org/Archives/Public/public-webcrypto/2014Mar/0141.html">can trigger getters</a>. If these things must be done inside the asynchronous portion of your algorithm, you need to specify that they are done via a queued task, and with a specific task queue. This nails down the exact time such developer-observable operations happen both in relation to other queued tasks, and to the microtask queue used by promises.</p>
    <p>As an example, the following steps will return a promise resolved after <var>ms</var> milliseconds, but also fire an event named <code>timerfinished</code> on <code>window</code>:</p>
    <ol>
     <li data-md="">
-     <p>Let <var>p</var> be a new promise.</p>
+     <p>Let <var>p</var> be <a data-link-type="dfn" href="#a-new-promise" id="ref-for-a-new-promise-2">a new promise</a>.</p>
     <li data-md="">
      <p>Run the following steps <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">in parallel</a>:</p>
      <ol>
       <li data-md="">
        <p>Wait <var>ms</var> milliseconds.</p>
       <li data-md="">
-       <p>Resolve <var>p</var> with <b>undefined</b>.</p>
+       <p><a data-link-type="dfn" href="#resolve-promise" id="ref-for-resolve-promise-3">Resolve</a> <var>p</var> with <b>undefined</b>.</p>
       <li data-md="">
        <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">Queue a task</a> to <a href="https://html.spec.whatwg.org/multipage/webappapis.html#fire-a-simple-event">fire a simple event</a> named <code>timerfinished</code> at the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">browsing context</a> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document">active document</a>’s <a href="https://html.spec.whatwg.org/multipage/browsers.html#window"><code>Window</code></a> object.</p>
      </ol>
@@ -1664,27 +1664,27 @@ It also includes a series of prose shorthands you can use in your specification 
    <div class="note" role="note">This section should eventually move to WebIDL, where it belongs. See <a href="https://github.com/w3ctag/promises-guide/issues/27">#27</a>.</div>
    <p>When writing such specifications, it’s convenient to be able to refer to common promise operations concisely. We define here a set of shorthands that allow you to do so.</p>
    <h3 class="heading settled" data-level="5.1" id="shorthand-creating"><span class="secno">5.1. </span><span class="content">Creating Promises</span><a class="self-link" href="#shorthand-creating"></a></h3>
-   <p><dfn data-dfn-type="dfn" data-export="" id="a-new-promise">A new promise<a class="self-link" href="#a-new-promise"></a></dfn> gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under <a href="#shorthand-manipulating">§5.2 Manipulating Promises</a>.</p>
-   <p><dfn data-dfn-type="dfn" data-export="" id="a-promise-resolved-with">A promise resolved with <var>x</var><a class="self-link" href="#a-promise-resolved-with"></a></dfn> or <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="x resolved as a promise" id="resolved-as-a-promise"><var>x</var> resolved as a promise<span class="dfn-panel" data-deco=""><b><a href="#resolved-as-a-promise">#resolved-as-a-promise</a></b><b>Referenced in:</b><span><a href="#ref-for-resolved-as-a-promise-1">5.5. Promise-Calling</a></span></span></dfn> is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve"><code>Promise.resolve</code></a>.</p>
-   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="A promise rejected with r" id="a-promise-rejected-with">A promise rejected with <var>r</var><span class="dfn-panel" data-deco=""><b><a href="#a-promise-rejected-with">#a-promise-rejected-with</a></b><b>Referenced in:</b><span><a href="#ref-for-a-promise-rejected-with-1">5.5. Promise-Calling</a></span></span></dfn> is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject"><code>Promise.reject</code></a>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="A new promise" id="a-new-promise">A new promise<span class="dfn-panel" data-deco=""><b><a href="#a-new-promise">#a-new-promise</a></b><b>Referenced in:</b><span><a href="#ref-for-a-new-promise-1">4.2.2. Note Parallel Steps Explicitly</a></span><span><a href="#ref-for-a-new-promise-2">4.2.3. Queue Tasks to Invoke Developer Code</a></span><span><a href="#ref-for-a-new-promise-3">6.1. delay(ms)</a></span><span><a href="#ref-for-a-new-promise-4">6.2. validatedDelay(ms)</a></span><span><a href="#ref-for-a-new-promise-5">6.3. addDelay(promise, ms)</a></span><span><a href="#ref-for-a-new-promise-6">6.5. environment.ready</a></span><span><a href="#ref-for-a-new-promise-7">6.6. addBookmark()</a></span></span></dfn>" gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under <a href="#shorthand-manipulating">§5.2 Manipulating Promises</a>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="A promise resolved with" id="a-promise-resolved-with">A promise resolved with<span class="dfn-panel" data-deco=""><b><a href="#a-promise-resolved-with">#a-promise-resolved-with</a></b><b>Referenced in:</b><span><a href="#ref-for-a-promise-resolved-with-1">5.6. A Note on Realms</a></span></span></dfn> <var>x</var>" or "<var>x</var> <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="resolved as a promise" id="resolved-as-a-promise">resolved as a promise<span class="dfn-panel" data-deco=""><b><a href="#resolved-as-a-promise">#resolved-as-a-promise</a></b><b>Referenced in:</b><span><a href="#ref-for-resolved-as-a-promise-1">5.5. Promise-Calling</a></span></span></dfn>" is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve"><code>Promise.resolve</code></a>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="A promise rejected with" id="a-promise-rejected-with">A promise rejected with<span class="dfn-panel" data-deco=""><b><a href="#a-promise-rejected-with">#a-promise-rejected-with</a></b><b>Referenced in:</b><span><a href="#ref-for-a-promise-rejected-with-1">5.5. Promise-Calling</a></span><span><a href="#ref-for-a-promise-rejected-with-2">6.2. validatedDelay(ms)</a> <a href="#ref-for-a-promise-rejected-with-3">(2)</a></span><span><a href="#ref-for-a-promise-rejected-with-4">6.6. addBookmark()</a> <a href="#ref-for-a-promise-rejected-with-5">(2)</a></span><span><a href="#ref-for-a-promise-rejected-with-6">6.7. batchRequest(urls)</a></span><span><a href="#ref-for-a-promise-rejected-with-7">7.2. Promise&lt;T> Parameters</a></span></span></dfn> <var>r</var>" is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject"><code>Promise.reject</code></a>.</p>
    <h3 class="heading settled" data-level="5.2" id="shorthand-manipulating"><span class="secno">5.2. </span><span class="content">Manipulating Promises</span><a class="self-link" href="#shorthand-manipulating"></a></h3>
-   <p><dfn data-dfn-type="dfn" data-export="" id="resolve-promise">Resolve <var>p</var> with <var>x</var><a class="self-link" href="#resolve-promise"></a></dfn> is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.</p>
-   <p><dfn data-dfn-type="dfn" data-export="" id="reject-promise">Reject <var>p</var> with <var>r</var><a class="self-link" href="#reject-promise"></a></dfn> is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Resolve" id="resolve-promise">Resolve<span class="dfn-panel" data-deco=""><b><a href="#resolve-promise">#resolve-promise</a></b><b>Referenced in:</b><span><a href="#ref-for-resolve-promise-1">4.2.2. Note Parallel Steps Explicitly</a></span><span><a href="#ref-for-resolve-promise-2">4.2.3. Queue Tasks to Invoke Developer Code</a> <a href="#ref-for-resolve-promise-3">(2)</a></span><span><a href="#ref-for-resolve-promise-4">6.1. delay(ms)</a></span><span><a href="#ref-for-resolve-promise-5">6.2. validatedDelay(ms)</a></span><span><a href="#ref-for-resolve-promise-6">6.3. addDelay(promise, ms)</a></span><span><a href="#ref-for-resolve-promise-7">6.5. environment.ready</a></span><span><a href="#ref-for-resolve-promise-8">6.6. addBookmark()</a></span></span></dfn> <var>p</var> with <var>x</var>" is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Reject" id="reject-promise">Reject<span class="dfn-panel" data-deco=""><b><a href="#reject-promise">#reject-promise</a></b><b>Referenced in:</b><span><a href="#ref-for-reject-promise-1">6.3. addDelay(promise, ms)</a></span><span><a href="#ref-for-reject-promise-2">6.5. environment.ready</a></span><span><a href="#ref-for-reject-promise-3">6.6. addBookmark()</a></span></span></dfn> <var>p</var> with <var>r</var>" is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.</p>
    <p>If the algorithm using these shorthands is running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">in parallel</a>, the shorthands <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> on <var>p</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object">relevant settings object</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#responsible-event-loop">responsible event loop</a> to call the stored function.</p>
    <h3 class="heading settled" data-level="5.3" id="shorthand-reacting"><span class="secno">5.3. </span><span class="content">Reacting to Promises</span><a class="self-link" href="#shorthand-reacting"></a></h3>
-   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Upon fulfillment of p with value v" id="upon-fulfillment">Upon fulfillment of <var>p</var> with value <var>v</var><span class="dfn-panel" data-deco=""><b><a href="#upon-fulfillment">#upon-fulfillment</a></b><b>Referenced in:</b><span><a href="#ref-for-upon-fulfillment-1">7.2. Promise&lt;T> Parameters</a></span></span></dfn> is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>’s argument as <var>v</var>.</p>
-   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Upon rejection of p with reason r" id="upon-rejection">Upon rejection of <var>p</var> with reason <var>r</var><span class="dfn-panel" data-deco=""><b><a href="#upon-rejection">#upon-rejection</a></b><b>Referenced in:</b><span><a href="#ref-for-upon-rejection-1">7.2. Promise&lt;T> Parameters</a></span></span></dfn> is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>’s argument as <var>r</var>.</p>
-   <p><dfn data-dfn-type="dfn" data-export="" id="transforming-by">Transforming <var>p</var> with a fulfillment and/or rejection handler<a class="self-link" href="#transforming-by"></a></dfn> is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.</p>
-   <div class="example" id="example-e171340d">
-    <a class="self-link" href="#example-e171340d"></a> Some examples of the latter phrase would be 
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Upon fulfillment" id="upon-fulfillment">Upon fulfillment<span class="dfn-panel" data-deco=""><b><a href="#upon-fulfillment">#upon-fulfillment</a></b><b>Referenced in:</b><span><a href="#ref-for-upon-fulfillment-1">6.3. addDelay(promise, ms)</a></span><span><a href="#ref-for-upon-fulfillment-2">7.2. Promise&lt;T> Parameters</a></span></span></dfn> of <var>p</var> with value <var>v</var>" is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>’s argument as <var>v</var>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Upon rejection" id="upon-rejection">Upon rejection<span class="dfn-panel" data-deco=""><b><a href="#upon-rejection">#upon-rejection</a></b><b>Referenced in:</b><span><a href="#ref-for-upon-rejection-1">6.3. addDelay(promise, ms)</a></span><span><a href="#ref-for-upon-rejection-2">7.2. Promise&lt;T> Parameters</a></span></span></dfn> of <var>p</var> with reason <var>r</var>" is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>’s argument as <var>r</var>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Transforming" id="transforming-by">Transforming<span class="dfn-panel" data-deco=""><b><a href="#transforming-by">#transforming-by</a></b><b>Referenced in:</b><span><a href="#ref-for-transforming-by-1">5.3. Reacting to Promises</a> <a href="#ref-for-transforming-by-2">(2)</a></span><span><a href="#ref-for-transforming-by-3">6.4. resource.open(resourcePath, openingOperation)</a></span></span></dfn> <var>p</var> with a fulfillment and/or rejection handler" is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.</p>
+   <div class="example" id="example-cf3e3540">
+    <a class="self-link" href="#example-cf3e3540"></a> Some examples of the latter phrase would be 
     <ol>
      <li data-md="">
-      <p>Return the result of transforming <var>p</var> with a fulfillment handler that returns <b>undefined</b>.</p>
+      <p>Return the result of <a data-link-type="dfn" href="#transforming-by" id="ref-for-transforming-by-1">transforming</a> <var>p</var> with a fulfillment handler that returns <b>undefined</b>.</p>
     </ol>
     <p>or</p>
     <ol>
      <li data-md="">
-      <p>Return the result of transforming <var>p</var> with a fulfillment handler that returns twice its first argument.</p>
+      <p>Return the result of <a data-link-type="dfn" href="#transforming-by" id="ref-for-transforming-by-2">transforming</a> <var>p</var> with a fulfillment handler that returns twice its first argument.</p>
     </ol>
     <p>These correspond to</p>
 <pre><code class="lang-javascript highlight"><span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=></span> <span class="kc">undefined</span><span class="p">);</span></code></pre>
@@ -1697,7 +1697,7 @@ It also includes a series of prose shorthands you can use in your specification 
    <p>This phrase is useful when you wish to perform multiple asynchronous operations in parallel that return promises, and then react to them all together. If all of the given promises fulfill, then the resulting promise will be fulfilled with an array corresponding to the fulfillment values. If any of them reject, then the resulting promise will be rejected with the first rejection reason to occur.</p>
    <p>An example usage of this phrase is found in <a href="#example-batch-request">§6.7 batchRequest(urls)</a>.</p>
    <h3 class="heading settled" data-level="5.5" id="shorthand-promise-calling"><span class="secno">5.5. </span><span class="content">Promise-Calling</span><a class="self-link" href="#shorthand-promise-calling"></a></h3>
-   <p>The result of <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="promise-calling f(...args)" id="promise-calling">promise-calling <var>f</var>(...<var>args</var>)<span class="dfn-panel" data-deco=""><b><a href="#promise-calling">#promise-calling</a></b><b>Referenced in:</b><span><a href="#ref-for-promise-calling-1">4.3.2. Developer-Supplied Promise-Returning Functions Should Be "Promise-Called"</a></span><span><a href="#ref-for-promise-calling-2">6.4. resource.open(resourcePath, openingOperation)</a> <a href="#ref-for-promise-calling-3">(2)</a></span></span></dfn> is:</p>
+   <p>The result of <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="promise-calling" id="promise-calling">promise-calling<span class="dfn-panel" data-deco=""><b><a href="#promise-calling">#promise-calling</a></b><b>Referenced in:</b><span><a href="#ref-for-promise-calling-1">4.3.2. Developer-Supplied Promise-Returning Functions Should Be "Promise-Called"</a></span><span><a href="#ref-for-promise-calling-2">6.4. resource.open(resourcePath, openingOperation)</a> <a href="#ref-for-promise-calling-3">(2)</a></span></span></dfn> <var>f</var>(...<var>args</var>) is:</p>
    <ul>
     <li data-md="">
      <p>If the call returns a value <var>v</var>, the result of <a href="#resolved-as-a-promise" id="ref-for-resolved-as-a-promise-1">resolving</a> <var>v</var> as a promise.</p>
@@ -1715,7 +1715,7 @@ It also includes a series of prose shorthands you can use in your specification 
 <span class="p">}</span></code></pre>
    </div>
    <h3 class="heading settled" data-level="5.6" id="shorthand-note-onrealms"><span class="secno">5.6. </span><span class="content">A Note on Realms</span><a class="self-link" href="#shorthand-note-onrealms"></a></h3>
-   <p>In all cases, when we use phrases like "the initial value of <code>Promise.resolve</code>," we mean the initial value within the <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-code-realms">realm</a> associated to the function being specified. So for example, if <code>window.f()</code> is specified to return "a promise resolved with <b>1</b>," then:</p>
+   <p>In all cases, when we use phrases like "the initial value of <code>Promise.resolve</code>," we mean the initial value within the <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-code-realms">realm</a> associated to the function being specified. So for example, if <code>window.f()</code> is specified to return "<a data-link-type="dfn" href="#a-promise-resolved-with" id="ref-for-a-promise-resolved-with-1">a promise resolved with</a> <b>1</b>," then:</p>
 <pre><code class="lang-javascript highlight"><span class="nx">assert</span><span class="p">(</span><span class="nx">windowA</span><span class="p">.</span><span class="nx">f</span><span class="p">().</span><span class="nx">constructor</span> <span class="o">===</span> <span class="nx">windowA</span><span class="p">.</span><span class="nx">Promise</span><span class="p">);</span>
 <span class="nx">assert</span><span class="p">(</span><span class="nx">windowB</span><span class="p">.</span><span class="nx">f</span><span class="p">().</span><span class="nx">constructor</span> <span class="o">===</span> <span class="nx">windowB</span><span class="p">.</span><span class="nx">Promise</span><span class="p">);</span>
 
@@ -1746,14 +1746,14 @@ It also includes a series of prose shorthands you can use in your specification 
     <li data-md="">
      <p>If <var>ms</var> is <b>NaN</b>, let <var>ms</var> be <b>+0</b>; otherwise let <var>ms</var> be the maximum of <var>ms</var> and <b>+0</b>.</p>
     <li data-md="">
-     <p>Let <var>p</var> be a new promise.</p>
+     <p>Let <var>p</var> be <a data-link-type="dfn" href="#a-new-promise" id="ref-for-a-new-promise-3">a new promise</a>.</p>
     <li data-md="">
      <p>Run the following steps <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">in parallel</a>:</p>
      <ol>
       <li data-md="">
        <p>Wait <var>ms</var> milliseconds.</p>
       <li data-md="">
-       <p>Resolve <var>p</var> with <b>undefined</b>.</p>
+       <p><a data-link-type="dfn" href="#resolve-promise" id="ref-for-resolve-promise-4">Resolve</a> <var>p</var> with <b>undefined</b>.</p>
      </ol>
     <li data-md="">
      <p>Return <var>p</var>.</p>
@@ -1786,18 +1786,18 @@ It also includes a series of prose shorthands you can use in your specification 
     <li data-md="">
      <p>Let <var>ms</var> be ToNumber(<var>ms</var>).</p>
     <li data-md="">
-     <p>If <var>ms</var> is <b>NaN</b>, return a promise rejected with a <b>TypeError</b>.</p>
+     <p>If <var>ms</var> is <b>NaN</b>, return <a data-link-type="dfn" href="#a-promise-rejected-with" id="ref-for-a-promise-rejected-with-2">a promise rejected with</a> a <b>TypeError</b>.</p>
     <li data-md="">
-     <p>If <var>ms</var> is less than zero, return a promise rejected with a <b>RangeError</b>.</p>
+     <p>If <var>ms</var> is less than zero, return <a data-link-type="dfn" href="#a-promise-rejected-with" id="ref-for-a-promise-rejected-with-3">a promise rejected with</a> a <b>RangeError</b>.</p>
     <li data-md="">
-     <p>Let <var>p</var> be a new promise.</p>
+     <p>Let <var>p</var> be <a data-link-type="dfn" href="#a-new-promise" id="ref-for-a-new-promise-4">a new promise</a>.</p>
     <li data-md="">
      <p>Run the following steps <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">in parallel</a>:</p>
      <ol>
       <li data-md="">
        <p>Wait <var>ms</var> milliseconds.</p>
       <li data-md="">
-       <p>Resolve <var>p</var> with <b>undefined</b>.</p>
+       <p><a data-link-type="dfn" href="#resolve-promise" id="ref-for-resolve-promise-5">Resolve</a> <var>p</var> with <b>undefined</b>.</p>
      </ol>
     <li data-md="">
      <p>Return <var>p</var>.</p>
@@ -1823,24 +1823,24 @@ It also includes a series of prose shorthands you can use in your specification 
     <li data-md="">
      <p>If <var>ms</var> is <b>NaN</b>, let <var>ms</var> be <b>+0</b>; otherwise let <var>ms</var> be the maximum of <var>ms</var> and <b>+0</b>.</p>
     <li data-md="">
-     <p>Let <var>p</var> be a new promise.</p>
+     <p>Let <var>p</var> be <a data-link-type="dfn" href="#a-new-promise" id="ref-for-a-new-promise-5">a new promise</a>.</p>
     <li data-md="">
      <p>Let <var>resolvedToPromise</var> be the result of resolving <var>promise</var> to a promise.</p>
     <li data-md="">
-     <p>Upon fulfillment of <var>resolvedToPromise</var> with value <var>v</var>, perform the following steps <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">in parallel</a>:</p>
+     <p><a data-link-type="dfn" href="#upon-fulfillment" id="ref-for-upon-fulfillment-1">Upon fulfillment</a> of <var>resolvedToPromise</var> with value <var>v</var>, perform the following steps <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">in parallel</a>:</p>
      <ol>
       <li data-md="">
        <p>Wait <var>ms</var> milliseconds.</p>
       <li data-md="">
-       <p>Resolve <var>p</var> with <var>v</var>.</p>
+       <p><a data-link-type="dfn" href="#resolve-promise" id="ref-for-resolve-promise-6">Resolve</a> <var>p</var> with <var>v</var>.</p>
      </ol>
     <li data-md="">
-     <p>Upon rejection of <var>resolvedToPromise</var> with reason <var>r</var>, perform the following steps <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">in parallel</a>:</p>
+     <p><a data-link-type="dfn" href="#upon-rejection" id="ref-for-upon-rejection-1">Upon rejection</a> of <var>resolvedToPromise</var> with reason <var>r</var>, perform the following steps <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">in parallel</a>:</p>
      <ol>
       <li data-md="">
        <p>Wait <var>ms</var> milliseconds.</p>
       <li data-md="">
-       <p>Reject <var>p</var> with <var>r</var>.</p>
+       <p><a data-link-type="dfn" href="#reject-promise" id="ref-for-reject-promise-1">Reject</a> <var>p</var> with <var>r</var>.</p>
      </ol>
     <li data-md="">
      <p>Return <var>p</var>.</p>
@@ -1869,7 +1869,7 @@ It also includes a series of prose shorthands you can use in your specification 
     <li data-md="">
      <p>Let <var>openingPromise</var> be the result of <a href="#promise-calling" id="ref-for-promise-calling-3">promise-calling</a> <var>openingOperation</var>(<var>resourcePath</var>).</p>
     <li data-md="">
-     <p>Return the result of transforming <var>openingPromise</var> with:</p>
+     <p>Return the result of <a data-link-type="dfn" href="#transforming-by" id="ref-for-transforming-by-3">transforming</a> <var>openingPromise</var> with:</p>
      <ol>
       <li data-md="">
        <p>A fulfillment handler that sets <code>this.status</code> to <code>"opened"</code>.</p>
@@ -1902,23 +1902,23 @@ It also includes a series of prose shorthands you can use in your specification 
    </div>
    <h3 class="heading settled" data-level="6.5" id="example-environment-ready"><span class="secno">6.5. </span><span class="content">environment.ready</span><a class="self-link" href="#example-environment-ready"></a></h3>
    <p><code>environment.ready</code> is a property that signals when some part of some environment becomes "ready," e.g. a DOM document. It illustrates how to encode environmental asynchronicity.</p>
-   <p>Let every <code>Environment</code> object have a [[ready]] internal slot, initialized with a new promise. When the getter for <code>environment.ready</code> is called, return the value of this <code>Environment</code> object’s [[ready]] internal slot.</p>
+   <p>Let every <code>Environment</code> object have a [[ready]] internal slot, initialized with <a data-link-type="dfn" href="#a-new-promise" id="ref-for-a-new-promise-6">a new promise</a>. When the getter for <code>environment.ready</code> is called, return the value of this <code>Environment</code> object’s [[ready]] internal slot.</p>
    <p>The following steps might be inserted toward the end of some algorithm for readying <code>Environment</code> objects:</p>
    <ol>
     <li data-md="">
-     <p>If the environment becomes ready successfully, resolve this <code>Environment</code> object’s [[ready]] promise with <b>undefined</b>.</p>
+     <p>If the environment becomes ready successfully, <a data-link-type="dfn" href="#resolve-promise" id="ref-for-resolve-promise-7">resolve</a> this <code>Environment</code> object’s [[ready]] promise with <b>undefined</b>.</p>
     <li data-md="">
-     <p>If the environment fails to become ready, reject this <code>Environment</code> object’s [[ready]] promise with an <b>Error</b> instance explaining the load failure.</p>
+     <p>If the environment fails to become ready, <a data-link-type="dfn" href="#reject-promise" id="ref-for-reject-promise-2">reject</a> this <code>Environment</code> object’s [[ready]] promise with an <b>Error</b> instance explaining the load failure.</p>
    </ol>
    <h3 class="heading settled" data-level="6.6" id="example-add-bookmark"><span class="secno">6.6. </span><span class="content">addBookmark()</span><a class="self-link" href="#example-add-bookmark"></a></h3>
    <p><code>addBookmark</code> is a function that requests that the user add the current web page as a bookmark. It’s drawn from <a href="https://github.com/domenic/promises-unwrapping/issues/85">some iterative design work</a> and illustrates a more real-world scenario of appealing to environmental asynchrony, as well as immediate rejections.</p>
    <ol>
     <li data-md="">
-     <p>If this method was not invoked as a result of explicit user action, return a promise rejected with a new <code>DOMException</code> whose name is <code>"SecurityError"</code>.</p>
+     <p>If this method was not invoked as a result of explicit user action, return <a data-link-type="dfn" href="#a-promise-rejected-with" id="ref-for-a-promise-rejected-with-4">a promise rejected with</a> a new <code>DOMException</code> whose name is <code>"SecurityError"</code>.</p>
     <li data-md="">
-     <p>If the document’s mode of operation is standalone, return a promise rejected with a new <code>DOMException</code> whose name is <code>"NotSupported"</code>.</p>
+     <p>If the document’s mode of operation is standalone, return <a data-link-type="dfn" href="#a-promise-rejected-with" id="ref-for-a-promise-rejected-with-5">a promise rejected with</a> a new <code>DOMException</code> whose name is <code>"NotSupported"</code>.</p>
     <li data-md="">
-     <p>Let <var>promise</var> be a new promise.</p>
+     <p>Let <var>promise</var> be <a data-link-type="dfn" href="#a-new-promise" id="ref-for-a-new-promise-7">a new promise</a>.</p>
     <li data-md="">
      <p>Let <var>info</var> be the result of getting a web application’s metadata.</p>
     <li data-md="">
@@ -1928,16 +1928,16 @@ It also includes a series of prose shorthands you can use in your specification 
        <p>Using <var>info</var>, and in a manner that is user-agent specific, allow the end user to make a choice as to whether they want to add the bookmark.</p>
        <ol>
         <li data-md="">
-         <p>If the end-user aborts the request to add the bookmark (e.g., they hit escape, or press a "cancel" button), reject <var>promise</var> with a new <code>DOMException</code> whose name is <code>"AbortError"</code>.</p>
+         <p>If the end-user aborts the request to add the bookmark (e.g., they hit escape, or press a "cancel" button), <a data-link-type="dfn" href="#reject-promise" id="ref-for-reject-promise-3">reject</a> <var>promise</var> with a new <code>DOMException</code> whose name is <code>"AbortError"</code>.</p>
         <li data-md="">
-         <p>Otherwise, resolve <var>promise</var> with <b>undefined</b>.</p>
+         <p>Otherwise, <a data-link-type="dfn" href="#resolve-promise" id="ref-for-resolve-promise-8">resolve</a> <var>promise</var> with <b>undefined</b>.</p>
        </ol>
      </ol>
     <li data-md="">
      <p>Return <var>promise</var>.</p>
    </ol>
    <h3 class="heading settled" data-level="6.7" id="example-batch-request"><span class="secno">6.7. </span><span class="content">batchRequest(<var>urls</var>)</span><a class="self-link" href="#example-batch-request"></a></h3>
-   <p>Several places in <a data-link-type="biblio" href="#biblio-service-workers">[SERVICE-WORKERS]</a> use <a data-link-type="dfn" href="#waiting-for-all" id="ref-for-waiting-for-all-1">waiting for all</a>. <code>batchRequest</code> illustrates a simplified version of one of their uses. It takes as input an iterable of URLs, and returns a promise for an array of <a href="https://fetch.spec.whatwg.org/#response"><code>Response</code></a> objects created by fetching the corresponding URL. If any of the fetches fail, it will return a promise rejected with that failure.</p>
+   <p>Several places in <a data-link-type="biblio" href="#biblio-service-workers">[SERVICE-WORKERS]</a> use <a data-link-type="dfn" href="#waiting-for-all" id="ref-for-waiting-for-all-1">waiting for all</a>. <code>batchRequest</code> illustrates a simplified version of one of their uses. It takes as input an iterable of URLs, and returns a promise for an array of <a href="https://fetch.spec.whatwg.org/#response"><code>Response</code></a> objects created by fetching the corresponding URL. If any of the fetches fail, it will return <a data-link-type="dfn" href="#a-promise-rejected-with" id="ref-for-a-promise-rejected-with-6">a promise rejected with</a> that failure.</p>
    <ol>
     <li data-md="">
      <p>Let <var>responsePromises</var> be a new empty list</p>
@@ -1964,7 +1964,7 @@ It also includes a series of prose shorthands you can use in your specification 
    <p>However, declaring that your method or accessor returns a promise does have one important impact: it ensures that any exceptions that it would otherwise throw, e.g. as a result of failed type conversions, are caught and turned into rejected promises. (See the <a href="https://heycam.github.io/webidl/#es-operations">"Operations" section</a>, "If <var>O</var> has a return type that is a promise type …", and similar phrases scattered throughout the document.) This automatically takes care of the advice in <a href="#always-return-promises">§4.1.1 Promise-Returning Functions Should Always Return Promises</a>, at least for exceptions.</p>
    <h3 class="heading settled" data-level="7.2" id="webidl-promise-parameters"><span class="secno">7.2. </span><span class="content"><code>Promise&lt;T></code> Parameters</span><a class="self-link" href="#webidl-promise-parameters"></a></h3>
    <p>When a parameter of a WebIDL method is declared as <code>Promise&lt;T></code>, it will automatically resolve any arguments passed in that position. This will take care of the "Promise Arguments Should Be Resolved" advice above.</p>
-   <p>If you have a WebIDL <code>Promise&lt;T></code> argument, you can use the WebIDL <a href="https://heycam.github.io/webidl/#dfn-perform-steps-once-promise-is-settled">perform some steps once a promise is settled</a> algorithm. This is much like our <a href="#upon-fulfillment" id="ref-for-upon-fulfillment-1">upon fulfillment …</a> and <a href="#upon-rejection" id="ref-for-upon-rejection-1">upon rejection …</a> shorthand phrases above, but it will add an additional step of converting the promise’s fulfillment value to the WebIDL type <code>T</code> before running any upon-fulfillment steps. Additionally it causes your algorithm to return a promise derived from running those steps. If the type conversion fails, your algorithm will return a promise rejected with the error causing that failure.</p>
+   <p>If you have a WebIDL <code>Promise&lt;T></code> argument, you can use the WebIDL <a href="https://heycam.github.io/webidl/#dfn-perform-steps-once-promise-is-settled">perform some steps once a promise is settled</a> algorithm. This is much like our <a href="#upon-fulfillment" id="ref-for-upon-fulfillment-2">upon fulfillment …</a> and <a href="#upon-rejection" id="ref-for-upon-rejection-2">upon rejection …</a> shorthand phrases above, but it will add an additional step of converting the promise’s fulfillment value to the WebIDL type <code>T</code> before running any upon-fulfillment steps. Additionally it causes your algorithm to return a promise derived from running those steps. If the type conversion fails, your algorithm will return <a data-link-type="dfn" href="#a-promise-rejected-with" id="ref-for-a-promise-rejected-with-7">a promise rejected with</a> the error causing that failure.</p>
    <p>Note that the <code>T</code> here refers to a WebIDL type <em>for the fulfillment value</em>. Furthermore, it only has impact if you use the WebIDL "perform some steps …" algorithm, and not if you use the promise in other ways (such as passing it along to another function). If that is not relevant, we advise using <code>Promise&lt;any></code> for parameters.</p>
    <div class="note" role="note">
      As a consequence of the resolution behavior, <code>Promise&lt;T></code> parameters cannot be overloaded with any other parameters. For example, you cannot do: 
@@ -2181,16 +2181,16 @@ interface ResourceConsumer {
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
    <li><a href="#a-new-promise">A new promise</a><span>, in §5.1</span>
-   <li><a href="#a-promise-rejected-with">A promise rejected with r</a><span>, in §5.1</span>
-   <li><a href="#a-promise-resolved-with">A promise resolved with x</a><span>, in §5.1</span>
-   <li><a href="#promise-calling">promise-calling f(...args)</a><span>, in §5.5</span>
-   <li><a href="#reject-promise">Reject p with r</a><span>, in §5.2</span>
-   <li><a href="#resolve-promise">Resolve p with x</a><span>, in §5.2</span>
-   <li><a href="#transforming-by">Transforming p with a fulfillment and/or rejection handler</a><span>, in §5.3</span>
-   <li><a href="#upon-fulfillment">Upon fulfillment of p with value v</a><span>, in §5.3</span>
-   <li><a href="#upon-rejection">Upon rejection of p with reason r</a><span>, in §5.3</span>
+   <li><a href="#a-promise-rejected-with">A promise rejected with</a><span>, in §5.1</span>
+   <li><a href="#a-promise-resolved-with">A promise resolved with</a><span>, in §5.1</span>
+   <li><a href="#promise-calling">promise-calling</a><span>, in §5.5</span>
+   <li><a href="#reject-promise">Reject</a><span>, in §5.2</span>
+   <li><a href="#resolve-promise">Resolve</a><span>, in §5.2</span>
+   <li><a href="#resolved-as-a-promise">resolved as a promise</a><span>, in §5.1</span>
+   <li><a href="#transforming-by">Transforming</a><span>, in §5.3</span>
+   <li><a href="#upon-fulfillment">Upon fulfillment</a><span>, in §5.3</span>
+   <li><a href="#upon-rejection">Upon rejection</a><span>, in §5.3</span>
    <li><a href="#waiting-for-all">waiting for all</a><span>, in §5.4</span>
-   <li><a href="#resolved-as-a-promise">x resolved as a promise</a><span>, in §5.1</span>
   </ul>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
