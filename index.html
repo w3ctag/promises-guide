@@ -10,7 +10,7 @@
  *
  * Indices
  *   - .toc for the Table of Contents (<ol class="toc">)
- *     -> <span class="secno"> for the section numbers
+ *     + <span class="secno"> for the section numbers
  *   - #toc for the Table of Contents (<nav id="toc">)
  *   - ul.index for Indices (<a href="#ref">term</a><span>, in §N.M</span>)
  *   - table.index for Index Tables (e.g. for properties or elements)
@@ -63,8 +63,7 @@
  *     Note that this styling basically doesn't help at all when printing,
  *     since A4 paper isn't much wider than the max-width here.
  *     It's better to design things to fit into a narrower measure if possible.
- *   - back-to-top link:
- *     <p role=navigation id="back-to-top"><a href="#toc"><abbr title="Back to Top">&uarr;</abbr>
+ *   - js-added ToC jump links (see fixup.js)
  *
  ******************************************************************************/
 
@@ -114,11 +113,36 @@
 
 	div.head h2 { margin-bottom: 1.5em;}
 
-	.head > :first-child {
+/** W3C Logo ******************************************************************/
+
+	.head .logo {
 		float: right;
-		margin: 0;
+		margin: 0.4rem 0 0.2rem .4rem;
 	}
 
+	.head img[src*="logos/W3C"] {
+		display: block;
+		border: solid #1a5e9a;
+		border-width: .65rem .7rem .6rem;
+		border-radius: .4rem;
+		background: #1a5e9a;
+		color: white;
+		font-weight: bold;
+	}
+
+	.head a:hover > img[src*="logos/W3C"],
+	.head a:focus > img[src*="logos/W3C"] {
+		opacity: .8;
+	}
+
+	.head a:active > img[src*="logos/W3C"] {
+		background: #c00;
+		border-color: #c00;
+	}
+
+	/* see also additional rules in Link Styling section */
+
+/** Copyright *****************************************************************/
 
 	p.copyright,
 	p.copyright small { font-size: small }
@@ -126,48 +150,60 @@
 /** Back to Top / ToC Toggle **************************************************/
 
 	@media print {
-		#back-to-top,
-		.toc-toggle {
+		#toc-nav {
 			display: none;
 		}
 	}
 	@media not print {
-		#back-to-top,
-		body > #toc-toggle {
+		#toc-nav {
 			position: fixed;
 			z-index: 2;
 			bottom: 0; left: 0;
 			margin: 0;
-			width: 26px;
-			text-align: center;
-			border-top-right-radius: 26px;
+			min-width: 1.33em;
+			border-top-right-radius: 2rem;
 			box-shadow: 0 0 2px;
-			font: 1em monospace;
-			font: 1rem monospace;
+			font-size: 1.5em;
 			color: black;
 		}
-		#back-to-top a,
-		body > #toc-toggle {
+		#toc-nav > a {
 			display: block;
-			width: 22px;
-			height: 22px;
-			padding: 4px 4px 0 0;
+			white-space: nowrap;
+
+			height: 1.33em;
+			padding: .1em 0.3em;
 			margin: 0;
-			border: none;
-			border-top-right-radius: 26px;
-		}
-		#back-to-top :first-child {
-			display: block;
-			padding-bottom: 22px;
-			margin-bottom: -22px;
-		}
-		#back-to-top > a {
+
 			background: white;
 			box-shadow: 0 0 2px;
+			border: none;
+			border-top-right-radius: 1.33em;
+			background: white;
 		}
-		#back-to-top > a:hover,
-		#back-to-top > a:focus {
+		#toc-nav > #toc-jump {
+			padding-bottom: 2em;
+			margin-bottom: -1.9em;
+		}
+
+		#toc-nav > a:hover,
+		#toc-nav > a:focus {
 			background: #f8f8f8;
+		}
+		#toc-nav > a:not(:hover):not(:focus) {
+			color: #707070;
+		}
+
+		/* statusbar gets in the way on keyboard focus; remove once browsers fix */
+		#toc-nav > a[href="#toc"]:not(:hover):focus:last-child {
+			padding-bottom: 1.5rem;
+		}
+
+		#toc-nav:not(:hover) > a:not(:focus) > span + span {
+			/* Ideally this uses :focus-within on #toc-nav */
+			display: none;
+		}
+		#toc-nav > a > span + span {
+			padding-right: 0.2em;
 		}
 
 		#toc-toggle-inline {
@@ -186,14 +222,8 @@
 			left: -1px;
 		}
 
-		.toc-toggle:active,
-		#back-to-top :active {
+		#toc-nav :active {
 			color: #C00;
-		}
-
-		#back-to-top abbr {
-			border: none;
-			text-decoration: none;
 		}
 	}
 
@@ -206,6 +236,8 @@
 			top: 0; bottom: 0;
 			left: 0;
 			width: 23.5em;
+			max-width: 80%;
+			max-width: calc(100% - 2em - 26px);
 			overflow: auto;
 			padding: 0 1em;
 			padding-left: 42px;
@@ -224,8 +256,18 @@
 			color: gray;
 			color: hsla(203,20%,40%,.7);
 		}
-		body.toc-sidebar #back-to-top :first-child {
-			display: none;
+		body.toc-sidebar #toc-jump:not(:focus) {
+			width: 0;
+			height: 0;
+			padding: 0;
+			position: absolute;
+			overflow: hidden;
+		}
+	}
+	/* Hide main scroller when only the ToC is visible anyway */
+	@media screen and (max-width: 28em) {
+		body.toc-sidebar {
+			overflow: hidden;
 		}
 	}
 
@@ -260,8 +302,12 @@
 		}
 		/* See also Overflow section at the bottom */
 
-		body:not(.toc-inline) #back-to-top :first-child {
-			display: none;
+		body:not(.toc-inline) #toc-jump:not(:focus) {
+			width: 0;
+			height: 0;
+			padding: 0;
+			position: absolute;
+			overflow: hidden;
 		}
 	}
 	@media screen and (min-width: 90em) {
@@ -282,6 +328,7 @@
 		font: 100% sans-serif;   /* Reset all font styling to clear out UA styles */
 		font-family: inherit;    /* Inherit the font family. */
 		line-height: 1.2;        /* Keep wrapped headings compact */
+		hyphens: manual;         /* Hyphenated headings look weird */
 	}
 
 	h2, h3, h4, h5, h6 {
@@ -353,15 +400,11 @@
 	}
 
 	dl dd {
-		margin: 0 0 1em 2em;
+		margin: 0 0 .5em 2em;
 	}
 
-	.head dd + dt {
-		margin-top: .5em;
-	}
-
-	.head dd { /* undo for header */
-		margin-bottom: 0;
+	.head dd + dd { /* compact for header */
+		margin-top: -.5em;
 	}
 
 	/* Style for algorithms */
@@ -489,9 +532,11 @@
 	}
 
 	/* Backout above styling for W3C logo */
-	.head > p:first-child > a {
+	.head .logo,
+	.head .logo a {
 		border: none;
 		text-decoration: none;
+		background: transparent;
 	}
 
 /******************************************************************************/
@@ -740,6 +785,7 @@
 		font-style: italic;
 		font-weight: normal;
 		padding-left: 1em;
+		width: 3em;
 	}
 
 	/* For when values are extra-complex and need formatting for readability */
@@ -782,8 +828,8 @@
 	table.index {
 		margin: 1em auto;
 		border-collapse: collapse;
-		width: 100%;
 		border: hidden;
+		width: 100%;
 	}
 	table.data caption,
 	table.index caption {
@@ -804,11 +850,6 @@
 		border: 0;
 	}
 
-	table.data  thead th[scope="row"],
-	table.index thead th[scope="row"] {
-		text-align: right;
-	}
-
 	table.data  thead,
 	table.index thead,
 	table.data  tbody,
@@ -823,7 +864,6 @@
 
 	table.data  tbody th:first-child,
 	table.index tbody th:first-child  {
-		text-align: right;
 		border-right: 2px solid;
 		border-top: 1px solid silver;
 		padding-right: 1em;
@@ -852,10 +892,7 @@
 
 
 /*
-	a.property {
-		font-weight: bold;
-		color: hsla(203, 90%, 30%,.8);
-	}
+Alternate table alignment rules
 
 	table.data,
 	table.index {
@@ -871,6 +908,8 @@
 	table.index tbody th:first-child  {
 		text-align: right;
 	}
+
+Possible extra rowspan handling
 
 	table.data  tbody th[rowspan]:not([rowspan='1']),
 	table.index tbody th[rowspan]:not([rowspan='1']),
@@ -895,24 +934,9 @@
 
 /** Table of Contents *********************************************************/
 
-	.toc, .toc ol, .toc ul, .toc li {
-		list-style: none; /* Numbers must be inlined into source */
-		/* because generated content isn't search/selectable and markers can't do multilevel yet */
-		margin:  0;
-		padding: 0;
-		line-height: 1.2rem; /* consistent spacing */
-	}
-
-	/* ToC not indented until third level, but font style & margins show hierarchy */
-	.toc > li             { margin: 1.2em 0;   font-weight: bold;   }
-	.toc > li li          { margin: 0;         font-weight: normal; }
-	.toc > li li li       { margin-left:  1em; font-style:  italic; }
-	.toc > li li li li    { margin-left:  1em; font-style:  normal; }
-	.toc > li li li li li { margin-left: 1rem; font-style:  italic; font-size: 85%; }
-
 	.toc a {
 		/* More spacing; use padding to make it part of the click target. */
-		padding-top: 0.1em;
+		padding-top: 0.1rem;
 		/* Larger, more consistently-sized click target */
 		display: block;
 		/* Reverse color scheme */
@@ -927,31 +951,68 @@
 		border-bottom-color: transparent;
 	}
 
-	/* Section numbers in a column of their own */
-	:not(li) > .toc {
-		margin-left: 4em;
+	.toc, .toc ol, .toc ul, .toc li {
+		list-style: none; /* Numbers must be inlined into source */
+		/* because generated content isn't search/selectable and markers can't do multilevel yet */
+		margin:  0;
+		padding: 0;
+		line-height: 1.1rem; /* consistent spacing */
 	}
 
+	/* ToC not indented until third level, but font style & margins show hierarchy */
+	.toc > li             { font-weight: bold;   }
+	.toc > li li          { font-weight: normal; }
+	.toc > li li li       { font-style:  italic; }
+	.toc > li li li li    { font-style:  normal; }
+	.toc > li li li li li { font-style:  italic;
+	                        font-size:   85%;    }
+
+	.toc > li             { margin: 1.5rem 0;    }
+	.toc > li li          { margin: 0.3rem 0;    }
+	.toc > li li li       { margin-left: 2rem;   }
+
+	/* Section numbers in a column of their own */
 	.toc .secno {
 		float: left;
-		width: 4em;
-		margin-left: -4em;
+		width: 4rem;
 		white-space: nowrap;
-	}
-
-	.toc > li li li .secno {
-		margin-left: -5em;
 	}
 	.toc > li li li li .secno {
 		font-size: 85%;
-		margin-left: -7.06em;
-		margin-left: -6rem;
 	}
 	.toc > li li li li li .secno {
-		margin-left: -8.24em;
-		margin-left: -7rem;
 		font-size: 100%;
 	}
+
+	:not(li) > .toc              { margin-left:  5rem; }
+	.toc .secno                  { margin-left: -5rem; }
+	.toc > li li li .secno       { margin-left: -7rem; }
+	.toc > li li li li .secno    { margin-left: -9rem; }
+	.toc > li li li li li .secno { margin-left: -11rem; }
+
+	/* Tighten up indentation in narrow ToCs */
+	@media (max-width: 30em) {
+		:not(li) > .toc              { margin-left:  4rem; }
+		.toc .secno                  { margin-left: -4rem; }
+		.toc > li li li              { margin-left:  1rem; }
+		.toc > li li li .secno       { margin-left: -5rem; }
+		.toc > li li li li .secno    { margin-left: -6rem; }
+		.toc > li li li li li .secno { margin-left: -7rem; }
+	}
+	@media screen and (min-width: 78em) {
+		body:not(.toc-inline) :not(li) > .toc              { margin-left:  4rem; }
+		body:not(.toc-inline) .toc .secno                  { margin-left: -4rem; }
+		body:not(.toc-inline) .toc > li li li              { margin-left:  1rem; }
+		body:not(.toc-inline) .toc > li li li .secno       { margin-left: -5rem; }
+		body:not(.toc-inline) .toc > li li li li .secno    { margin-left: -6rem; }
+		body:not(.toc-inline) .toc > li li li li li .secno { margin-left: -7rem; }
+	}
+	body.toc-sidebar #toc :not(li) > .toc              { margin-left:  4rem; }
+	body.toc-sidebar #toc .toc .secno                  { margin-left: -4rem; }
+	body.toc-sidebar #toc .toc > li li li              { margin-left:  1rem; }
+	body.toc-sidebar #toc .toc > li li li .secno       { margin-left: -5rem; }
+	body.toc-sidebar #toc .toc > li li li li .secno    { margin-left: -6rem; }
+	body.toc-sidebar #toc .toc > li li li li li .secno { margin-left: -7rem; }
 
 	.toc li {
 		clear: both;
@@ -961,7 +1022,7 @@
 /** Index *********************************************************************/
 
 	/* Index Lists: Layout */
-	ul.index       { margin-left: 0; columns: 15em; -webkit-columns: 15em; -moz-columns: 15em; text-indent: 1em hanging; }
+	ul.index       { margin-left: 0; columns: 15em; text-indent: 1em hanging; }
 	ul.index li    { margin-left: 0; list-style: none; break-inside: avoid; }
 	ul.index li li { margin-left: 1em }
 	ul.index dl    { margin-top: 0; }
@@ -1040,6 +1101,12 @@
 	.figure .caption, .sidefigure .caption, figcaption {
 		/* in case figure is overlarge, limit caption to 50em */
 		max-width: 50rem;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.overlarge > table {
+		/* limit preferred width of table */
+		max-width: 50em;
 		margin-left: auto;
 		margin-right: auto;
 	}
@@ -1122,6 +1189,11 @@
 
 /** Autolinks produced using Bikeshed *****************************************/
 
+	[data-link-type]:not([data-link-type="dfn"]),
+	[data-dfn-type]:not([data-dfn-type="dfn"]) {
+		hyphens: none;
+	}
+
 	[data-link-type="property"]::before,
 	[data-link-type="propdesc"]::before,
 	[data-link-type="descriptor"]::before,
@@ -1171,8 +1243,8 @@
 	a.self-link {
 		position: absolute;
 		top: 0;
-		left: -2.5em;
-		width: 2em;
+		left: calc(-1 * (3.5rem - 26px));
+		width: calc(3.5rem - 26px);
 		height: 2em;
 		text-align: center;
 		border: none;
@@ -1186,7 +1258,7 @@
 		font-size: 83%;
 	}
 	li > a.self-link {
-		left: -3.5em;
+		left: calc(-1 * (3.5rem - 26px) - 2em);
 	}
 	dfn > a.self-link {
 		top: auto;
@@ -1230,10 +1302,45 @@
 
 
 /********************************************
- Remember to remove the logo section when copypasting freshly.
+ Remember to fix the logo section when copypasting freshly.
  */
 </style>
   <meta content="Bikeshed 1.0.0" name="generator">
+<style>
+        .dfn-panel {
+            display: inline-block;
+            position: absolute;
+            z-index: 35;
+            height: auto;
+            width: -webkit-fit-content;
+            max-width: 300px;
+            max-height: 500px;
+            overflow: auto;
+            padding: 0.5em 0.75em;
+            font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
+            background: #DDDDDD;
+            color: black;
+            border: outset 0.2em;
+        }
+        .dfn-panel:not(.on) { display: none; }
+        .dfn-panel * { margin: 0; padding: 0; text-indent: 0; }
+        .dfn-panel > b { display: block; }
+        .dfn-panel a { color: black; }
+        .dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
+        .dfn-panel > b + b { margin-top: 0.25em; }
+        .dfn-panel > span { display: list-item; list-style: inside; }
+        .dfn-panel.activated {
+            display: inline-block;
+            position: fixed;
+            left: .5em;
+            bottom: .5em;
+            margin: 0 auto;
+            max-width: calc(100vw - 1.5em - .4em - .5em);
+            max-height: 30vh;
+        }
+
+        .dfn-paneled { cursor: pointer; }
+        </style>
 <style>.highlight .hll { background-color: #ffffcc }
 .highlight  { background: #ffffff; }
 .highlight .c { color: #708090 } /* Comment */
@@ -1296,7 +1403,7 @@
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">Writing Promise-Using Specifications</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Finding of the W3C TAG, <time class="dt-updated" datetime="2016-02-16">16 February 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Finding of the W3C TAG, <time class="dt-updated" datetime="2016-04-13">13 April 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt class="editor">Editor:
@@ -1309,7 +1416,7 @@
    <div data-fill-with="warning"></div>
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" src="https://licensebuttons.net/p/zero/1.0/80x15.png"></a> To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 16 February 2016,
+In addition, as of 13 April 2016,
 the editors have made this specification available under the <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 Parts of this work may be from another specification document.  If so, those parts are instead covered by the license of that specification document. </p>
@@ -1550,7 +1657,7 @@ It also includes a series of prose shorthands you can use in your specification 
    </div>
    <p>In this example, <code>p1</code> will be fulfilled 500 ms after the promise returned by <code>doAsyncOperation()</code> fulfills, with that operation’s value. (Or <code>p1</code> will reject as soon as that promise rejects.) And, since we resolve the incoming argument to a promise, the function can also work when you pass it the string <code>"value"</code>: <code>p2</code> will be fulfilled with <code>"value"</code> after 1000 ms. In this way, we essentially treat it as an immediately-fulfilled promise for that value.</p>
    <h4 class="heading settled" data-level="4.3.2" id="should-promise-call"><span class="secno">4.3.2. </span><span class="content">Developer-Supplied Promise-Returning Functions Should Be "Promise-Called"</span><a class="self-link" href="#should-promise-call"></a></h4>
-   <p>If the developer supplies you with a function that you expect to return a promise, you should also allow it to return a thenable or non-promise value, or even throw an exception, and treat all these cases as if they had returned an analogous promise. We can encapsulate this process in an operation called <a href="#promise-calling">promise-calling</a> the supplied function. This allows us to have the same reaction to synchronous forms of success and failure that we would to asynchronous forms.</p>
+   <p>If the developer supplies you with a function that you expect to return a promise, you should also allow it to return a thenable or non-promise value, or even throw an exception, and treat all these cases as if they had returned an analogous promise. We can encapsulate this process in an operation called <a href="#promise-calling" id="ref-for-promise-calling-1">promise-calling</a> the supplied function. This allows us to have the same reaction to synchronous forms of success and failure that we would to asynchronous forms.</p>
    <p>See the <a href="#example-resource-open"><code>resource.open</code> example</a> below for further discussion of how and why this should be used.</p>
    <h2 class="heading settled" data-level="5" id="shorthand-phrases"><span class="secno">5. </span><span class="content">Shorthand Phrases</span><a class="self-link" href="#shorthand-phrases"></a></h2>
    <div class="note" role="note">This section is primarily for spec writers, dealing with ways of performing common promise operations in prose.</div>
@@ -1558,15 +1665,15 @@ It also includes a series of prose shorthands you can use in your specification 
    <p>When writing such specifications, it’s convenient to be able to refer to common promise operations concisely. We define here a set of shorthands that allow you to do so.</p>
    <h3 class="heading settled" data-level="5.1" id="shorthand-creating"><span class="secno">5.1. </span><span class="content">Creating Promises</span><a class="self-link" href="#shorthand-creating"></a></h3>
    <p><dfn data-dfn-type="dfn" data-export="" id="a-new-promise">A new promise<a class="self-link" href="#a-new-promise"></a></dfn> gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under <a href="#shorthand-manipulating">§5.2 Manipulating Promises</a>.</p>
-   <p><dfn data-dfn-type="dfn" data-export="" id="a-promise-resolved-with">A promise resolved with <var>x</var><a class="self-link" href="#a-promise-resolved-with"></a></dfn> or <dfn data-dfn-type="dfn" data-export="" id="resolved-as-a-promise"><var>x</var> resolved as a promise<a class="self-link" href="#resolved-as-a-promise"></a></dfn> is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve"><code>Promise.resolve</code></a>.</p>
-   <p><dfn data-dfn-type="dfn" data-export="" id="a-promise-rejected-with">A promise rejected with <var>r</var><a class="self-link" href="#a-promise-rejected-with"></a></dfn> is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject"><code>Promise.reject</code></a>.</p>
+   <p><dfn data-dfn-type="dfn" data-export="" id="a-promise-resolved-with">A promise resolved with <var>x</var><a class="self-link" href="#a-promise-resolved-with"></a></dfn> or <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="x resolved as a promise" id="resolved-as-a-promise"><var>x</var> resolved as a promise<span class="dfn-panel" data-deco=""><b><a href="#resolved-as-a-promise">#resolved-as-a-promise</a></b><b>Referenced in:</b><span><a href="#ref-for-resolved-as-a-promise-1">5.5. Promise-Calling</a></span></span></dfn> is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve"><code>Promise.resolve</code></a>.</p>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="A promise rejected with r" id="a-promise-rejected-with">A promise rejected with <var>r</var><span class="dfn-panel" data-deco=""><b><a href="#a-promise-rejected-with">#a-promise-rejected-with</a></b><b>Referenced in:</b><span><a href="#ref-for-a-promise-rejected-with-1">5.5. Promise-Calling</a></span></span></dfn> is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject"><code>Promise.reject</code></a>.</p>
    <h3 class="heading settled" data-level="5.2" id="shorthand-manipulating"><span class="secno">5.2. </span><span class="content">Manipulating Promises</span><a class="self-link" href="#shorthand-manipulating"></a></h3>
    <p><dfn data-dfn-type="dfn" data-export="" id="resolve-promise">Resolve <var>p</var> with <var>x</var><a class="self-link" href="#resolve-promise"></a></dfn> is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.</p>
    <p><dfn data-dfn-type="dfn" data-export="" id="reject-promise">Reject <var>p</var> with <var>r</var><a class="self-link" href="#reject-promise"></a></dfn> is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.</p>
    <p>If the algorithm using these shorthands is running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">in parallel</a>, the shorthands <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> on <var>p</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object">relevant settings object</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#responsible-event-loop">responsible event loop</a> to call the stored function.</p>
    <h3 class="heading settled" data-level="5.3" id="shorthand-reacting"><span class="secno">5.3. </span><span class="content">Reacting to Promises</span><a class="self-link" href="#shorthand-reacting"></a></h3>
-   <p><dfn data-dfn-type="dfn" data-export="" id="upon-fulfillment">Upon fulfillment of <var>p</var> with value <var>v</var><a class="self-link" href="#upon-fulfillment"></a></dfn> is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>’s argument as <var>v</var>.</p>
-   <p><dfn data-dfn-type="dfn" data-export="" id="upon-rejection">Upon rejection of <var>p</var> with reason <var>r</var><a class="self-link" href="#upon-rejection"></a></dfn> is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>’s argument as <var>r</var>.</p>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Upon fulfillment of p with value v" id="upon-fulfillment">Upon fulfillment of <var>p</var> with value <var>v</var><span class="dfn-panel" data-deco=""><b><a href="#upon-fulfillment">#upon-fulfillment</a></b><b>Referenced in:</b><span><a href="#ref-for-upon-fulfillment-1">7.2. Promise&lt;T> Parameters</a></span></span></dfn> is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>’s argument as <var>v</var>.</p>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Upon rejection of p with reason r" id="upon-rejection">Upon rejection of <var>p</var> with reason <var>r</var><span class="dfn-panel" data-deco=""><b><a href="#upon-rejection">#upon-rejection</a></b><b>Referenced in:</b><span><a href="#ref-for-upon-rejection-1">7.2. Promise&lt;T> Parameters</a></span></span></dfn> is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>’s argument as <var>r</var>.</p>
    <p><dfn data-dfn-type="dfn" data-export="" id="transforming-by">Transforming <var>p</var> with a fulfillment and/or rejection handler<a class="self-link" href="#transforming-by"></a></dfn> is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.</p>
    <div class="example" id="example-e171340d">
     <a class="self-link" href="#example-e171340d"></a> Some examples of the latter phrase would be 
@@ -1586,16 +1693,16 @@ It also includes a series of prose shorthands you can use in your specification 
     <p>respectively. (More complicated transforms are of course possible as well, as shown in the <a href="#example-resource-open"><code>resource.open</code> example</a> below.)</p>
    </div>
    <h3 class="heading settled" data-level="5.4" id="aggregating-promises"><span class="secno">5.4. </span><span class="content">Aggregating Promises</span><a class="self-link" href="#aggregating-promises"></a></h3>
-   <p>The result of <dfn data-dfn-type="dfn" data-export="" id="waiting-for-all">waiting for all<a class="self-link" href="#waiting-for-all"></a></dfn> of a collection of promises is a promise created by calling <code>Promise.all(promiseArray)</code>, where <code>promiseArray</code> is that collection in array form and we use the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.all"><code>Promise.all</code></a>.</p>
+   <p>The result of <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="waiting for all" id="waiting-for-all">waiting for all<span class="dfn-panel" data-deco=""><b><a href="#waiting-for-all">#waiting-for-all</a></b><b>Referenced in:</b><span><a href="#ref-for-waiting-for-all-1">6.7. batchRequest(urls)</a> <a href="#ref-for-waiting-for-all-2">(2)</a></span></span></dfn> of a collection of promises is a promise created by calling <code>Promise.all(promiseArray)</code>, where <code>promiseArray</code> is that collection in array form and we use the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.all"><code>Promise.all</code></a>.</p>
    <p>This phrase is useful when you wish to perform multiple asynchronous operations in parallel that return promises, and then react to them all together. If all of the given promises fulfill, then the resulting promise will be fulfilled with an array corresponding to the fulfillment values. If any of them reject, then the resulting promise will be rejected with the first rejection reason to occur.</p>
    <p>An example usage of this phrase is found in <a href="#example-batch-request">§6.7 batchRequest(urls)</a>.</p>
    <h3 class="heading settled" data-level="5.5" id="shorthand-promise-calling"><span class="secno">5.5. </span><span class="content">Promise-Calling</span><a class="self-link" href="#shorthand-promise-calling"></a></h3>
-   <p>The result of <dfn data-dfn-type="dfn" data-export="" id="promise-calling">promise-calling <var>f</var>(...<var>args</var>)<a class="self-link" href="#promise-calling"></a></dfn> is:</p>
+   <p>The result of <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="promise-calling f(...args)" id="promise-calling">promise-calling <var>f</var>(...<var>args</var>)<span class="dfn-panel" data-deco=""><b><a href="#promise-calling">#promise-calling</a></b><b>Referenced in:</b><span><a href="#ref-for-promise-calling-1">4.3.2. Developer-Supplied Promise-Returning Functions Should Be "Promise-Called"</a></span><span><a href="#ref-for-promise-calling-2">6.4. resource.open(resourcePath, openingOperation)</a> <a href="#ref-for-promise-calling-3">(2)</a></span></span></dfn> is:</p>
    <ul>
     <li data-md="">
-     <p>If the call returns a value <var>v</var>, the result of <a href="#resolved-as-a-promise">resolving</a> <var>v</var> as a promise.</p>
+     <p>If the call returns a value <var>v</var>, the result of <a href="#resolved-as-a-promise" id="ref-for-resolved-as-a-promise-1">resolving</a> <var>v</var> as a promise.</p>
     <li data-md="">
-     <p>If the call throws an exception <var>e</var>, a promise <a href="#a-promise-rejected-with">rejected with</a> <var>e</var>.</p>
+     <p>If the call throws an exception <var>e</var>, a promise <a href="#a-promise-rejected-with" id="ref-for-a-promise-rejected-with-1">rejected with</a> <var>e</var>.</p>
    </ul>
    <div class="note" id="promise-call-in-js" role="note">
     <a class="self-link" href="#promise-call-in-js"></a> In JavaScript, you might express promise-calling this way: 
@@ -1755,12 +1862,12 @@ It also includes a series of prose shorthands you can use in your specification 
     <span class="k">return</span> <span class="nx">p</span><span class="p">;</span>
 <span class="p">}</span></code></pre>
    <h3 class="heading settled" data-level="6.4" id="example-resource-open"><span class="secno">6.4. </span><span class="content">resource.open(<var>resourcePath</var>, <var>openingOperation</var>)</span><a class="self-link" href="#example-resource-open"></a></h3>
-   <p><code>resource.open</code> is a method that executes the passed function <var>openingOperation</var> to do most of its work, but then updates the <code>resource</code>’s properties to reflect the result of this operation. It is a simplified version of some of the techniques used in the streams specification. The method is meant to illustrate how and why you might <a href="#promise-calling">promise-call</a> another function.</p>
+   <p><code>resource.open</code> is a method that executes the passed function <var>openingOperation</var> to do most of its work, but then updates the <code>resource</code>’s properties to reflect the result of this operation. It is a simplified version of some of the techniques used in the streams specification. The method is meant to illustrate how and why you might <a href="#promise-calling" id="ref-for-promise-calling-2">promise-call</a> another function.</p>
    <ol>
     <li data-md="">
      <p>Let <var>resourcePath</var> be ToString(<var>resourcePath</var>).</p>
     <li data-md="">
-     <p>Let <var>openingPromise</var> be the result of <a href="#promise-calling">promise-calling</a> <var>openingOperation</var>(<var>resourcePath</var>).</p>
+     <p>Let <var>openingPromise</var> be the result of <a href="#promise-calling" id="ref-for-promise-calling-3">promise-calling</a> <var>openingOperation</var>(<var>resourcePath</var>).</p>
     <li data-md="">
      <p>Return the result of transforming <var>openingPromise</var> with:</p>
      <ol>
@@ -1830,7 +1937,7 @@ It also includes a series of prose shorthands you can use in your specification 
      <p>Return <var>promise</var>.</p>
    </ol>
    <h3 class="heading settled" data-level="6.7" id="example-batch-request"><span class="secno">6.7. </span><span class="content">batchRequest(<var>urls</var>)</span><a class="self-link" href="#example-batch-request"></a></h3>
-   <p>Several places in <a data-link-type="biblio" href="#biblio-service-workers">[SERVICE-WORKERS]</a> use <a data-link-type="dfn" href="#waiting-for-all">waiting for all</a>. <code>batchRequest</code> illustrates a simplified version of one of their uses. It takes as input an iterable of URLs, and returns a promise for an array of <a href="https://fetch.spec.whatwg.org/#response"><code>Response</code></a> objects created by fetching the corresponding URL. If any of the fetches fail, it will return a promise rejected with that failure.</p>
+   <p>Several places in <a data-link-type="biblio" href="#biblio-service-workers">[SERVICE-WORKERS]</a> use <a data-link-type="dfn" href="#waiting-for-all" id="ref-for-waiting-for-all-1">waiting for all</a>. <code>batchRequest</code> illustrates a simplified version of one of their uses. It takes as input an iterable of URLs, and returns a promise for an array of <a href="https://fetch.spec.whatwg.org/#response"><code>Response</code></a> objects created by fetching the corresponding URL. If any of the fetches fail, it will return a promise rejected with that failure.</p>
    <ol>
     <li data-md="">
      <p>Let <var>responsePromises</var> be a new empty list</p>
@@ -1847,7 +1954,7 @@ It also includes a series of prose shorthands you can use in your specification 
        <p>Add <var>p</var> to <var>responsePromises</var>.</p>
      </ol>
     <li data-md="">
-     <p>Return the result of <a data-link-type="dfn" href="#waiting-for-all">waiting for all</a> of <var>responsePromises</var>.</p>
+     <p>Return the result of <a data-link-type="dfn" href="#waiting-for-all" id="ref-for-waiting-for-all-2">waiting for all</a> of <var>responsePromises</var>.</p>
    </ol>
    <h2 class="heading settled" data-level="7" id="webidl"><span class="secno">7. </span><span class="content">WebIDL and Promises</span><a class="self-link" href="#webidl"></a></h2>
    <div class="note" role="note">This section is primarily for spec writers, dealing with how promises integrate with an interface definition language often used in web specs.</div>
@@ -1857,7 +1964,7 @@ It also includes a series of prose shorthands you can use in your specification 
    <p>However, declaring that your method or accessor returns a promise does have one important impact: it ensures that any exceptions that it would otherwise throw, e.g. as a result of failed type conversions, are caught and turned into rejected promises. (See the <a href="https://heycam.github.io/webidl/#es-operations">"Operations" section</a>, "If <var>O</var> has a return type that is a promise type …", and similar phrases scattered throughout the document.) This automatically takes care of the advice in <a href="#always-return-promises">§4.1.1 Promise-Returning Functions Should Always Return Promises</a>, at least for exceptions.</p>
    <h3 class="heading settled" data-level="7.2" id="webidl-promise-parameters"><span class="secno">7.2. </span><span class="content"><code>Promise&lt;T></code> Parameters</span><a class="self-link" href="#webidl-promise-parameters"></a></h3>
    <p>When a parameter of a WebIDL method is declared as <code>Promise&lt;T></code>, it will automatically resolve any arguments passed in that position. This will take care of the "Promise Arguments Should Be Resolved" advice above.</p>
-   <p>If you have a WebIDL <code>Promise&lt;T></code> argument, you can use the WebIDL <a href="https://heycam.github.io/webidl/#dfn-perform-steps-once-promise-is-settled">perform some steps once a promise is settled</a> algorithm. This is much like our <a href="#upon-fulfillment">upon fulfillment …</a> and <a href="#upon-rejection">upon rejection …</a> shorthand phrases above, but it will add an additional step of converting the promise’s fulfillment value to the WebIDL type <code>T</code> before running any upon-fulfillment steps. Additionally it causes your algorithm to return a promise derived from running those steps. If the type conversion fails, your algorithm will return a promise rejected with the error causing that failure.</p>
+   <p>If you have a WebIDL <code>Promise&lt;T></code> argument, you can use the WebIDL <a href="https://heycam.github.io/webidl/#dfn-perform-steps-once-promise-is-settled">perform some steps once a promise is settled</a> algorithm. This is much like our <a href="#upon-fulfillment" id="ref-for-upon-fulfillment-1">upon fulfillment …</a> and <a href="#upon-rejection" id="ref-for-upon-rejection-1">upon rejection …</a> shorthand phrases above, but it will add an additional step of converting the promise’s fulfillment value to the WebIDL type <code>T</code> before running any upon-fulfillment steps. Additionally it causes your algorithm to return a promise derived from running those steps. If the type conversion fails, your algorithm will return a promise rejected with the error causing that failure.</p>
    <p>Note that the <code>T</code> here refers to a WebIDL type <em>for the fulfillment value</em>. Furthermore, it only has impact if you use the WebIDL "perform some steps …" algorithm, and not if you use the promise in other ways (such as passing it along to another function). If that is not relevant, we advise using <code>Promise&lt;any></code> for parameters.</p>
    <div class="note" role="note">
      As a consequence of the resolution behavior, <code>Promise&lt;T></code> parameters cannot be overloaded with any other parameters. For example, you cannot do: 
@@ -1866,7 +1973,7 @@ void f(Promise&lt;DOMString> x);
 void f(DOMString y);
 </pre>
    </div>
-   <p><span id="webidl-user-functions-returning-promises"></span> </p>
+   <p><span id="webidl-user-functions-returning-promises"></span></p>
    <h3 class="heading settled" data-level="7.3" id="webidl-developer-functions-returning-promises"><span class="secno">7.3. </span><span class="content">Developer Functions Returning Promises</span><a class="self-link" href="#webidl-developer-functions-returning-promises"></a></h3>
    <p>In WebIDL, you consume JavaScript functions by declaring them as WebIDL <a href="https://heycam.github.io/webidl/#dfn-callback-function">callback functions</a> (or, in rare cases, via <a href="https://heycam.github.io/webidl/#dfn-callback-interface">callback interfaces</a>) and later <a href="https://heycam.github.io/webidl/#es-invoking-callback-functions">invoking them</a> with a list of WebIDL values.</p>
    <p>If you use WebIDL’s mechanisms for calling JavaScript functions, the invocation algorithm will automatically resolve return values and convert thrown exceptions into rejected promises. This automatically takes care of the advice in <a href="#should-promise-call">§4.3.2 Developer-Supplied Promise-Returning Functions Should Be "Promise-Called"</a>.</p>
@@ -1941,8 +2048,137 @@ interface ResourceConsumer {
             and are set apart from the normative text with <code>class="note"</code>, like this: </p>
    <p class="note" role="note"> Note, this is an informative note. </p>
   </div>
-  <h2 class="no-num heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
-  <h3 class="no-num heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
+<script>
+(function() {
+  "use strict";
+  var collapseSidebarText = '<span aria-hidden="true">←</span> '
+                          + '<span>Collapse Sidebar</span>';
+  var expandSidebarText   = '<span aria-hidden="true">→</span> '
+                          + '<span>Pop Out Sidebar</span>';
+  var tocJumpText         = '<span aria-hidden="true">↑</span> '
+                          + '<span>Jump to Table of Contents</span>';
+
+  var sidebarMedia = window.matchMedia('screen and (min-width: 78em)');
+  var autoToggle   = function(e){ toggleSidebar(e.matches) };
+  if(sidebarMedia.addListener) {
+    sidebarMedia.addListener(autoToggle);
+  }
+
+  function toggleSidebar(on) {
+    if (on == undefined) {
+      on = !document.body.classList.contains('toc-sidebar');
+    }
+
+    /* Don’t scroll to compensate for the ToC if we’re above it already. */
+    var headY = 0;
+    var head = document.querySelector('.head');
+    if (head) {
+      // terrible approx of "top of ToC"
+      headY += head.offsetTop + head.offsetHeight;
+    }
+    var skipScroll = window.scrollY < headY;
+
+    var toggle = document.getElementById('toc-toggle');
+    var tocNav = document.getElementById('toc');
+    if (on) {
+      var tocHeight = tocNav.offsetHeight;
+      document.body.classList.add('toc-sidebar');
+      document.body.classList.remove('toc-inline');
+      toggle.innerHTML = collapseSidebarText;
+      if (!skipScroll) {
+        window.scrollBy(0, 0 - tocHeight);
+      }
+      tocNav.focus();
+      sidebarMedia.addListener(autoToggle); // auto-collapse when out of room
+    }
+    else {
+      document.body.classList.add('toc-inline');
+      document.body.classList.remove('toc-sidebar');
+      toggle.innerHTML = expandSidebarText;
+      if (!skipScroll) {
+        window.scrollBy(0, tocNav.offsetHeight);
+      }
+      if (toggle.matches(':hover')) {
+        /* Unfocus button when not using keyboard navigation,
+           because I don’t know where else to send the focus. */
+        toggle.blur();
+      }
+    }
+  }
+
+  function createSidebarToggle() {
+    /* Create the sidebar toggle in JS; it shouldn’t exist when JS is off. */
+    var toggle = document.createElement('a');
+      /* This should probably be a button, but appearance isn’t standards-track.*/
+    toggle.id = 'toc-toggle';
+    toggle.class = 'toc-toggle';
+    toggle.href = '#toc';
+    toggle.innerHTML = collapseSidebarText;
+
+    sidebarMedia.addListener(autoToggle);
+    var toggler = function(e) {
+      e.preventDefault();
+      sidebarMedia.removeListener(autoToggle); // persist explicit off states
+      toggleSidebar();
+      return false;
+    }
+    toggle.addEventListener('click', toggler, false);
+
+
+    /* Get <nav id=toc-nav>, or make it if we don’t have one. */
+    var tocNav = document.getElementById('toc-nav');
+    if (!tocNav) {
+      tocNav = document.createElement('p');
+      tocNav.id = 'toc-nav';
+      /* Prepend for better keyboard navigation */
+      document.body.insertBefore(tocNav, document.body.firstChild);
+    }
+    /* While we’re at it, make sure we have a Jump to Toc link. */
+    var tocJump = document.getElementById('toc-jump');
+    if (!tocJump) {
+      tocJump = document.createElement('a');
+      tocJump.id = 'toc-jump';
+      tocJump.href = '#toc';
+      tocJump.innerHTML = tocJumpText;
+      tocNav.appendChild(tocJump);
+    }
+
+    tocNav.appendChild(toggle);
+  }
+
+  var toc = document.getElementById('toc');
+  if (toc) {
+    createSidebarToggle();
+    toggleSidebar(sidebarMedia.matches);
+
+    /* If the sidebar has been manually opened and is currently overlaying the text
+       (window too small for the MQ to add the margin to body),
+       then auto-close the sidebar once you click on something in there. */
+    toc.addEventListener('click', function(e) {
+      if(e.target.tagName.toLowerCase() == "a" && document.body.classList.contains('toc-sidebar') && !sidebarMedia.matches) {
+        toggleSidebar(false);
+      }
+    }, false);
+  }
+  else {
+    console.warn("Can’t find Table of Contents. Please use <nav id='toc'> around the ToC.");
+  }
+
+  /* Wrap tables in case they overflow */
+  var tables = document.querySelectorAll(':not(.overlarge) > table.data, :not(.overlarge) > table.index');
+  var numTables = tables.length;
+  for (var i = 0; i < numTables; i++) {
+    var table = tables[i];
+    var wrapper = document.createElement('div');
+    wrapper.className = 'overlarge';
+    table.parentNode.insertBefore(wrapper, table);
+    wrapper.appendChild(table);
+  }
+
+})();
+</script>
+  <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
    <li><a href="#a-new-promise">A new promise</a><span>, in §5.1</span>
    <li><a href="#a-promise-rejected-with">A promise rejected with r</a><span>, in §5.1</span>
@@ -1956,10 +2192,10 @@ interface ResourceConsumer {
    <li><a href="#waiting-for-all">waiting for all</a><span>, in §5.4</span>
    <li><a href="#resolved-as-a-promise">x resolved as a promise</a><span>, in §5.1</span>
   </ul>
-  <h3 class="no-num heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
+  <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
-    <a data-link-type="biblio" href="#biblio-html">[HTML]</a> defines the following terms:
+    <a data-link-type="biblio">[HTML]</a> defines the following terms:
     <ul>
      <li><a href="https://html.spec.whatwg.org/multipage/browsers.html#active-document">active document</a>
      <li><a href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">browsing context</a>
@@ -1969,20 +2205,61 @@ interface ResourceConsumer {
      <li><a href="https://html.spec.whatwg.org/multipage/webappapis.html#responsible-event-loop">responsible event loop</a>
     </ul>
   </ul>
-  <h2 class="no-num heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
-  <h3 class="no-num heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
+  <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
-   <dt id="biblio-ecmascript"><a class="self-link" href="#biblio-ecmascript"></a>[ECMASCRIPT]
+   <dt id="biblio-ecmascript">[ECMASCRIPT]
    <dd><a href="https://tc39.github.io/ecma262/">ECMAScript Language Specification</a>. URL: <a href="https://tc39.github.io/ecma262/">https://tc39.github.io/ecma262/</a>
-   <dt id="biblio-html"><a class="self-link" href="#biblio-html"></a>[HTML]
+   <dt id="biblio-html">[HTML]
    <dd>Ian Hickson. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
-   <dt id="biblio-webidl"><a class="self-link" href="#biblio-webidl"></a>[WebIDL]
-   <dd>Cameron McCormack; Boris Zbarsky. <a href="https://heycam.github.io/webidl/">WebIDL Level 1</a>. 4 August 2015. WD. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
-   <dt id="biblio-rfc2119"><a class="self-link" href="#biblio-rfc2119"></a>[RFC2119]
+   <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
+   <dt id="biblio-webidl">[WEBIDL]
+   <dd>Cameron McCormack; Boris Zbarsky. <a href="https://heycam.github.io/webidl/">WebIDL Level 1</a>. 8 March 2016. CR. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
   </dl>
-  <h3 class="no-num heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
+  <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
-   <dt id="biblio-service-workers"><a class="self-link" href="#biblio-service-workers"></a>[SERVICE-WORKERS]
+   <dt id="biblio-service-workers">[SERVICE-WORKERS]
    <dd>Alex Russell; Jungkee Song; Jake Archibald. <a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/">Service Workers</a>. 25 June 2015. WD. URL: <a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/">https://slightlyoff.github.io/ServiceWorker/spec/service_worker/</a>
   </dl>
+<script>
+        document.body.addEventListener("click", function(e) {
+            var queryAll = function(sel) { return [].slice.call(document.querySelectorAll(sel)); }
+            // Find the dfn element or panel, if any, that was clicked on.
+            var el = e.target;
+            var target;
+            while(el.parentElement) {
+                if(el.tagName == "DFN") {
+                    target = "dfn";
+                    break;
+                }
+                if(/H\d/.test(el.tagName) && el.getAttribute('data-dfn-type') != null) {
+                    target = "dfn";
+                    break;
+                }
+                if(el.classList.contains("dfn-panel")) {
+                    target = "dfn-panel";
+                    break;
+                }
+                el = el.parentElement;
+            }
+            if(target != "dfn-panel") {
+                // Turn off any currently "on" or "activated" panels.
+                queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(function(el){
+                    el.classList.remove("on");
+                    el.classList.remove("activated");
+                });
+            }
+            if(target == "dfn") {
+                // open the panel
+                var dfnPanel = el.querySelector(".dfn-panel");
+                if(dfnPanel) {
+                    dfnPanel.classList.add("on");
+                }
+            } else if(target == "dfn-panel") {
+                // Switch it to "activated" state, which pins it.
+                el.classList.add("activated");
+            }
+
+        });
+        </script>
