@@ -174,7 +174,7 @@ In WebIDL-using specs, this is automatically taken care of by the <a href="https
         return Promise.resolve(promise).then(v =>
             new Promise(resolve =>
                 setTimeout(() => resolve(v), ms);
-            );
+            )
         );
     }
 
@@ -340,7 +340,7 @@ function delay(ms) {
 
     // Step 3
     let resolve;
-    const p = new Promise(r => { resolve = r });
+    const p = new Promise(r => { resolve = r; });
 
     // Step 4
     setTimeout(() => resolve(undefined), ms);
