@@ -34,6 +34,7 @@
  *   - .note       for informative notes             (div, p, span, aside, details)
  *   - .example    for informative examples          (div, p, pre, span)
  *   - .issue      for issues                        (div, p, span)
+ *   - .assertion  for assertions                    (div, p, span)
  *   - .advisement for loud normative statements     (div, p, strong)
  *   - .annoying-warning for spec obsoletion notices (div, aside, details)
  *
@@ -48,9 +49,9 @@
  *   - ::before styled for CSS-generated issue/example/figure numbers:
  *     -> Documents wishing to use this only need to add
  *        figcaption::before,
- *        .caption::before { content: "Figure "  counter(figure);  }
- *        .example::before { content: "Example " counter(example); }
- *        .issue::before   { content: "Issue "   counter(issue);   }
+ *        .caption::before { content: "Figure "  counter(figure) " ";  }
+ *        .example::before { content: "Example " counter(example) " "; }
+ *        .issue::before   { content: "Issue "   counter(issue) " ";   }
  *
  * Header Stuff (ignore, just don't conflict with these classes)
  *   - .head for the header
@@ -408,15 +409,31 @@
 	}
 
 	/* Style for algorithms */
-	ol.algorithm ol:not(.algorithm) {
+	ol.algorithm ol:not(.algorithm),
+	.algorithm > ol ol:not(.algorithm) {
 	 border-left: 0.5em solid #DEF;
 	}
 
+	/* Put nice boxes around each algorithm. */
+	[data-algorithm]:not(.heading) {
+	  padding: .5em;
+	  border: thin solid #ddd; border-radius: .5em;
+	  margin: .5em 0;
+	}
+	[data-algorithm]:not(.heading) > :first-child {
+	  margin-top: 0;
+	}
+	[data-algorithm]:not(.heading) > :last-child {
+	  margin-bottom: 0;
+	}
+
 	/* Style for switch/case <dl>s */
-	dl.switch > dd > ol.only {
+	dl.switch > dd > ol.only,
+	dl.switch > dd > .only > ol {
 	 margin-left: 0;
 	}
-	dl.switch > dd > ol.algorithm {
+	dl.switch > dd > ol.algorithm,
+	dl.switch > dd > .algorithm > ol {
 	 margin-left: -2em;
 	}
 	dl.switch {
@@ -453,7 +470,7 @@
 		font-style: normal;
 	}
 	dt dfn code, code.idl {
-		font-size: inherit;
+		font-size: normal;
 	}
 	dfn var {
 		font-style: normal;
@@ -594,7 +611,7 @@
 /*                             Colored Boxes                                  */
 /******************************************************************************/
 
-	.issue, .note, .example, .advisement, blockquote {
+	.issue, .note, .example, .assertion, .advisement, blockquote {
 		padding: .5em;
 		border: .5em;
 		border-left-style: solid;
@@ -609,6 +626,7 @@
 	.note,
 	.example,
 	.advisement,
+	.assertion,
 	blockquote {
 		margin: 1em auto;
 	}
@@ -641,7 +659,7 @@
 		padding-right: 1em;
 		text-transform: uppercase;
 	}
-	/* Add .issue::before { content: "Issue " counter(issue); } for autogen numbers,
+	/* Add .issue::before { content: "Issue " counter(issue) " "; } for autogen numbers,
 	   or use class="marker" to mark up the issue number in source. */
 
 /** Example *******************************************************************/
@@ -659,7 +677,7 @@
 		min-width: 7.5em;
 		display: block;
 	}
-	/* Add .example::before { content: "Example " counter(example); } for autogen numbers,
+	/* Add .example::before { content: "Example " counter(example) " "; } for autogen numbers,
 	   or use class="marker" to mark up the example number in source. */
 
 /** Non-normative Note ********************************************************/
@@ -686,6 +704,14 @@
 	}
 	details.note[open] > summary {
 		border-bottom: 1px silver solid;
+	}
+
+/** Assertion Box *************************************************************/
+	/*  for assertions in algorithms */
+
+	.assertion {
+		border-color: #AAA;
+		background: #EEE;
 	}
 
 /** Advisement Box ************************************************************/
@@ -962,10 +988,9 @@ Possible extra rowspan handling
 	/* ToC not indented until third level, but font style & margins show hierarchy */
 	.toc > li             { font-weight: bold;   }
 	.toc > li li          { font-weight: normal; }
-	.toc > li li li       { font-style:  italic; }
-	.toc > li li li li    { font-style:  normal; }
-	.toc > li li li li li { font-style:  italic;
-	                        font-size:   85%;    }
+	.toc > li li li       { font-size:   95%;    }
+	.toc > li li li li    { font-size:   90%;    }
+	.toc > li li li li li { font-size:   85%;    }
 
 	.toc > li             { margin: 1.5rem 0;    }
 	.toc > li li          { margin: 0.3rem 0;    }
@@ -1148,171 +1173,163 @@ Possible extra rowspan handling
 			*/
 		}
 	}
-
-/******************************************************************************/
-/*                                  Bikeshed                                  */
-/******************************************************************************/
-
-	/* Style for paragraphs I know are in MD-genned lists */
-	/* This is a weird hack for me not yet following the commonmark spec
-	   regarding paragraph and lists. */
-	[data-md] > :first-child {
-		margin-top: 0;
-	}
-	[data-md] > :last-child {
-		margin-bottom: 0;
-	}
-
-/** Inline CSS fragments ******************************************************/
-
-	.css.css, .property.property, .descriptor.descriptor {
-		color: #005a9c;
-		font-size: inherit;
-		font-family: inherit;
-	}
-	.css::before, .property::before, .descriptor::before {
-		content: "‘";
-	}
-	.css::after, .property::after, .descriptor::after {
-		content: "’";
-	}
-	.property, .descriptor {
-		/* Don't wrap property and descriptor names */
-		white-space: nowrap;
-	}
-	.type { /* CSS value <type> */
-		font-style: italic;
-	}
-	pre .property::before, pre .property::after {
-		content: "";
-	}
-
-/** Autolinks produced using Bikeshed *****************************************/
-
-	[data-link-type]:not([data-link-type="dfn"]),
-	[data-dfn-type]:not([data-dfn-type="dfn"]) {
-		hyphens: none;
-	}
-
-	[data-link-type="property"]::before,
-	[data-link-type="propdesc"]::before,
-	[data-link-type="descriptor"]::before,
-	[data-link-type="value"]::before,
-	[data-link-type="function"]::before,
-	[data-link-type="at-rule"]::before,
-	[data-link-type="selector"]::before,
-	[data-link-type="maybe"]::before {
-		content: "‘";
-	}
-	[data-link-type="property"]::after,
-	[data-link-type="propdesc"]::after,
-	[data-link-type="descriptor"]::after,
-	[data-link-type="value"]::after,
-	[data-link-type="function"]::after,
-	[data-link-type="at-rule"]::after,
-	[data-link-type="selector"]::after,
-	[data-link-type="maybe"]::after {
-		content: "’";
-	}
-
-	[data-link-type].production::before,
-	[data-link-type].production::after,
-	.prod [data-link-type]::before,
-	.prod [data-link-type]::after {
-		content: "";
-	}
-
-	[data-link-type=element],
-	[data-link-type=element-attr] {
-		font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
-		font-size: .9em;
-	}
-	[data-link-type=element]::before { content: "<" }
-	[data-link-type=element]::after  { content: ">" }
-
-	[data-link-type=biblio] {
-		white-space: pre;
-	}
-
-/** Self-Links ****************************************************************/
-/* Auto-generated links from an element to its own anchor, for usability */
-
-	.heading, .issue, .note, .example, li, dt {
-		position: relative;
-	}
-	a.self-link {
-		position: absolute;
-		top: 0;
-		left: calc(-1 * (3.5rem - 26px));
-		width: calc(3.5rem - 26px);
-		height: 2em;
-		text-align: center;
-		border: none;
-		transition: opacity .2s;
-		opacity: .5;
-	}
-	a.self-link:hover {
-		opacity: 1;
-	}
-	.heading > a.self-link {
-		font-size: 83%;
-	}
-	li > a.self-link {
-		left: calc(-1 * (3.5rem - 26px) - 2em);
-	}
-	dfn > a.self-link {
-		top: auto;
-		left: auto;
-		opacity: 0;
-		width: 1.5em;
-		height: 1.5em;
-		background: gray;
-		color: white;
-		font-style: normal;
-		transition: opacity .2s, background-color .2s, color .2s;
-	}
-	dfn:hover > a.self-link {
-		opacity: 1;
-	}
-	dfn > a.self-link:hover {
-		color: black;
-	}
-
-	a.self-link::before            { content: "¶"; }
-	.heading > a.self-link::before { content: "§"; }
-	dfn > a.self-link::before      { content: "#"; }
-
-/** Counters ******************************************************************/
-/* Adds the auto-genned issue/example counters,
-   until Bikeshed fills in manual ones. */
-	.issue:not(.no-marker)::before {
-		content: "Issue " counter(issue);
-	}
-
-	.example:not(.no-marker)::before {
-		content: "Example";
-		content: "Example " counter(example);
-	}
-	.invalid.example:not(.no-marker)::before,
-	.illegal.example:not(.no-marker)::before {
-		content: "Invalid Example";
-		content: "Invalid Example" counter(example);
-	}
-
-
-
-/********************************************
- Remember to fix the logo section when copypasting freshly.
- */
 </style>
   <meta content="Bikeshed 1.0.0" name="generator">
-<style>
+<style>/* style-md-lists */
+
+            /* This is a weird hack for me not yet following the commonmark spec
+               regarding paragraph and lists. */
+            [data-md] > :first-child {
+                margin-top: 0;
+            }
+            [data-md] > :last-child {
+                margin-bottom: 0;
+            }</style>
+<style>/* style-selflinks */
+
+            .heading, .issue, .note, .example, li, dt {
+                position: relative;
+            }
+            a.self-link {
+                position: absolute;
+                top: 0;
+                left: calc(-1 * (3.5rem - 26px));
+                width: calc(3.5rem - 26px);
+                height: 2em;
+                text-align: center;
+                border: none;
+                transition: opacity .2s;
+                opacity: .5;
+            }
+            a.self-link:hover {
+                opacity: 1;
+            }
+            .heading > a.self-link {
+                font-size: 83%;
+            }
+            li > a.self-link {
+                left: calc(-1 * (3.5rem - 26px) - 2em);
+            }
+            dfn > a.self-link {
+                top: auto;
+                left: auto;
+                opacity: 0;
+                width: 1.5em;
+                height: 1.5em;
+                background: gray;
+                color: white;
+                font-style: normal;
+                transition: opacity .2s, background-color .2s, color .2s;
+            }
+            dfn:hover > a.self-link {
+                opacity: 1;
+            }
+            dfn > a.self-link:hover {
+                color: black;
+            }
+
+            a.self-link::before            { content: "¶"; }
+            .heading > a.self-link::before { content: "§"; }
+            dfn > a.self-link::before      { content: "#"; }</style>
+<style>/* style-counters */
+
+            body {
+                counter-reset: example figure issue;
+            }
+            .issue {
+                counter-increment: issue;
+            }
+            .issue:not(.no-marker)::before {
+                content: "Issue " counter(issue);
+            }
+
+            .example {
+                counter-increment: example;
+            }
+            .example:not(.no-marker)::before {
+                content: "Example " counter(example);
+            }
+            .invalid.example:not(.no-marker)::before,
+            .illegal.example:not(.no-marker)::before {
+                content: "Invalid Example" counter(example);
+            }
+
+            figcaption {
+                counter-increment: figure;
+            }
+            figcaption:not(.no-marker)::before {
+                content: "Figure " counter(figure) " ";
+            }</style>
+<style>/* style-autolinks */
+
+            .css.css, .property.property, .descriptor.descriptor {
+                color: #005a9c;
+                font-size: inherit;
+                font-family: inherit;
+            }
+            .css::before, .property::before, .descriptor::before {
+                content: "‘";
+            }
+            .css::after, .property::after, .descriptor::after {
+                content: "’";
+            }
+            .property, .descriptor {
+                /* Don't wrap property and descriptor names */
+                white-space: nowrap;
+            }
+            .type { /* CSS value <type> */
+                font-style: italic;
+            }
+            pre .property::before, pre .property::after {
+                content: "";
+            }
+            [data-link-type="property"]::before,
+            [data-link-type="propdesc"]::before,
+            [data-link-type="descriptor"]::before,
+            [data-link-type="value"]::before,
+            [data-link-type="function"]::before,
+            [data-link-type="at-rule"]::before,
+            [data-link-type="selector"]::before,
+            [data-link-type="maybe"]::before {
+                content: "‘";
+            }
+            [data-link-type="property"]::after,
+            [data-link-type="propdesc"]::after,
+            [data-link-type="descriptor"]::after,
+            [data-link-type="value"]::after,
+            [data-link-type="function"]::after,
+            [data-link-type="at-rule"]::after,
+            [data-link-type="selector"]::after,
+            [data-link-type="maybe"]::after {
+                content: "’";
+            }
+
+            [data-link-type].production::before,
+            [data-link-type].production::after,
+            .prod [data-link-type]::before,
+            .prod [data-link-type]::after {
+                content: "";
+            }
+
+            [data-link-type=element],
+            [data-link-type=element-attr] {
+                font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+                font-size: .9em;
+            }
+            [data-link-type=element]::before { content: "<" }
+            [data-link-type=element]::after  { content: ">" }
+
+            [data-link-type=biblio] {
+                white-space: pre;
+            }</style>
+<style>/* style-dfn-panel */
+
         .dfn-panel {
-            display: inline-block;
             position: absolute;
             z-index: 35;
             height: auto;
             width: -webkit-fit-content;
+            width: fit-content;
             max-width: 300px;
             max-height: 500px;
             overflow: auto;
@@ -1328,12 +1345,13 @@ Possible extra rowspan handling
         .dfn-panel a { color: black; }
         .dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
         .dfn-panel > b + b { margin-top: 0.25em; }
-        .dfn-panel > span { display: list-item; list-style: inside; }
+        .dfn-panel ul { padding: 0; }
+        .dfn-panel li { list-style: inside; }
         .dfn-panel.activated {
             display: inline-block;
             position: fixed;
             left: .5em;
-            bottom: .5em;
+            bottom: 2em;
             margin: 0 auto;
             max-width: calc(100vw - 1.5em - .4em - .5em);
             max-height: 30vh;
@@ -1341,69 +1359,69 @@ Possible extra rowspan handling
 
         .dfn-paneled { cursor: pointer; }
         </style>
-<style>.highlight .hll { background-color: #ffffcc }
-.highlight  { background: #ffffff; }
-.highlight .c { color: #708090 } /* Comment */
-.highlight .k { color: #990055 } /* Keyword */
-.highlight .l { color: #000000 } /* Literal */
-.highlight .n { color: #0077aa } /* Name */
-.highlight .o { color: #999999 } /* Operator */
-.highlight .p { color: #999999 } /* Punctuation */
-.highlight .cm { color: #708090 } /* Comment.Multiline */
-.highlight .cp { color: #708090 } /* Comment.Preproc */
-.highlight .c1 { color: #708090 } /* Comment.Single */
-.highlight .cs { color: #708090 } /* Comment.Special */
-.highlight .kc { color: #990055 } /* Keyword.Constant */
-.highlight .kd { color: #990055 } /* Keyword.Declaration */
-.highlight .kn { color: #990055 } /* Keyword.Namespace */
-.highlight .kp { color: #990055 } /* Keyword.Pseudo */
-.highlight .kr { color: #990055 } /* Keyword.Reserved */
-.highlight .kt { color: #990055 } /* Keyword.Type */
-.highlight .ld { color: #000000 } /* Literal.Date */
-.highlight .m { color: #000000 } /* Literal.Number */
-.highlight .s { color: #a67f59 } /* Literal.String */
-.highlight .na { color: #0077aa } /* Name.Attribute */
-.highlight .nc { color: #0077aa } /* Name.Class */
-.highlight .no { color: #0077aa } /* Name.Constant */
-.highlight .nd { color: #0077aa } /* Name.Decorator */
-.highlight .ni { color: #0077aa } /* Name.Entity */
-.highlight .ne { color: #0077aa } /* Name.Exception */
-.highlight .nf { color: #0077aa } /* Name.Function */
-.highlight .nl { color: #0077aa } /* Name.Label */
-.highlight .nn { color: #0077aa } /* Name.Namespace */
-.highlight .py { color: #0077aa } /* Name.Property */
-.highlight .nt { color: #669900 } /* Name.Tag */
-.highlight .nv { color: #0077aa } /* Name.Variable */
-.highlight .ow { color: #999999 } /* Operator.Word */
-.highlight .mb { color: #000000 } /* Literal.Number.Bin */
-.highlight .mf { color: #000000 } /* Literal.Number.Float */
-.highlight .mh { color: #000000 } /* Literal.Number.Hex */
-.highlight .mi { color: #000000 } /* Literal.Number.Integer */
-.highlight .mo { color: #000000 } /* Literal.Number.Oct */
-.highlight .sb { color: #a67f59 } /* Literal.String.Backtick */
-.highlight .sc { color: #a67f59 } /* Literal.String.Char */
-.highlight .sd { color: #a67f59 } /* Literal.String.Doc */
-.highlight .s2 { color: #a67f59 } /* Literal.String.Double */
-.highlight .se { color: #a67f59 } /* Literal.String.Escape */
-.highlight .sh { color: #a67f59 } /* Literal.String.Heredoc */
-.highlight .si { color: #a67f59 } /* Literal.String.Interpol */
-.highlight .sx { color: #a67f59 } /* Literal.String.Other */
-.highlight .sr { color: #a67f59 } /* Literal.String.Regex */
-.highlight .s1 { color: #a67f59 } /* Literal.String.Single */
-.highlight .ss { color: #a67f59 } /* Literal.String.Symbol */
-.highlight .vc { color: #0077aa } /* Name.Variable.Class */
-.highlight .vg { color: #0077aa } /* Name.Variable.Global */
-.highlight .vi { color: #0077aa } /* Name.Variable.Instance */
-.highlight .il { color: #000000 } /* Literal.Number.Integer.Long */
-        .highlight { background: hsl(24, 20%, 95%); }
+<style>/* style-syntax-highlighting */
+
+        .highlight:not(.idl) { background: hsl(24, 20%, 95%); }
         code.highlight { padding: .1em; border-radius: .3em; }
         pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em 0; overflow: auto; border-radius: 0; }
+        .highlight .c { color: #708090 } /* Comment */
+        .highlight .k { color: #990055 } /* Keyword */
+        .highlight .l { color: #000000 } /* Literal */
+        .highlight .n { color: #0077aa } /* Name */
+        .highlight .o { color: #999999 } /* Operator */
+        .highlight .p { color: #999999 } /* Punctuation */
+        .highlight .cm { color: #708090 } /* Comment.Multiline */
+        .highlight .cp { color: #708090 } /* Comment.Preproc */
+        .highlight .c1 { color: #708090 } /* Comment.Single */
+        .highlight .cs { color: #708090 } /* Comment.Special */
+        .highlight .kc { color: #990055 } /* Keyword.Constant */
+        .highlight .kd { color: #990055 } /* Keyword.Declaration */
+        .highlight .kn { color: #990055 } /* Keyword.Namespace */
+        .highlight .kp { color: #990055 } /* Keyword.Pseudo */
+        .highlight .kr { color: #990055 } /* Keyword.Reserved */
+        .highlight .kt { color: #990055 } /* Keyword.Type */
+        .highlight .ld { color: #000000 } /* Literal.Date */
+        .highlight .m { color: #000000 } /* Literal.Number */
+        .highlight .s { color: #a67f59 } /* Literal.String */
+        .highlight .na { color: #0077aa } /* Name.Attribute */
+        .highlight .nc { color: #0077aa } /* Name.Class */
+        .highlight .no { color: #0077aa } /* Name.Constant */
+        .highlight .nd { color: #0077aa } /* Name.Decorator */
+        .highlight .ni { color: #0077aa } /* Name.Entity */
+        .highlight .ne { color: #0077aa } /* Name.Exception */
+        .highlight .nf { color: #0077aa } /* Name.Function */
+        .highlight .nl { color: #0077aa } /* Name.Label */
+        .highlight .nn { color: #0077aa } /* Name.Namespace */
+        .highlight .py { color: #0077aa } /* Name.Property */
+        .highlight .nt { color: #669900 } /* Name.Tag */
+        .highlight .nv { color: #222222 } /* Name.Variable */
+        .highlight .ow { color: #999999 } /* Operator.Word */
+        .highlight .mb { color: #000000 } /* Literal.Number.Bin */
+        .highlight .mf { color: #000000 } /* Literal.Number.Float */
+        .highlight .mh { color: #000000 } /* Literal.Number.Hex */
+        .highlight .mi { color: #000000 } /* Literal.Number.Integer */
+        .highlight .mo { color: #000000 } /* Literal.Number.Oct */
+        .highlight .sb { color: #a67f59 } /* Literal.String.Backtick */
+        .highlight .sc { color: #a67f59 } /* Literal.String.Char */
+        .highlight .sd { color: #a67f59 } /* Literal.String.Doc */
+        .highlight .s2 { color: #a67f59 } /* Literal.String.Double */
+        .highlight .se { color: #a67f59 } /* Literal.String.Escape */
+        .highlight .sh { color: #a67f59 } /* Literal.String.Heredoc */
+        .highlight .si { color: #a67f59 } /* Literal.String.Interpol */
+        .highlight .sx { color: #a67f59 } /* Literal.String.Other */
+        .highlight .sr { color: #a67f59 } /* Literal.String.Regex */
+        .highlight .s1 { color: #a67f59 } /* Literal.String.Single */
+        .highlight .ss { color: #a67f59 } /* Literal.String.Symbol */
+        .highlight .vc { color: #0077aa } /* Name.Variable.Class */
+        .highlight .vg { color: #0077aa } /* Name.Variable.Global */
+        .highlight .vi { color: #0077aa } /* Name.Variable.Instance */
+        .highlight .il { color: #000000 } /* Literal.Number.Integer.Long */
         </style>
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">Writing Promise-Using Specifications</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Finding of the W3C TAG, <time class="dt-updated" datetime="2016-04-13">13 April 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Finding of the W3C TAG, <time class="dt-updated" datetime="2016-11-06">6 November 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt class="editor">Editor:
@@ -1416,7 +1434,7 @@ Possible extra rowspan handling
    <div data-fill-with="warning"></div>
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" src="https://licensebuttons.net/p/zero/1.0/80x15.png"></a> To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 13 April 2016,
+In addition, as of 6 November 2016,
 the editors have made this specification available under the <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 Parts of this work may be from another specification document.  If so, those parts are instead covered by the license of that specification document. </p>
@@ -1564,9 +1582,10 @@ It also includes a series of prose shorthands you can use in your specification 
    <h3 class="heading settled" data-level="4.1" id="errors"><span class="secno">4.1. </span><span class="content">Errors</span><a class="self-link" href="#errors"></a></h3>
    <h4 class="heading settled" data-level="4.1.1" id="always-return-promises"><span class="secno">4.1.1. </span><span class="content">Promise-Returning Functions Should Always Return Promises</span><a class="self-link" href="#always-return-promises"></a></h4>
    <p>Promise-returning functions should always return a promise, under all circumstances. Even if the result is available synchronously, or the inputs can be detected as invalid synchronously, this information needs to be communicated through a uniform channel so that a developer can be sure that by doing</p>
-<pre><code class="lang-javascript highlight"><span class="nx">promiseFunction</span><span class="p">()</span>
-  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">onSuccess</span><span class="p">)</span>
-  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">onFailure</span><span class="p">);</span></code></pre>
+<pre><code class="lang-javascript highlight">promiseFunction<span class="p">(</span><span class="p">)</span>
+  <span class="p">.</span>then<span class="p">(</span>onSuccess<span class="p">)</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span>onFailure<span class="p">)</span><span class="p">;</span>
+</code></pre>
    <p>they are handling all successes and all errors.</p>
    <p>In particular, promise-returning functions should never synchronously throw errors, since that would force duplicate error-handling logic on the consumer: once in a <code>catch (e) { ... }</code> block, and once in a <code>.catch(e => { ... })</code> block. Even argument validation errors are not OK. Instead, all errors should be signaled by returning rejected promises.</p>
    <p>For WebIDL-based specs, this is taken care of automatically <a href="https://heycam.github.io/webidl/#es-operations">by the WebIDL specification</a>: any exceptions thrown by WebIDL operations, or by the WebIDL overload resolution algorithm itself, are automatically converted into rejections. For an example of how to do manual validation, see the <code>validatedDelay</code> example below.</p>
@@ -1642,18 +1661,19 @@ It also includes a series of prose shorthands you can use in your specification 
    <h4 class="heading settled" data-level="4.3.1" id="resolve-arguments"><span class="secno">4.3.1. </span><span class="content">Promise Arguments Should Be Resolved</span><a class="self-link" href="#resolve-arguments"></a></h4>
    <p>In general, when an argument is expected to be a promise, you should also allow thenables and non-promise values by <em>resolving</em> the argument to a promise before using it. You should <em>never</em> do a type-detection on the incoming value, or overload between promises and other values, or put promises in a union type.</p>
    <p>In WebIDL-using specs, this is automatically taken care of by the <a href="https://heycam.github.io/webidl/#es-promise">WebIDL promise type</a>. To see what it means in JavaScript, consider the following function, which adds a delay of <var>ms</var> milliseconds to a promise:</p>
-   <div class="example" id="example-cba324a0">
-    <a class="self-link" href="#example-cba324a0"></a> 
-<pre><code class="lang-javascript highlight"><span class="kd">function</span> <span class="nx">addDelay</span><span class="p">(</span><span class="nx">promise</span><span class="p">,</span> <span class="nx">ms</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">promise</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">v</span> <span class="o">=></span>
-        <span class="k">new</span> <span class="nx">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="o">=></span>
-            <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=></span> <span class="nx">resolve</span><span class="p">(</span><span class="nx">v</span><span class="p">),</span> <span class="nx">ms</span><span class="p">);</span>
-        <span class="p">);</span>
-    <span class="p">);</span>
+   <div class="example" id="example-6eeff9c3">
+    <a class="self-link" href="#example-6eeff9c3"></a> 
+<pre><code class="lang-javascript highlight"><span class="kd">function</span> addDelay<span class="p">(</span>promise<span class="p">,</span> ms<span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> Promise<span class="p">.</span>resolve<span class="p">(</span>promise<span class="p">)</span><span class="p">.</span>then<span class="p">(</span>v <span class="o">=></span>
+        <span class="k">new</span> Promise<span class="p">(</span>resolve <span class="o">=></span>
+            setTimeout<span class="p">(</span><span class="p">(</span><span class="p">)</span> <span class="o">=></span> resolve<span class="p">(</span>v<span class="p">)</span><span class="p">,</span> ms<span class="p">)</span><span class="p">;</span>
+        <span class="p">)</span>
+    <span class="p">)</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="kd">var</span> <span class="nx">p1</span> <span class="o">=</span> <span class="nx">addDelay</span><span class="p">(</span><span class="nx">doAsyncOperation</span><span class="p">(),</span> <span class="mi">500</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">p2</span> <span class="o">=</span> <span class="nx">addDelay</span><span class="p">(</span><span class="s2">"value"</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span></code></pre>
+<span class="kd">var</span> p1 <span class="o">=</span> addDelay<span class="p">(</span>doAsyncOperation<span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span><span class="p">;</span>
+<span class="kd">var</span> p2 <span class="o">=</span> addDelay<span class="p">(</span><span class="s2">"value"</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span><span class="p">;</span>
+</code></pre>
    </div>
    <p>In this example, <code>p1</code> will be fulfilled 500 ms after the promise returned by <code>doAsyncOperation()</code> fulfills, with that operation’s value. (Or <code>p1</code> will reject as soon as that promise rejects.) And, since we resolve the incoming argument to a promise, the function can also work when you pass it the string <code>"value"</code>: <code>p2</code> will be fulfilled with <code>"value"</code> after 1000 ms. In this way, we essentially treat it as an immediately-fulfilled promise for that value.</p>
    <h4 class="heading settled" data-level="4.3.2" id="should-promise-call"><span class="secno">4.3.2. </span><span class="content">Developer-Supplied Promise-Returning Functions Should Be "Promise-Called"</span><a class="self-link" href="#should-promise-call"></a></h4>
@@ -1664,19 +1684,19 @@ It also includes a series of prose shorthands you can use in your specification 
    <div class="note" role="note">This section should eventually move to WebIDL, where it belongs. See <a href="https://github.com/w3ctag/promises-guide/issues/27">#27</a>.</div>
    <p>When writing such specifications, it’s convenient to be able to refer to common promise operations concisely. We define here a set of shorthands that allow you to do so.</p>
    <h3 class="heading settled" data-level="5.1" id="shorthand-creating"><span class="secno">5.1. </span><span class="content">Creating Promises</span><a class="self-link" href="#shorthand-creating"></a></h3>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="A new promise" id="a-new-promise">A new promise<span class="dfn-panel" data-deco=""><b><a href="#a-new-promise">#a-new-promise</a></b><b>Referenced in:</b><span><a href="#ref-for-a-new-promise-1">4.2.2. Note Parallel Steps Explicitly</a></span><span><a href="#ref-for-a-new-promise-2">4.2.3. Queue Tasks to Invoke Developer Code</a></span><span><a href="#ref-for-a-new-promise-3">6.1. delay(ms)</a></span><span><a href="#ref-for-a-new-promise-4">6.2. validatedDelay(ms)</a></span><span><a href="#ref-for-a-new-promise-5">6.3. addDelay(promise, ms)</a></span><span><a href="#ref-for-a-new-promise-6">6.5. environment.ready</a></span><span><a href="#ref-for-a-new-promise-7">6.6. addBookmark()</a></span></span></dfn>" gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under <a href="#shorthand-manipulating">§5.2 Manipulating Promises</a>.</p>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="A promise resolved with" id="a-promise-resolved-with">A promise resolved with<span class="dfn-panel" data-deco=""><b><a href="#a-promise-resolved-with">#a-promise-resolved-with</a></b><b>Referenced in:</b><span><a href="#ref-for-a-promise-resolved-with-1">5.6. A Note on Realms</a></span></span></dfn> <var>x</var>" or "<var>x</var> <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="resolved as a promise" id="resolved-as-a-promise">resolved as a promise<span class="dfn-panel" data-deco=""><b><a href="#resolved-as-a-promise">#resolved-as-a-promise</a></b><b>Referenced in:</b><span><a href="#ref-for-resolved-as-a-promise-1">5.5. Promise-Calling</a></span></span></dfn>" is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve"><code>Promise.resolve</code></a>.</p>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="A promise rejected with" id="a-promise-rejected-with">A promise rejected with<span class="dfn-panel" data-deco=""><b><a href="#a-promise-rejected-with">#a-promise-rejected-with</a></b><b>Referenced in:</b><span><a href="#ref-for-a-promise-rejected-with-1">5.5. Promise-Calling</a></span><span><a href="#ref-for-a-promise-rejected-with-2">6.2. validatedDelay(ms)</a> <a href="#ref-for-a-promise-rejected-with-3">(2)</a></span><span><a href="#ref-for-a-promise-rejected-with-4">6.6. addBookmark()</a> <a href="#ref-for-a-promise-rejected-with-5">(2)</a></span><span><a href="#ref-for-a-promise-rejected-with-6">6.7. batchRequest(urls)</a></span><span><a href="#ref-for-a-promise-rejected-with-7">7.2. Promise&lt;T> Parameters</a></span></span></dfn> <var>r</var>" is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject"><code>Promise.reject</code></a>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" id="a-new-promise">A new promise</dfn>" gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under <a href="#shorthand-manipulating">§5.2 Manipulating Promises</a>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" id="a-promise-resolved-with">A promise resolved with</dfn> <var>x</var>" or "<var>x</var> <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" id="resolved-as-a-promise">resolved as a promise</dfn>" is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve"><code>Promise.resolve</code></a>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" id="a-promise-rejected-with">A promise rejected with</dfn> <var>r</var>" is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject"><code>Promise.reject</code></a>.</p>
    <h3 class="heading settled" data-level="5.2" id="shorthand-manipulating"><span class="secno">5.2. </span><span class="content">Manipulating Promises</span><a class="self-link" href="#shorthand-manipulating"></a></h3>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Resolve" id="resolve-promise">Resolve<span class="dfn-panel" data-deco=""><b><a href="#resolve-promise">#resolve-promise</a></b><b>Referenced in:</b><span><a href="#ref-for-resolve-promise-1">4.2.2. Note Parallel Steps Explicitly</a></span><span><a href="#ref-for-resolve-promise-2">4.2.3. Queue Tasks to Invoke Developer Code</a> <a href="#ref-for-resolve-promise-3">(2)</a></span><span><a href="#ref-for-resolve-promise-4">6.1. delay(ms)</a></span><span><a href="#ref-for-resolve-promise-5">6.2. validatedDelay(ms)</a></span><span><a href="#ref-for-resolve-promise-6">6.3. addDelay(promise, ms)</a></span><span><a href="#ref-for-resolve-promise-7">6.5. environment.ready</a></span><span><a href="#ref-for-resolve-promise-8">6.6. addBookmark()</a></span></span></dfn> <var>p</var> with <var>x</var>" is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.</p>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Reject" id="reject-promise">Reject<span class="dfn-panel" data-deco=""><b><a href="#reject-promise">#reject-promise</a></b><b>Referenced in:</b><span><a href="#ref-for-reject-promise-1">6.3. addDelay(promise, ms)</a></span><span><a href="#ref-for-reject-promise-2">6.5. environment.ready</a></span><span><a href="#ref-for-reject-promise-3">6.6. addBookmark()</a></span></span></dfn> <var>p</var> with <var>r</var>" is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" id="resolve-promise">Resolve</dfn> <var>p</var> with <var>x</var>" is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" id="reject-promise">Reject</dfn> <var>p</var> with <var>r</var>" is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.</p>
    <p>If the algorithm using these shorthands is running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">in parallel</a>, the shorthands <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> on <var>p</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object">relevant settings object</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#responsible-event-loop">responsible event loop</a> to call the stored function.</p>
    <h3 class="heading settled" data-level="5.3" id="shorthand-reacting"><span class="secno">5.3. </span><span class="content">Reacting to Promises</span><a class="self-link" href="#shorthand-reacting"></a></h3>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Upon fulfillment" id="upon-fulfillment">Upon fulfillment<span class="dfn-panel" data-deco=""><b><a href="#upon-fulfillment">#upon-fulfillment</a></b><b>Referenced in:</b><span><a href="#ref-for-upon-fulfillment-1">6.3. addDelay(promise, ms)</a></span><span><a href="#ref-for-upon-fulfillment-2">7.2. Promise&lt;T> Parameters</a></span></span></dfn> of <var>p</var> with value <var>v</var>" is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>’s argument as <var>v</var>.</p>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Upon rejection" id="upon-rejection">Upon rejection<span class="dfn-panel" data-deco=""><b><a href="#upon-rejection">#upon-rejection</a></b><b>Referenced in:</b><span><a href="#ref-for-upon-rejection-1">6.3. addDelay(promise, ms)</a></span><span><a href="#ref-for-upon-rejection-2">7.2. Promise&lt;T> Parameters</a></span></span></dfn> of <var>p</var> with reason <var>r</var>" is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>’s argument as <var>r</var>.</p>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="Transforming" id="transforming-by">Transforming<span class="dfn-panel" data-deco=""><b><a href="#transforming-by">#transforming-by</a></b><b>Referenced in:</b><span><a href="#ref-for-transforming-by-1">5.3. Reacting to Promises</a> <a href="#ref-for-transforming-by-2">(2)</a></span><span><a href="#ref-for-transforming-by-3">6.4. resource.open(resourcePath, openingOperation)</a></span></span></dfn> <var>p</var> with a fulfillment and/or rejection handler" is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.</p>
-   <div class="example" id="example-cf3e3540">
-    <a class="self-link" href="#example-cf3e3540"></a> Some examples of the latter phrase would be 
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" id="upon-fulfillment">Upon fulfillment</dfn> of <var>p</var> with value <var>v</var>" is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>’s argument as <var>v</var>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" id="upon-rejection">Upon rejection</dfn> of <var>p</var> with reason <var>r</var>" is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>’s argument as <var>r</var>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" id="transforming-by">Transforming</dfn> <var>p</var> with a fulfillment and/or rejection handler" is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.</p>
+   <div class="example" id="example-ba0b0671">
+    <a class="self-link" href="#example-ba0b0671"></a> Some examples of the latter phrase would be 
     <ol>
      <li data-md="">
       <p>Return the result of <a data-link-type="dfn" href="#transforming-by" id="ref-for-transforming-by-1">transforming</a> <var>p</var> with a fulfillment handler that returns <b>undefined</b>.</p>
@@ -1687,17 +1707,19 @@ It also includes a series of prose shorthands you can use in your specification 
       <p>Return the result of <a data-link-type="dfn" href="#transforming-by" id="ref-for-transforming-by-2">transforming</a> <var>p</var> with a fulfillment handler that returns twice its first argument.</p>
     </ol>
     <p>These correspond to</p>
-<pre><code class="lang-javascript highlight"><span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=></span> <span class="kc">undefined</span><span class="p">);</span></code></pre>
+<pre><code class="lang-javascript highlight"><span class="k">return</span> p<span class="p">.</span>then<span class="p">(</span><span class="p">(</span><span class="p">)</span> <span class="o">=></span> <span class="kc">undefined</span><span class="p">)</span><span class="p">;</span>
+</code></pre>
     <p>and</p>
-<pre><code class="lang-javascript highlight"><span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">x</span> <span class="o">=></span> <span class="mi">2</span> <span class="o">*</span> <span class="nx">x</span><span class="p">);</span></code></pre>
+<pre><code class="lang-javascript highlight"><span class="k">return</span> p<span class="p">.</span>then<span class="p">(</span>x <span class="o">=></span> <span class="mi">2</span> <span class="o">*</span> x<span class="p">)</span><span class="p">;</span>
+</code></pre>
     <p>respectively. (More complicated transforms are of course possible as well, as shown in the <a href="#example-resource-open"><code>resource.open</code> example</a> below.)</p>
    </div>
    <h3 class="heading settled" data-level="5.4" id="aggregating-promises"><span class="secno">5.4. </span><span class="content">Aggregating Promises</span><a class="self-link" href="#aggregating-promises"></a></h3>
-   <p>The result of <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="waiting for all" id="waiting-for-all">waiting for all<span class="dfn-panel" data-deco=""><b><a href="#waiting-for-all">#waiting-for-all</a></b><b>Referenced in:</b><span><a href="#ref-for-waiting-for-all-1">6.7. batchRequest(urls)</a> <a href="#ref-for-waiting-for-all-2">(2)</a></span></span></dfn> of a collection of promises is a promise created by calling <code>Promise.all(promiseArray)</code>, where <code>promiseArray</code> is that collection in array form and we use the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.all"><code>Promise.all</code></a>.</p>
+   <p>The result of <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" id="waiting-for-all">waiting for all</dfn> of a collection of promises is a promise created by calling <code>Promise.all(promiseArray)</code>, where <code>promiseArray</code> is that collection in array form and we use the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.all"><code>Promise.all</code></a>.</p>
    <p>This phrase is useful when you wish to perform multiple asynchronous operations in parallel that return promises, and then react to them all together. If all of the given promises fulfill, then the resulting promise will be fulfilled with an array corresponding to the fulfillment values. If any of them reject, then the resulting promise will be rejected with the first rejection reason to occur.</p>
    <p>An example usage of this phrase is found in <a href="#example-batch-request">§6.7 batchRequest(urls)</a>.</p>
    <h3 class="heading settled" data-level="5.5" id="shorthand-promise-calling"><span class="secno">5.5. </span><span class="content">Promise-Calling</span><a class="self-link" href="#shorthand-promise-calling"></a></h3>
-   <p>The result of <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" data-lt="promise-calling" id="promise-calling">promise-calling<span class="dfn-panel" data-deco=""><b><a href="#promise-calling">#promise-calling</a></b><b>Referenced in:</b><span><a href="#ref-for-promise-calling-1">4.3.2. Developer-Supplied Promise-Returning Functions Should Be "Promise-Called"</a></span><span><a href="#ref-for-promise-calling-2">6.4. resource.open(resourcePath, openingOperation)</a> <a href="#ref-for-promise-calling-3">(2)</a></span></span></dfn> <var>f</var>(...<var>args</var>) is:</p>
+   <p>The result of <dfn class="dfn-paneled" data-dfn-type="dfn" data-export="" id="promise-calling">promise-calling</dfn> <var>f</var>(...<var>args</var>) is:</p>
    <ul>
     <li data-md="">
      <p>If the call returns a value <var>v</var>, the result of <a href="#resolved-as-a-promise" id="ref-for-resolved-as-a-promise-1">resolving</a> <var>v</var> as a promise.</p>
@@ -1706,35 +1728,37 @@ It also includes a series of prose shorthands you can use in your specification 
    </ul>
    <div class="note" id="promise-call-in-js" role="note">
     <a class="self-link" href="#promise-call-in-js"></a> In JavaScript, you might express promise-calling this way: 
-<pre><code class="lang-javascript highlight"><span class="kd">function</span> <span class="nx">promiseCall</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span> <span class="p">...</span><span class="nx">args</span><span class="p">)</span> <span class="p">{</span>
+<pre><code class="lang-javascript highlight"><span class="kd">function</span> promiseCall<span class="p">(</span>f<span class="p">,</span> <span class="p">...</span>args<span class="p">)</span> <span class="p">{</span>
     <span class="k">try</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">f</span><span class="p">(...</span><span class="nx">args</span><span class="p">));</span>
-    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+        <span class="k">return</span> Promise<span class="p">.</span>resolve<span class="p">(</span>f<span class="p">(</span><span class="p">...</span>args<span class="p">)</span><span class="p">)</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span>e<span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> Promise<span class="p">.</span>reject<span class="p">(</span>e<span class="p">)</span><span class="p">;</span>
     <span class="p">}</span>
-<span class="p">}</span></code></pre>
+<span class="p">}</span>
+</code></pre>
    </div>
    <h3 class="heading settled" data-level="5.6" id="shorthand-note-onrealms"><span class="secno">5.6. </span><span class="content">A Note on Realms</span><a class="self-link" href="#shorthand-note-onrealms"></a></h3>
    <p>In all cases, when we use phrases like "the initial value of <code>Promise.resolve</code>," we mean the initial value within the <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-code-realms">realm</a> associated to the function being specified. So for example, if <code>window.f()</code> is specified to return "<a data-link-type="dfn" href="#a-promise-resolved-with" id="ref-for-a-promise-resolved-with-1">a promise resolved with</a> <b>1</b>," then:</p>
-<pre><code class="lang-javascript highlight"><span class="nx">assert</span><span class="p">(</span><span class="nx">windowA</span><span class="p">.</span><span class="nx">f</span><span class="p">().</span><span class="nx">constructor</span> <span class="o">===</span> <span class="nx">windowA</span><span class="p">.</span><span class="nx">Promise</span><span class="p">);</span>
-<span class="nx">assert</span><span class="p">(</span><span class="nx">windowB</span><span class="p">.</span><span class="nx">f</span><span class="p">().</span><span class="nx">constructor</span> <span class="o">===</span> <span class="nx">windowB</span><span class="p">.</span><span class="nx">Promise</span><span class="p">);</span>
+<pre><code class="lang-javascript highlight">assert<span class="p">(</span>windowA<span class="p">.</span>f<span class="p">(</span><span class="p">)</span><span class="p">.</span>constructor <span class="o">===</span> windowA<span class="p">.</span>Promise<span class="p">)</span><span class="p">;</span>
+assert<span class="p">(</span>windowB<span class="p">.</span>f<span class="p">(</span><span class="p">)</span><span class="p">.</span>constructor <span class="o">===</span> windowB<span class="p">.</span>Promise<span class="p">)</span><span class="p">;</span>
 
-<span class="c1">// The realm of the object the function is being invoked on has no effect;</span>
-<span class="c1">// the function’s realm is all that matters.</span>
-<span class="nx">assert</span><span class="p">(</span><span class="nx">windowA</span><span class="p">.</span><span class="nx">f</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">windowB</span><span class="p">).</span><span class="nx">constructor</span> <span class="o">===</span> <span class="nx">windowA</span><span class="p">.</span><span class="nx">Promise</span><span class="p">);</span>
+<span class="c1">// The realm of the object the function is being invoked on has no effect;
+</span><span class="c1">// the function’s realm is all that matters.
+</span>assert<span class="p">(</span>windowA<span class="p">.</span>f<span class="p">.</span>call<span class="p">(</span>windowB<span class="p">)</span><span class="p">.</span>constructor <span class="o">===</span> windowA<span class="p">.</span>Promise<span class="p">)</span><span class="p">;</span>
 
-<span class="c1">// This means mutations to the Promise constructor also propagate.</span>
-<span class="nx">windowA</span><span class="p">.</span><span class="nx">Promise</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">foo</span> <span class="o">=</span> <span class="s2">"bar"</span><span class="p">;</span>
-<span class="nx">assert</span><span class="p">(</span><span class="nx">windowA</span><span class="p">.</span><span class="nx">f</span><span class="p">().</span><span class="nx">foo</span> <span class="o">===</span> <span class="s2">"bar"</span><span class="p">);</span>
-<span class="nx">assert</span><span class="p">(</span><span class="nx">windowB</span><span class="p">.</span><span class="nx">f</span><span class="p">().</span><span class="nx">foo</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">);</span>
+<span class="c1">// This means mutations to the Promise constructor also propagate.
+</span>windowA<span class="p">.</span>Promise<span class="p">.</span>prototype<span class="p">.</span>foo <span class="o">=</span> <span class="s2">"bar"</span><span class="p">;</span>
+assert<span class="p">(</span>windowA<span class="p">.</span>f<span class="p">(</span><span class="p">)</span><span class="p">.</span>foo <span class="o">===</span> <span class="s2">"bar"</span><span class="p">)</span><span class="p">;</span>
+assert<span class="p">(</span>windowB<span class="p">.</span>f<span class="p">(</span><span class="p">)</span><span class="p">.</span>foo <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span><span class="p">;</span>
 
-<span class="c1">// But since the algorithm for Promise.resolve uses the un-modifiable %Promise%</span>
-<span class="c1">// intrinsic, instead of consulting the global, modifying the global property named</span>
-<span class="c1">// "Promise" does not impact the return value.</span>
-<span class="kr">const</span> <span class="nx">oldPromise</span> <span class="o">=</span> <span class="nx">windowA</span><span class="p">.</span><span class="nx">Promise</span><span class="p">;</span>
-<span class="nx">windowA</span><span class="p">.</span><span class="nx">Promise</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=></span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">"I break developer code, but not platform code!"</span><span class="p">);</span>
-<span class="nx">assert</span><span class="p">(</span><span class="nx">windowA</span><span class="p">.</span><span class="nx">f</span><span class="p">().</span><span class="nx">constructor</span> <span class="o">!==</span> <span class="nx">windowA</span><span class="p">.</span><span class="nx">Promise</span><span class="p">);</span>
-<span class="nx">assert</span><span class="p">(</span><span class="nx">windowA</span><span class="p">.</span><span class="nx">f</span><span class="p">().</span><span class="nx">constructor</span> <span class="o">===</span> <span class="nx">oldPromise</span><span class="p">);</span></code></pre>
+<span class="c1">// But since the algorithm for Promise.resolve uses the un-modifiable %Promise%
+</span><span class="c1">// intrinsic, instead of consulting the global, modifying the global property named
+</span><span class="c1">// "Promise" does not impact the return value.
+</span><span class="kr">const</span> oldPromise <span class="o">=</span> windowA<span class="p">.</span>Promise<span class="p">;</span>
+windowA<span class="p">.</span>Promise <span class="o">=</span> <span class="p">(</span><span class="p">)</span> <span class="o">=></span> <span class="k">throw</span> <span class="k">new</span> Error<span class="p">(</span><span class="s2">"I break developer code, but not platform code!"</span><span class="p">)</span><span class="p">;</span>
+assert<span class="p">(</span>windowA<span class="p">.</span>f<span class="p">(</span><span class="p">)</span><span class="p">.</span>constructor <span class="o">!==</span> windowA<span class="p">.</span>Promise<span class="p">)</span><span class="p">;</span>
+assert<span class="p">(</span>windowA<span class="p">.</span>f<span class="p">(</span><span class="p">)</span><span class="p">.</span>constructor <span class="o">===</span> oldPromise<span class="p">)</span><span class="p">;</span>
+</code></pre>
    <p>For more information, see <a href="http://lists.w3.org/Archives/Public/www-tag/2014Jan/0108.html">this www-tag thread</a>, especially the replies.</p>
    <h2 class="heading settled" data-level="6" id="examples"><span class="secno">6. </span><span class="content">Examples</span><a class="self-link" href="#examples"></a></h2>
    <div class="note" role="note">This section is mostly for spec writers, although it does give examples of the spec prose translated into JavaScript.</div>
@@ -1759,27 +1783,29 @@ It also includes a series of prose shorthands you can use in your specification 
      <p>Return <var>p</var>.</p>
    </ol>
    <p>The equivalent function in JavaScript would be</p>
-<pre><code class="lang-javascript highlight"><span class="kd">function</span> <span class="nx">delay</span><span class="p">(</span><span class="nx">ms</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">ms</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">ms</span><span class="p">);</span>
-    <span class="nx">ms</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">.</span><span class="nb">isNaN</span><span class="p">(</span><span class="nx">ms</span><span class="p">)</span> <span class="o">?</span> <span class="o">+</span><span class="mi">0</span> <span class="o">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nx">ms</span><span class="p">,</span> <span class="o">+</span><span class="mi">0</span><span class="p">);</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="o">=></span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">ms</span><span class="p">));</span>
-<span class="p">}</span></code></pre>
+<pre><code class="lang-javascript highlight"><span class="kd">function</span> delay<span class="p">(</span>ms<span class="p">)</span> <span class="p">{</span>
+    ms <span class="o">=</span> Number<span class="p">(</span>ms<span class="p">)</span><span class="p">;</span>
+    ms <span class="o">=</span> Number<span class="p">.</span>isNaN<span class="p">(</span>ms<span class="p">)</span> <span class="o">?</span> <span class="o">+</span><span class="mi">0</span> <span class="o">:</span> Math<span class="p">.</span>max<span class="p">(</span>ms<span class="p">,</span> <span class="o">+</span><span class="mi">0</span><span class="p">)</span><span class="p">;</span>
+    <span class="k">return</span> <span class="k">new</span> Promise<span class="p">(</span>resolve <span class="o">=></span> setTimeout<span class="p">(</span>resolve<span class="p">,</span> ms<span class="p">)</span><span class="p">)</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
    <p>or, in a more one-to-one correspondence with the specified steps,</p>
-<pre><code class="lang-javascript highlight"><span class="kd">function</span> <span class="nx">delay</span><span class="p">(</span><span class="nx">ms</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Steps 1, 2</span>
-    <span class="nx">ms</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">ms</span><span class="p">);</span>
-    <span class="nx">ms</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">.</span><span class="nb">isNaN</span><span class="p">(</span><span class="nx">ms</span><span class="p">)</span> <span class="o">?</span> <span class="o">+</span><span class="mi">0</span> <span class="o">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nx">ms</span><span class="p">,</span> <span class="o">+</span><span class="mi">0</span><span class="p">);</span>
+<pre><code class="lang-javascript highlight"><span class="kd">function</span> delay<span class="p">(</span>ms<span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Steps 1, 2
+</span>    ms <span class="o">=</span> Number<span class="p">(</span>ms<span class="p">)</span><span class="p">;</span>
+    ms <span class="o">=</span> Number<span class="p">.</span>isNaN<span class="p">(</span>ms<span class="p">)</span> <span class="o">?</span> <span class="o">+</span><span class="mi">0</span> <span class="o">:</span> Math<span class="p">.</span>max<span class="p">(</span>ms<span class="p">,</span> <span class="o">+</span><span class="mi">0</span><span class="p">)</span><span class="p">;</span>
 
-    <span class="c1">// Step 3</span>
-    <span class="kd">let</span> <span class="nx">resolve</span><span class="p">;</span>
-    <span class="kr">const</span> <span class="nx">p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">(</span><span class="nx">r</span> <span class="o">=></span> <span class="p">{</span> <span class="nx">resolve</span> <span class="o">=</span> <span class="nx">r</span> <span class="p">});</span>
+    <span class="c1">// Step 3
+</span>    <span class="kd">let</span> resolve<span class="p">;</span>
+    <span class="kr">const</span> p <span class="o">=</span> <span class="k">new</span> Promise<span class="p">(</span>r <span class="o">=></span> <span class="p">{</span> resolve <span class="o">=</span> r<span class="p">;</span> <span class="p">}</span><span class="p">)</span><span class="p">;</span>
 
-    <span class="c1">// Step 4</span>
-    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=></span> <span class="nx">resolve</span><span class="p">(</span><span class="kc">undefined</span><span class="p">),</span> <span class="nx">ms</span><span class="p">);</span>
+    <span class="c1">// Step 4
+</span>    setTimeout<span class="p">(</span><span class="p">(</span><span class="p">)</span> <span class="o">=></span> resolve<span class="p">(</span><span class="kc">undefined</span><span class="p">)</span><span class="p">,</span> ms<span class="p">)</span><span class="p">;</span>
 
-    <span class="c1">// Step 5</span>
-    <span class="k">return</span> <span class="nx">p</span><span class="p">;</span>
-<span class="p">}</span></code></pre>
+    <span class="c1">// Step 5
+</span>    <span class="k">return</span> p<span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
    <h3 class="heading settled" data-level="6.2" id="example-validated-delay"><span class="secno">6.2. </span><span class="content">validatedDelay(<var>ms</var>)</span><a class="self-link" href="#example-validated-delay"></a></h3>
    <p>The <code>validatedDelay</code> function is much like <a href="#example-delay">the <code>delay</code> function</a>, except it will validate its arguments. This shows how to use rejected promises to signal immediate failure before even starting any asynchronous operations.</p>
    <ol>
@@ -1803,18 +1829,19 @@ It also includes a series of prose shorthands you can use in your specification 
      <p>Return <var>p</var>.</p>
    </ol>
    <p>The equivalent function in JavaScript would be</p>
-<pre><code class="lang-javascript highlight"><span class="kd">function</span> <span class="nx">delay</span><span class="p">(</span><span class="nx">ms</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">ms</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">ms</span><span class="p">);</span>
+<pre><code class="lang-javascript highlight"><span class="kd">function</span> delay<span class="p">(</span>ms<span class="p">)</span> <span class="p">{</span>
+    ms <span class="o">=</span> Number<span class="p">(</span>ms<span class="p">)</span><span class="p">;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="nb">Number</span><span class="p">.</span><span class="nb">isNaN</span><span class="p">(</span><span class="nx">ms</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s2">"Not a number."</span><span class="p">));</span>
+    <span class="k">if</span> <span class="p">(</span>Number<span class="p">.</span>isNaN<span class="p">(</span>ms<span class="p">)</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> Promise<span class="p">.</span>reject<span class="p">(</span><span class="k">new</span> TypeError<span class="p">(</span><span class="s2">"Not a number."</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
     <span class="p">}</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">ms</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nx">RangeError</span><span class="p">(</span><span class="s2">"ms must be at least zero."</span><span class="p">));</span>
+    <span class="k">if</span> <span class="p">(</span>ms <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> Promise<span class="p">.</span>reject<span class="p">(</span><span class="k">new</span> RangeError<span class="p">(</span><span class="s2">"ms must be at least zero."</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="k">return</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="o">=></span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">ms</span><span class="p">));</span>
-<span class="p">}</span></code></pre>
+    <span class="k">return</span> <span class="k">new</span> Promise<span class="p">(</span>resolve <span class="o">=></span> setTimeout<span class="p">(</span>resolve<span class="p">,</span> ms<span class="p">)</span><span class="p">)</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
    <h3 class="heading settled" data-level="6.3" id="example-add-delay"><span class="secno">6.3. </span><span class="content">addDelay(<var>promise</var>, <var>ms</var>)</span><a class="self-link" href="#example-add-delay"></a></h3>
    <p><code>addDelay</code> is a function that adds an extra <var>ms</var> milliseconds of delay between <var>promise</var> settling and the returned promise settling. Notice how it resolves the incoming argument to a promise, so that you could pass it a non-promise value or a thenable.</p>
    <ol>
@@ -1846,21 +1873,22 @@ It also includes a series of prose shorthands you can use in your specification 
      <p>Return <var>p</var>.</p>
    </ol>
    <p>The equivalent function in JavaScript would be</p>
-<pre><code class="lang-javascript highlight"><span class="kd">function</span> <span class="nx">addDelay</span><span class="p">(</span><span class="nx">promise</span><span class="p">,</span> <span class="nx">ms</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">ms</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">ms</span><span class="p">);</span>
-    <span class="nx">ms</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">.</span><span class="nb">isNaN</span><span class="p">(</span><span class="nx">ms</span><span class="p">)</span> <span class="o">?</span> <span class="o">+</span><span class="mi">0</span> <span class="o">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nx">ms</span><span class="p">,</span> <span class="o">+</span><span class="mi">0</span><span class="p">);</span>
+<pre><code class="lang-javascript highlight"><span class="kd">function</span> addDelay<span class="p">(</span>promise<span class="p">,</span> ms<span class="p">)</span> <span class="p">{</span>
+    ms <span class="o">=</span> Number<span class="p">(</span>ms<span class="p">)</span><span class="p">;</span>
+    ms <span class="o">=</span> Number<span class="p">.</span>isNaN<span class="p">(</span>ms<span class="p">)</span> <span class="o">?</span> <span class="o">+</span><span class="mi">0</span> <span class="o">:</span> Math<span class="p">.</span>max<span class="p">(</span>ms<span class="p">,</span> <span class="o">+</span><span class="mi">0</span><span class="p">)</span><span class="p">;</span>
 
-    <span class="kd">let</span> <span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">;</span>
-    <span class="kr">const</span> <span class="nx">p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">((</span><span class="nx">r</span><span class="p">,</span> <span class="nx">rr</span><span class="p">)</span> <span class="o">=></span> <span class="p">{</span> <span class="nx">resolve</span> <span class="o">=</span> <span class="nx">r</span><span class="p">;</span> <span class="nx">reject</span> <span class="o">=</span> <span class="nx">rr</span><span class="p">;</span> <span class="p">});</span>
+    <span class="kd">let</span> resolve<span class="p">,</span> reject<span class="p">;</span>
+    <span class="kr">const</span> p <span class="o">=</span> <span class="k">new</span> Promise<span class="p">(</span><span class="p">(</span>r<span class="p">,</span> rr<span class="p">)</span> <span class="o">=></span> <span class="p">{</span> resolve <span class="o">=</span> r<span class="p">;</span> reject <span class="o">=</span> rr<span class="p">;</span> <span class="p">}</span><span class="p">)</span><span class="p">;</span>
 
-    <span class="kr">const</span> <span class="nx">resolvedToPromise</span> <span class="o">=</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">promise</span><span class="p">);</span>
-    <span class="nx">resolvedToPromise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span>
-        <span class="nx">v</span> <span class="o">=></span> <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=></span> <span class="nx">resolve</span><span class="p">(</span><span class="nx">v</span><span class="p">),</span> <span class="nx">ms</span><span class="p">),</span>
-        <span class="nx">r</span> <span class="o">=></span> <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=></span> <span class="nx">reject</span><span class="p">(</span><span class="nx">r</span><span class="p">),</span> <span class="nx">ms</span><span class="p">)</span>
-    <span class="p">);</span>
+    <span class="kr">const</span> resolvedToPromise <span class="o">=</span> Promise<span class="p">.</span>resolve<span class="p">(</span>promise<span class="p">)</span><span class="p">;</span>
+    resolvedToPromise<span class="p">.</span>then<span class="p">(</span>
+        v <span class="o">=></span> setTimeout<span class="p">(</span><span class="p">(</span><span class="p">)</span> <span class="o">=></span> resolve<span class="p">(</span>v<span class="p">)</span><span class="p">,</span> ms<span class="p">)</span><span class="p">,</span>
+        r <span class="o">=></span> setTimeout<span class="p">(</span><span class="p">(</span><span class="p">)</span> <span class="o">=></span> reject<span class="p">(</span>r<span class="p">)</span><span class="p">,</span> ms<span class="p">)</span>
+    <span class="p">)</span><span class="p">;</span>
 
-    <span class="k">return</span> <span class="nx">p</span><span class="p">;</span>
-<span class="p">}</span></code></pre>
+    <span class="k">return</span> p<span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
    <h3 class="heading settled" data-level="6.4" id="example-resource-open"><span class="secno">6.4. </span><span class="content">resource.open(<var>resourcePath</var>, <var>openingOperation</var>)</span><a class="self-link" href="#example-resource-open"></a></h3>
    <p><code>resource.open</code> is a method that executes the passed function <var>openingOperation</var> to do most of its work, but then updates the <code>resource</code>’s properties to reflect the result of this operation. It is a simplified version of some of the techniques used in the streams specification. The method is meant to illustrate how and why you might <a href="#promise-calling" id="ref-for-promise-calling-2">promise-call</a> another function.</p>
    <ol>
@@ -1881,23 +1909,25 @@ It also includes a series of prose shorthands you can use in your specification 
      </ol>
    </ol>
    <p>The equivalent function in JavaScript would be</p>
-<pre><code class="lang-javascript highlight"><span class="nx">resource</span><span class="p">.</span><span class="nx">open</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">resourcePath</span><span class="p">,</span> <span class="nx">openingOperation</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">resourcePath</span> <span class="o">=</span> <span class="nb">String</span><span class="p">(</span><span class="nx">resourcePath</span><span class="p">);</span>
+<pre><code class="lang-javascript highlight">resource<span class="p">.</span>open <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span>resourcePath<span class="p">,</span> openingOperation<span class="p">)</span> <span class="p">{</span>
+    resourcePath <span class="o">=</span> String<span class="p">(</span>resourcePath<span class="p">)</span><span class="p">;</span>
 
-    <span class="k">return</span> <span class="nx">promiseCall</span><span class="p">(</span><span class="nx">openingOperation</span><span class="p">,</span> <span class="nx">resourcePath</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span>
-        <span class="nx">v</span> <span class="o">=></span> <span class="p">{</span>
-            <span class="k">this</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="s2">"opened"</span><span class="p">;</span>
-        <span class="p">},</span>
-        <span class="nx">r</span> <span class="o">=></span> <span class="p">{</span>
-            <span class="k">this</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="s2">"errored"</span><span class="p">;</span>
-            <span class="k">this</span><span class="p">.</span><span class="nx">error</span> <span class="o">=</span> <span class="nx">r</span><span class="p">;</span>
+    <span class="k">return</span> promiseCall<span class="p">(</span>openingOperation<span class="p">,</span> resourcePath<span class="p">)</span><span class="p">.</span>then<span class="p">(</span>
+        v <span class="o">=></span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span>status <span class="o">=</span> <span class="s2">"opened"</span><span class="p">;</span>
+        <span class="p">}</span><span class="p">,</span>
+        r <span class="o">=></span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span>status <span class="o">=</span> <span class="s2">"errored"</span><span class="p">;</span>
+            <span class="k">this</span><span class="p">.</span>error <span class="o">=</span> r<span class="p">;</span>
         <span class="p">}</span>
-    <span class="p">);</span>
-<span class="p">};</span></code></pre>
+    <span class="p">)</span><span class="p">;</span>
+<span class="p">}</span><span class="p">;</span>
+</code></pre>
    <p>using <a href="#promise-call-in-js">the <code>promiseCall</code> function defined above</a>.</p>
    <div class="note" role="note">
      Note how if we had instead just called <code>openingOperation</code>, i.e. done <code>openingOperation(resourcePath)</code> directly, then code like 
-<pre><code class="lang-javascript highlight"><span class="nx">resource</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">synchronouslyOpenTheResource</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">doSomethingElse</span><span class="p">);</span></code></pre>
+<pre><code class="lang-javascript highlight">resource<span class="p">.</span>open<span class="p">(</span>synchronouslyOpenTheResource<span class="p">)</span><span class="p">.</span>then<span class="p">(</span>doSomethingElse<span class="p">)</span><span class="p">;</span>
+</code></pre>
     <p>would fail. It would not return a promise, so calling <code>then</code> on the return value would fail. Even if we accounted for that, what if <code>synchronouslyOpenTheResource</code> threw an error? We would want that to result in an <code>"errored"</code> status, but without promise-calling, that would not be the case: the error would simply cause <code>resource.open</code> to exit. So you can see that promise-calling is quite helpful here.</p>
    </div>
    <h3 class="heading settled" data-level="6.5" id="example-environment-ready"><span class="secno">6.5. </span><span class="content">environment.ready</span><a class="self-link" href="#example-environment-ready"></a></h3>
@@ -2215,25 +2245,115 @@ interface ResourceConsumer {
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
    <dt id="biblio-webidl">[WEBIDL]
-   <dd>Cameron McCormack; Boris Zbarsky. <a href="https://heycam.github.io/webidl/">WebIDL Level 1</a>. 8 March 2016. CR. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
+   <dd>Cameron McCormack; Boris Zbarsky; Tobie Langel. <a href="https://heycam.github.io/webidl/">Web IDL</a>. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
   </dl>
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
    <dt id="biblio-service-workers">[SERVICE-WORKERS]
-   <dd>Alex Russell; Jungkee Song; Jake Archibald. <a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/">Service Workers</a>. 25 June 2015. WD. URL: <a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/">https://slightlyoff.github.io/ServiceWorker/spec/service_worker/</a>
+   <dd>Alex Russell; et al. <a href="https://w3c.github.io/ServiceWorker/v1/">Service Workers 1</a>. URL: <a href="https://w3c.github.io/ServiceWorker/v1/">https://w3c.github.io/ServiceWorker/v1/</a>
   </dl>
-<script>
+  <aside class="dfn-panel" data-for="a-new-promise">
+   <b><a href="#a-new-promise">#a-new-promise</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-a-new-promise-1">4.2.2. Note Parallel Steps Explicitly</a>
+    <li><a href="#ref-for-a-new-promise-2">4.2.3. Queue Tasks to Invoke Developer Code</a>
+    <li><a href="#ref-for-a-new-promise-3">6.1. delay(ms)</a>
+    <li><a href="#ref-for-a-new-promise-4">6.2. validatedDelay(ms)</a>
+    <li><a href="#ref-for-a-new-promise-5">6.3. addDelay(promise, ms)</a>
+    <li><a href="#ref-for-a-new-promise-6">6.5. environment.ready</a>
+    <li><a href="#ref-for-a-new-promise-7">6.6. addBookmark()</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="a-promise-resolved-with">
+   <b><a href="#a-promise-resolved-with">#a-promise-resolved-with</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-a-promise-resolved-with-1">5.6. A Note on Realms</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="resolved-as-a-promise">
+   <b><a href="#resolved-as-a-promise">#resolved-as-a-promise</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-resolved-as-a-promise-1">5.5. Promise-Calling</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="a-promise-rejected-with">
+   <b><a href="#a-promise-rejected-with">#a-promise-rejected-with</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-a-promise-rejected-with-1">5.5. Promise-Calling</a>
+    <li><a href="#ref-for-a-promise-rejected-with-2">6.2. validatedDelay(ms)</a> <a href="#ref-for-a-promise-rejected-with-3">(2)</a>
+    <li><a href="#ref-for-a-promise-rejected-with-4">6.6. addBookmark()</a> <a href="#ref-for-a-promise-rejected-with-5">(2)</a>
+    <li><a href="#ref-for-a-promise-rejected-with-6">6.7. batchRequest(urls)</a>
+    <li><a href="#ref-for-a-promise-rejected-with-7">7.2. Promise&lt;T> Parameters</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="resolve-promise">
+   <b><a href="#resolve-promise">#resolve-promise</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-resolve-promise-1">4.2.2. Note Parallel Steps Explicitly</a>
+    <li><a href="#ref-for-resolve-promise-2">4.2.3. Queue Tasks to Invoke Developer Code</a> <a href="#ref-for-resolve-promise-3">(2)</a>
+    <li><a href="#ref-for-resolve-promise-4">6.1. delay(ms)</a>
+    <li><a href="#ref-for-resolve-promise-5">6.2. validatedDelay(ms)</a>
+    <li><a href="#ref-for-resolve-promise-6">6.3. addDelay(promise, ms)</a>
+    <li><a href="#ref-for-resolve-promise-7">6.5. environment.ready</a>
+    <li><a href="#ref-for-resolve-promise-8">6.6. addBookmark()</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="reject-promise">
+   <b><a href="#reject-promise">#reject-promise</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-reject-promise-1">6.3. addDelay(promise, ms)</a>
+    <li><a href="#ref-for-reject-promise-2">6.5. environment.ready</a>
+    <li><a href="#ref-for-reject-promise-3">6.6. addBookmark()</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="upon-fulfillment">
+   <b><a href="#upon-fulfillment">#upon-fulfillment</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-upon-fulfillment-1">6.3. addDelay(promise, ms)</a>
+    <li><a href="#ref-for-upon-fulfillment-2">7.2. Promise&lt;T> Parameters</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="upon-rejection">
+   <b><a href="#upon-rejection">#upon-rejection</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-upon-rejection-1">6.3. addDelay(promise, ms)</a>
+    <li><a href="#ref-for-upon-rejection-2">7.2. Promise&lt;T> Parameters</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="transforming-by">
+   <b><a href="#transforming-by">#transforming-by</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-transforming-by-1">5.3. Reacting to Promises</a> <a href="#ref-for-transforming-by-2">(2)</a>
+    <li><a href="#ref-for-transforming-by-3">6.4. resource.open(resourcePath, openingOperation)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="waiting-for-all">
+   <b><a href="#waiting-for-all">#waiting-for-all</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-waiting-for-all-1">6.7. batchRequest(urls)</a> <a href="#ref-for-waiting-for-all-2">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="promise-calling">
+   <b><a href="#promise-calling">#promise-calling</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-promise-calling-1">4.3.2. Developer-Supplied Promise-Returning Functions Should Be "Promise-Called"</a>
+    <li><a href="#ref-for-promise-calling-2">6.4. resource.open(resourcePath, openingOperation)</a> <a href="#ref-for-promise-calling-3">(2)</a>
+   </ul>
+  </aside>
+<script>/* script-dfn-panel */
+
         document.body.addEventListener("click", function(e) {
             var queryAll = function(sel) { return [].slice.call(document.querySelectorAll(sel)); }
             // Find the dfn element or panel, if any, that was clicked on.
             var el = e.target;
             var target;
+            var hitALink = false;
             while(el.parentElement) {
-                if(el.tagName == "DFN") {
-                    target = "dfn";
-                    break;
+                if(el.tagName == "A") {
+                    // Clicking on a link in a <dfn> shouldn't summon the panel
+                    hitALink = true;
                 }
-                if(/H\d/.test(el.tagName) && el.getAttribute('data-dfn-type') != null) {
+                if(el.classList.contains("dfn-paneled")) {
                     target = "dfn";
                     break;
                 }
@@ -2250,15 +2370,29 @@ interface ResourceConsumer {
                     el.classList.remove("activated");
                 });
             }
-            if(target == "dfn") {
+            if(target == "dfn" && !hitALink) {
                 // open the panel
-                var dfnPanel = el.querySelector(".dfn-panel");
+                var dfnPanel = document.querySelector(".dfn-panel[data-for='" + el.id + "']");
                 if(dfnPanel) {
+                    console.log(dfnPanel);
                     dfnPanel.classList.add("on");
+                    var rect = el.getBoundingClientRect();
+                    dfnPanel.style.left = window.scrollX + rect.right + 5 + "px";
+                    dfnPanel.style.top = window.scrollY + rect.top + "px";
+                    var panelRect = dfnPanel.getBoundingClientRect();
+                    var panelWidth = panelRect.right - panelRect.left;
+                    if(panelRect.right > document.body.scrollWidth && (rect.left - (panelWidth + 5)) > 0) {
+                        // Reposition, because the panel is overflowing
+                        dfnPanel.style.left = window.scrollX + rect.left - (panelWidth + 5) + "px";
+                    }
+                } else {
+                    console.log("Couldn't find .dfn-panel[data-for='" + el.id + "']");
                 }
             } else if(target == "dfn-panel") {
                 // Switch it to "activated" state, which pins it.
                 el.classList.add("activated");
+                el.style.left = null;
+                el.style.top = null;
             }
 
         });
