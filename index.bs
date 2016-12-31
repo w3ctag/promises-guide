@@ -17,7 +17,7 @@ Ignored Vars: O, f, args, x, cb
 
 A <em>promise</em> is an object that represents the eventual result of a single asynchronous operation. They can be returned from asynchronous functions, thus allowing consumers to not only queue up callbacks to be called when the operation succeeds or fails, but also to manipulate the returned promise object, opening up a variety of possibilities.
 
-Promises have been battle-tested in many JavaScript libraries, including as part of popular frameworks like Dojo, jQuery, YUI, Ember, Angular, WinJS, Q, and others. This culminated in the <a href="http://promisesaplus.com/">Promises/A+ community specification</a> which most libraries conformed to. Now, a standard <code>Promise</code> class is included <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">in the next version of ECMAScript</a> [[!ECMASCRIPT]], allowing web platform APIs to return promises for their asynchronous operations.
+Promises have been battle-tested in many JavaScript libraries, including as part of popular frameworks like Dojo, jQuery, YUI, Ember, Angular, WinJS, Q, and others. This culminated in the <a href="https://promisesaplus.com/">Promises/A+ community specification</a> which most libraries conformed to. Now, a standard <code>Promise</code> class is included <a href="https://tc39.github.io/ecma262/#sec-promise-objects">in the ECMAScript Language Specification</a> [[!ECMASCRIPT]], allowing web platform APIs to return promises for their asynchronous operations.
 
 Promises are now the web platform's paradigm for all "one and done" asynchronous operations. Previously, specifications used a variety of mismatched mechanisms for such operations. Going forward, all asynchronous operations of this type should be specified to instead return promises, giving our platform a unified primitive for asynchronicity.
 
@@ -102,7 +102,7 @@ For WebIDL-based specs, this is taken care of automatically <a href="https://hey
 
 Promise rejection reasons should always be instances of the ECMAScript <code>Error</code> type, just like synchronously-thrown exceptions should always be instances of <code>Error</code> as well.
 
-In particular, for DOM or other web platform specs, this means you should never use <code>DOMError</code>, but instead use <code>DOMException</code>, which <a href="https://heycam.github.io/webidl/#es-exceptions">per WebIDL</a> extends <code>Error</code>. You can of course also use one of the <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-error-objects">built-in ECMAScript error types</a>.
+In particular, for DOM or other web platform specs, this means you should never use <code>DOMError</code>, but instead use <code>DOMException</code>, which <a href="https://heycam.github.io/webidl/#es-exceptions">per WebIDL</a> extends <code>Error</code>. You can of course also use one of the <a href="https://tc39.github.io/ecma262/#sec-error-objects">built-in ECMAScript error types</a>.
 
 <h4 id="rejections-should-be-exceptional">Rejections Should Be Used for Exceptional Situations</h4>
 
@@ -201,27 +201,27 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 <h3 id="shorthand-creating">Creating Promises</h3>
 
-"<dfn id="a-new-promise" export>A new promise</dfn>" gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under [[#shorthand-manipulating]].
+"<dfn id="a-new-promise" export>A new promise</dfn>" gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under [[#shorthand-manipulating]].
 
-"<dfn id="a-promise-resolved-with" export>A promise resolved with</dfn> <var>x</var>" or "<var>x</var> <dfn id="resolved-as-a-promise" export>resolved as a promise</dfn>" is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve"><code>Promise.resolve</code></a>.
+"<dfn id="a-promise-resolved-with" export>A promise resolved with</dfn> <var>x</var>" or "<var>x</var> <dfn id="resolved-as-a-promise" export>resolved as a promise</dfn>" is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.resolve"><code>Promise.resolve</code></a>.
 
-"<dfn id="a-promise-rejected-with" export>A promise rejected with</dfn> <var>r</var>" is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.reject"><code>Promise.reject</code></a>.
+"<dfn id="a-promise-rejected-with" export>A promise rejected with</dfn> <var>r</var>" is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.reject"><code>Promise.reject</code></a>.
 
 <h3 id="shorthand-manipulating">Manipulating Promises</h3>
 
-"<dfn id="resolve-promise" export>Resolve</dfn> <var>p</var> with <var>x</var>" is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.
+"<dfn id="resolve-promise" export>Resolve</dfn> <var>p</var> with <var>x</var>" is shorthand for calling a previously-stored <a href="https://tc39.github.io/ecma262/#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.
 
-"<dfn id="reject-promise" export>Reject</dfn> <var>p</var> with <var>r</var>" is shorthand for calling a previously-stored <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.
+"<dfn id="reject-promise" export>Reject</dfn> <var>p</var> with <var>r</var>" is shorthand for calling a previously-stored <a href="https://tc39.github.io/ecma262/#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.
 
 If the algorithm using these shorthands is running <a>in parallel</a>, the shorthands <a>queue a task</a> on <var>p</var>'s <a>relevant settings object</a>'s <a>responsible event loop</a> to call the stored function.
 
 <h3 id="shorthand-reacting">Reacting to Promises</h3>
 
-"<dfn id="upon-fulfillment" export>Upon fulfillment</dfn> of <var>p</var> with value <var>v</var>" is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>'s argument as <var>v</var>.
+"<dfn id="upon-fulfillment" export>Upon fulfillment</dfn> of <var>p</var> with value <var>v</var>" is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>'s argument as <var>v</var>.
 
-"<dfn id="upon-rejection" export>Upon rejection</dfn> of <var>p</var> with reason <var>r</var>" is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>'s argument as <var>r</var>.
+"<dfn id="upon-rejection" export>Upon rejection</dfn> of <var>p</var> with reason <var>r</var>" is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>'s argument as <var>r</var>.
 
-"<dfn id="transforming-by" export>Transforming</dfn> <var>p</var> with a fulfillment and/or rejection handler" is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.
+"<dfn id="transforming-by" export>Transforming</dfn> <var>p</var> with a fulfillment and/or rejection handler" is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.
 
 <div class="example">
     Some examples of the latter phrase would be
@@ -249,7 +249,7 @@ If the algorithm using these shorthands is running <a>in parallel</a>, the short
 
 <h3 id="aggregating-promises">Aggregating Promises</h3>
 
-The result of <dfn id="waiting-for-all" export>waiting for all</dfn> of a collection of promises is a promise created by calling <code>Promise.all(promiseArray)</code>, where <code>promiseArray</code> is that collection in array form and we use the initial value of <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.all"><code>Promise.all</code></a>.
+The result of <dfn id="waiting-for-all" export>waiting for all</dfn> of a collection of promises is a promise created by calling <code>Promise.all(promiseArray)</code>, where <code>promiseArray</code> is that collection in array form and we use the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.all"><code>Promise.all</code></a>.
 
 This phrase is useful when you wish to perform multiple asynchronous operations in parallel that return promises, and then react to them all together. If all of the given promises fulfill, then the resulting promise will be fulfilled with an array corresponding to the fulfillment values. If any of them reject, then the resulting promise will be rejected with the first rejection reason to occur.
 
@@ -278,7 +278,7 @@ The result of <dfn id="promise-calling" export>promise-calling</dfn> <var>f</var
 
 <h3 id="shorthand-note-onrealms">A Note on Realms</h3>
 
-In all cases, when we use phrases like "the initial value of <code>Promise.resolve</code>," we mean the initial value within the <a href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-code-realms">realm</a> associated to the function being specified. So for example, if <code>window.f()</code> is specified to return "<a>a promise resolved with</a> <b>1</b>," then:
+In all cases, when we use phrases like "the initial value of <code>Promise.resolve</code>," we mean the initial value within the <a href="https://tc39.github.io/ecma262/#sec-code-realms">realm</a> associated to the function being specified. So for example, if <code>window.f()</code> is specified to return "<a>a promise resolved with</a> <b>1</b>," then:
 
 <pre><code class="lang-javascript">
 assert(windowA.f().constructor === windowA.Promise);
