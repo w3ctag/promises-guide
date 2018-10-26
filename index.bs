@@ -261,10 +261,13 @@ If the algorithm using these shorthands is running <a>in parallel</a>, the short
 
 To <dfn id="waiting-for-all" export lt="wait for all|waiting for all">wait for all</dfn> of a <a>list</a> of promises |promises|, with success steps |successSteps| that take a <a>list</a> of JavaScript values and failure steps |failureSteps| that take a rejection reason JavaScript value, perform the following steps:
 
+1. Let |fullfilledCount| be 0.
+1. Let |rejected| be false.
 1. Let |rejectionHandler| be a built-in function that takes an argument |arg| and performs the following steps:
+    1. If |rejected| is true, abort these steps.
+    1. Set |rejected| to true.
     1. Perform |failureSteps| given |arg|.
 1. Let |index| be 0.
-1. Let |fullfilledCount| be 0.
 1. Let |total| be |promises|'s [=list/size=].
 1. Let |result| be a <a>list</a> containing |total| null values.
 1. [=list/For each=] |promise| of |promises|:
