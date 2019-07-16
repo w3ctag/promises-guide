@@ -15,8 +15,6 @@ Ignored Vars: O, f, args, x, cb
 <pre class="link-defaults">
 spec:infra; type:dfn;
     text:list
-spec:html; type:dfn;
-    text:queue a microtask
 </pre>
 
 <pre class="anchors">
