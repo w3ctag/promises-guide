@@ -13,8 +13,7 @@ Ignored Vars: O, f, args, x, cb
 </pre>
 
 <pre class="link-defaults">
-spec:infra; type:dfn;
-    text:list
+spec:infra; type:dfn; text:list
 </pre>
 
 <pre class="anchors">
