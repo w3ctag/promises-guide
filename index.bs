@@ -210,27 +210,27 @@ When writing such specifications, it's convenient to be able to refer to common 
 
 <h3 id="shorthand-creating">Creating Promises</h3>
 
-"<dfn id="a-new-promise" export>A new promise</dfn>" gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under [[#shorthand-manipulating]].
+"<dfn id="a-new-promise">A new promise</dfn>" gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under [[#shorthand-manipulating]].
 
-"<dfn id="a-promise-resolved-with" export>A promise resolved with</dfn> <var>x</var>" or "<var>x</var> <dfn id="resolved-as-a-promise" export>resolved as a promise</dfn>" is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.resolve"><code>Promise.resolve</code></a>.
+"<dfn id="a-promise-resolved-with">A promise resolved with</dfn> <var>x</var>" or "<var>x</var> <dfn id="resolved-as-a-promise">resolved as a promise</dfn>" is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.resolve"><code>Promise.resolve</code></a>.
 
-"<dfn id="a-promise-rejected-with" export>A promise rejected with</dfn> <var>r</var>" is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.reject"><code>Promise.reject</code></a>.
+"<dfn id="a-promise-rejected-with">A promise rejected with</dfn> <var>r</var>" is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.reject"><code>Promise.reject</code></a>.
 
 <h3 id="shorthand-manipulating">Manipulating Promises</h3>
 
-"<dfn id="resolve-promise" export>Resolve</dfn> <var>p</var> with <var>x</var>" is shorthand for calling a previously-stored <a href="https://tc39.github.io/ecma262/#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.
+"<dfn id="resolve-promise">Resolve</dfn> <var>p</var> with <var>x</var>" is shorthand for calling a previously-stored <a href="https://tc39.github.io/ecma262/#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.
 
-"<dfn id="reject-promise" export>Reject</dfn> <var>p</var> with <var>r</var>" is shorthand for calling a previously-stored <a href="https://tc39.github.io/ecma262/#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.
+"<dfn id="reject-promise">Reject</dfn> <var>p</var> with <var>r</var>" is shorthand for calling a previously-stored <a href="https://tc39.github.io/ecma262/#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.
 
 If the algorithm using these shorthands is running <a>in parallel</a>, the shorthands <a>queue a task</a> on <var>p</var>'s <a>relevant settings object</a>'s <a>responsible event loop</a> to call the stored function.
 
 <h3 id="shorthand-reacting">Reacting to Promises</h3>
 
-"<dfn id="upon-fulfillment" export>Upon fulfillment</dfn> of <var>p</var> with value <var>v</var>" is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>'s argument as <var>v</var>.
+"<dfn id="upon-fulfillment">Upon fulfillment</dfn> of <var>p</var> with value <var>v</var>" is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>'s argument as <var>v</var>.
 
-"<dfn id="upon-rejection" export>Upon rejection</dfn> of <var>p</var> with reason <var>r</var>" is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>'s argument as <var>r</var>.
+"<dfn id="upon-rejection">Upon rejection</dfn> of <var>p</var> with reason <var>r</var>" is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>'s argument as <var>r</var>.
 
-"<dfn id="transforming-by" export>Transforming</dfn> <var>p</var> with a fulfillment and/or rejection handler" is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.
+"<dfn id="transforming-by">Transforming</dfn> <var>p</var> with a fulfillment and/or rejection handler" is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.
 
 <div class="example">
     Some examples of the latter phrase would be
@@ -258,7 +258,7 @@ If the algorithm using these shorthands is running <a>in parallel</a>, the short
 
 <h3 id="aggregating-promises">Aggregating Promises</h3>
 
-To <dfn id="waiting-for-all" export lt="wait for all|waiting for all">wait for all</dfn> of a <a>list</a> of promises |promises|, with success steps |successSteps| that take a <a>list</a> of JavaScript values and failure steps |failureSteps| that take a rejection reason JavaScript value, perform the following steps:
+To <dfn id="waiting-for-all" lt="wait for all|waiting for all">wait for all</dfn> of a <a>list</a> of promises |promises|, with success steps |successSteps| that take a <a>list</a> of JavaScript values and failure steps |failureSteps| that take a rejection reason JavaScript value, perform the following steps:
 
 1. Let |fullfilledCount| be 0.
 1. Let |rejected| be false.
@@ -283,7 +283,7 @@ To <dfn id="waiting-for-all" export lt="wait for all|waiting for all">wait for a
 
 This phrase is useful when you wish to aggregate the result of multiple promises, and react to them all together, in the same way that {{Promise/all()|Promise.all()}} functions for JavaScript code.
 
-To <dfn id="waiting-for-all-promise" export lt="get a promise to wait for all|getting a promise to wait for all">get a promise for waiting for all</dfn> of a <a>list</a> of promises |promises|, with success steps |successSteps| that take a <a>list</a> of JavaScript values and optional failure steps |failureSteps| that take a rejection reason JavaScript value, perform the following steps:
+To <dfn id="waiting-for-all-promise" lt="get a promise to wait for all|getting a promise to wait for all">get a promise for waiting for all</dfn> of a <a>list</a> of promises |promises|, with success steps |successSteps| that take a <a>list</a> of JavaScript values and optional failure steps |failureSteps| that take a rejection reason JavaScript value, perform the following steps:
 
 1. Let |promise| be <a>a new promise</a>.
 1. If |failureSteps| were not given, let them be steps taking an argument |arg| that throw |arg|.
@@ -302,7 +302,7 @@ An example usage of this phrase is found in [[#example-batch-request]].
 
 <h3 id="shorthand-promise-calling">Promise-Calling</h3>
 
-The result of <dfn id="promise-calling" export>promise-calling</dfn> <var>f</var>(...<var>args</var>) is:
+The result of <dfn id="promise-calling">promise-calling</dfn> <var>f</var>(...<var>args</var>) is:
 
 - If the call returns a value <var>v</var>, the result of <a href="#resolved-as-a-promise">resolving</a> <var>v</var> as a promise.
 - If the call throws an exception <var>e</var>, a promise <a href="#a-promise-rejected-with">rejected with</a> <var>e</var>.
