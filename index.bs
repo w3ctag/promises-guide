@@ -30,7 +30,7 @@ Promises have been battle-tested in many JavaScript libraries, including as part
 
 Promises are now the web platform's paradigm for all "one and done" asynchronous operations. Previously, specifications used a variety of mismatched mechanisms for such operations. Going forward, all asynchronous operations of this type should be specified to instead return promises, giving our platform a unified primitive for asynchronicity.
 
-<div class="note">Although the primary audience of this document is specification writers, it is also useful for JavaScript developers who want to write libraries or applications using promises. We will call out sections that are spec-writer specific so developers can skip them more easily.</div>
+<p class="note" oldids="shorthand-phrases a-new-promise a-promise-resolved-with resolved-as-a-promise a-promise-rejected-with resolve-promise reject-promise upon-fulfillment upon-rejection transforming-by waiting-for-all waiting-for-all-promise promise-calling examples example-delay example-validated-delay example-add-delay example-resource-open example-environment-ready example-add-bookmark example-batch-request shorthand-note-on-realms webidl-examples webidl">This document previously defined a number of terms for manipulating promises, and gave examples for using them. Those have since moved to [[!WEBIDL]].</p>
 
 
 <h2 id="when-to-use">When to Use Promises</h2>
@@ -91,7 +91,7 @@ There are a few subtle aspects of using or accepting promises in your API. Here 
 
 <h3 id="errors">Errors</h3>
 
-<h4 id="always-return-promises">Promise-Returning Functions Should Always Return Promises</h4>
+<h4 id="always-return-promises" oldids="webidl-promise-return-values">Promise-Returning Functions Should Always Return Promises</h4>
 
 Promise-returning functions should always return a promise, under all circumstances. Even if the result is available synchronously, or the inputs can be detected as invalid synchronously, this information needs to be communicated through a uniform channel so that a developer can be sure that by doing
 
@@ -105,7 +105,7 @@ they are handling all successes and all errors.
 
 In particular, promise-returning functions should never synchronously throw errors, since that would force duplicate error-handling logic on the consumer: once in a <code>catch (e) { ... }</code> block, and once in a <code>.catch(e => { ... })</code> block. Even argument validation errors are not OK. Instead, all errors should be signaled by returning rejected promises.
 
-For Web IDL-based specs, this is taken care of automatically <a href="https://heycam.github.io/webidl/#es-operations">by the Web IDL specification</a>: any exceptions thrown by Web IDL operations, or by the Web IDL overload resolution algorithm itself, are automatically converted into rejections.
+For Web IDL-based specs, this is taken care of automatically if you declare your [=operations=] to return a [=promise type=]. Any exceptions thrown by such operations, or by the Web IDL-level type conversions and overload resolution, are automatically converted into rejections.
 
 <h4 id="reasons-should-be-errors">Rejection Reasons Should Be <code>Error</code>s</h4>
 
@@ -171,11 +171,11 @@ As an example, the following steps will return a promise resolved after <var>ms<
 
 <h3 id="accepting-promises">Accepting Promises</h3>
 
-<h4 id="resolve-arguments">Promise Arguments Should Be Resolved</h4>
+<h4 id="resolve-arguments" oldids="webidl-promise-parameters">Promise Arguments Should Be Resolved</h4>
 
 In general, when an argument is expected to be a promise, you should also allow thenables and non-promise values by <em>resolving</em> the argument to a promise before using it. You should <em>never</em> do a type-detection on the incoming value, or overload between promises and other values, or put promises in a union type.
 
-In Web IDL-using specs, this is automatically taken care of by the <a href="https://heycam.github.io/webidl/#es-promise">Web IDL promise type</a>. To see what it means in JavaScript, consider the following function, which adds a delay of <var>ms</var> milliseconds to a promise:
+In Web IDL-using specs, this is automatically taken care of by the <code><a interface>Promise</a>&lt;<var ignore>T</var>&gt;</code> type. To see what it means in JavaScript, consider the following function, which adds a delay of <var>ms</var> milliseconds to a promise:
 
 <div class="example">
     <pre><code class="lang-javascript">
@@ -194,49 +194,11 @@ In Web IDL-using specs, this is automatically taken care of by the <a href="http
 
 In this example, <code>p1</code> will be fulfilled 500 ms after the promise returned by <code>doAsyncOperation()</code> fulfills, with that operation's value. (Or <code>p1</code> will reject as soon as that promise rejects.) And, since we resolve the incoming argument to a promise, the function can also work when you pass it the string <code>"value"</code>: <code>p2</code> will be fulfilled with <code>"value"</code> after 1000 ms. In this way, we essentially treat it as an immediately-fulfilled promise for that value.
 
-<h4 id="should-promise-call">Developer-Supplied Promise-Returning Functions Should Be "Promise-Called"</h4>
+<h4 id="should-promise-call" oldids="webidl-developer-functions-returning-promises">Developer-Supplied Promise-Returning Functions Should Be "Promise-Called"</h4>
 
-If the developer supplies you with a function that you expect to return a promise, you should also allow it to return a thenable or non-promise value, or even throw an exception, and treat all these cases as if they had returned an analogous promise. This should be done by converting the returned value to a promise, as if by using <code>Promise.resolve()</code>. The purpose of this is to allow us to have the same reaction to synchronous forms of success and failure that we would to asynchronous forms.
+If the developer supplies you with a function that you expect to return a promise, you should also allow it to return a thenable or non-promise value, or even throw an exception, and treat all these cases as if they had returned an analogous promise. This should be done by converting the returned value to a promise, as if by using <code>Promise.resolve()</code>, and catching thrown exceptions and converting those into a promise as if by using <code>Promise.reject()</code>. The purpose of this is to allow us to have the same reaction to synchronous forms of success and failure that we would to asynchronous forms.
 
-See the [[#webidl-developer-functions-returning-promises]] section for more on how this is done in Web IDL-using specifications.
-
-<h2 id="webidl">Web IDL and Promises</h2>
-
-<div class="note">This section is primarily for spec writers, dealing with how promises integrate with an interface definition language often used in web specs.</div>
-
-[[!WEBIDL]] provides a <code><a interface>Promise</a>&lt;|T|&gt;</code> type which can be used when writing specifications that expose their API through Web IDL. Here we summarize how the <code><a interface>Promise</a>&lt;|T|&gt;</code> type relates to and enforces the guidelines in this document.
-
-<p class="note" oldids="shorthand-phrases a-new-promise a-promise-resolved-with resolved-as-a-promise a-promise-rejected-with resolve-promise reject-promise upon-fulfillment upon-rejection transforming-by waiting-for-all waiting-for-all-promise promise-calling examples example-delay example-validated-delay example-add-delay example-resource-open example-environment-ready example-add-bookmark example-batch-request shorthand-note-on-realms webidl-examples">This document previously defined a number of terms for manipulating promises, and gave examples for using them, which have since moved to [[!WEBIDL]].</p>
-
-<h3 id="webidl-promise-return-values"><code><a interface>Promise</a>&lt;|T|&gt;</code> Return Values</h3>
-
-Like all Web IDL return values, declaring a return value of type <code><a interface>Promise</a>&lt;|T|&gt;</code> has no impact on the algorithm's actual return steps. It is simply a form of documentation, and if you return something that is not a promise or is a promise with a fulfillment value that is not of Web IDL-type <code>T</code>, then you have written incorrect documentation into your spec.
-
-However, declaring that your method or accessor returns a promise does have one important impact: it ensures that any exceptions that it would otherwise throw, e.g. as a result of failed type conversions, are caught and turned into rejected promises. (See the <a href="https://heycam.github.io/webidl/#es-operations">"Operations" section</a>, "If <var ignore>op</var> has a return type that is a promise type …", and similar phrases scattered throughout the document.) This automatically takes care of the advice in [[#always-return-promises]], at least for exceptions.
-
-<h3 id="webidl-promise-parameters"><code><a interface>Promise</a>&lt;|T|&gt;</code> Parameters</h3>
-
-When a parameter of a Web IDL operation is declared as <code><a interface>Promise</a>&lt;|T|&gt;</code>, it will automatically resolve any arguments passed in that position. This will take care of the [[#resolve-arguments]] advice above.
-
-If you have a <code><a interface>Promise</a>&lt;|T|&gt;</code> argument, you can use the Web IDL [=upon settling|perform some steps once a promise is settled=] algorithm, or the more targeted [=upon fulfillment=] and [=upon rejection=] algorithms, to unwrap the promise's value. This also handles type conversion to |T| (although, see <a href="https://github.com/heycam/webidl/issues/782">heycam/webidl#782</a>).
-
-Note that the |T| here refers to a Web IDL type <em>for the fulfillment value</em>. Furthermore, it only has impact if you use the Web IDL "perform some steps …" algorithm, and not if you use the promise in other ways (such as passing it along to another function). If that is not relevant, we advise using <code>Promise&lt;any&gt;</code> for parameters.
-
-<div class="note">
-    As a consequence of the resolution behavior, <code><a interface>Promise</a>&lt;|T|&gt;</code> parameters cannot be overloaded with any other parameters. For example, you cannot do:
-
-    <pre>
-    // INVALID WEBIDL
-    void f(Promise&lt;DOMString&gt; x);
-    void f(DOMString y);
-    </pre>
-</div>
-
-<h3 id="webidl-developer-functions-returning-promises" oldids="webidl-user-functions-returning-promises">Developer Functions Returning Promises</h3>
-
-In Web IDL, you consume JavaScript functions by declaring them as [=callback functions=] (or, in rare cases, via [=callback interfaces=]) and later [=invoke|invoking=] them with a list of Web IDL values.
-
-If you use these mechanisms, the invocation algorithm will automatically resolve return values and convert thrown exceptions into rejected promises. This automatically takes care of the advice in [[#should-promise-call]].
+In Web IDL-using specifications, this is automatically taken care of if you declare the developer function as a [=callback function=] and then [=invoke=] it.
 
 <h2 id="legacy" class="no-num">Appendix: Legacy APIs for Asynchronicity</h2>
 
