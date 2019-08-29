@@ -1212,7 +1212,7 @@ Possible extra rowspan handling
 		}
 	}
 </style>
-  <meta content="Bikeshed version a3b64e58e069c2e8a9ffcadffb76601231663a47" name="generator">
+  <meta content="Bikeshed version 08c4b0e94d147852f66673459784d3429bb3bda1" name="generator">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -1459,7 +1459,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">Writing Promise-Using Specifications</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Finding of the W3C TAG, <time class="dt-updated" datetime="2019-07-16">16 July 2019</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Finding of the W3C TAG, <time class="dt-updated" datetime="2019-08-29">29 August 2019</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt class="editor">Editor:
@@ -1472,7 +1472,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <div data-fill-with="warning"></div>
    <p class="copyright" data-fill-with="copyright"><a href="http://creativecommons.org/publicdomain/zero/1.0/" rel="license"><img alt="CC0" src="https://licensebuttons.net/p/zero/1.0/80x15.png"></a> To the extent possible under law, the editors have waived all copyright
 and related or neighboring rights to this work.
-In addition, as of 16 July 2019,
+In addition, as of 29 August 2019,
 the editors have made this specification available under the <a href="http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0" rel="license">Open Web Foundation Agreement Version 1.0</a>,
 which is available at http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0.
 Parts of this work may be from another specification document.  If so, those parts are instead covered by the license of that specification document. </p>
@@ -1722,17 +1722,17 @@ It also includes a series of prose shorthands you can use in your specification 
    <div class="note" role="note">This section should eventually move to WebIDL, where it belongs. See <a href="https://github.com/w3ctag/promises-guide/issues/27">#27</a>.</div>
    <p>When writing such specifications, it’s convenient to be able to refer to common promise operations concisely. We define here a set of shorthands that allow you to do so.</p>
    <h3 class="heading settled" data-level="5.1" id="shorthand-creating"><span class="secno">5.1. </span><span class="content">Creating Promises</span><a class="self-link" href="#shorthand-creating"></a></h3>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="a-new-promise">A new promise</dfn>" gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under <a href="#shorthand-manipulating">§ 5.2 Manipulating Promises</a>.</p>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="a-promise-resolved-with">A promise resolved with</dfn> <var>x</var>" or "<var>x</var> <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="resolved-as-a-promise">resolved as a promise</dfn>" is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.resolve"><code>Promise.resolve</code></a>.</p>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="a-promise-rejected-with">A promise rejected with</dfn> <var>r</var>" is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.reject"><code>Promise.reject</code></a>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="a-new-promise">A new promise</dfn>" gives a new, initialized-but-unresolved promise object to manipulate further. It is equivalent to calling <code>new Promise((resolve, reject) => { ... })</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise-constructor">the <code>Promise</code> constructor</a>. Here <code>...</code> stands in for code that saves the value of <code>resolve</code> and <code>reject</code> for later use by the shorthands under <a href="#shorthand-manipulating">§ 5.2 Manipulating Promises</a>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="a-promise-resolved-with">A promise resolved with</dfn> <var>x</var>" or "<var>x</var> <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="resolved-as-a-promise">resolved as a promise</dfn>" is shorthand for the result of <code>Promise.resolve(x)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.resolve"><code>Promise.resolve</code></a>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="a-promise-rejected-with">A promise rejected with</dfn> <var>r</var>" is shorthand for the result of <code>Promise.reject(r)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.reject"><code>Promise.reject</code></a>.</p>
    <h3 class="heading settled" data-level="5.2" id="shorthand-manipulating"><span class="secno">5.2. </span><span class="content">Manipulating Promises</span><a class="self-link" href="#shorthand-manipulating"></a></h3>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="resolve-promise">Resolve</dfn> <var>p</var> with <var>x</var>" is shorthand for calling a previously-stored <a href="https://tc39.github.io/ecma262/#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.</p>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="reject-promise">Reject</dfn> <var>p</var> with <var>r</var>" is shorthand for calling a previously-stored <a href="https://tc39.github.io/ecma262/#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="resolve-promise">Resolve</dfn> <var>p</var> with <var>x</var>" is shorthand for calling a previously-stored <a href="https://tc39.github.io/ecma262/#sec-promise-resolve-functions"><code>resolve</code> function</a> from creating <code>p</code>, with argument <code>x</code>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="reject-promise">Reject</dfn> <var>p</var> with <var>r</var>" is shorthand for calling a previously-stored <a href="https://tc39.github.io/ecma262/#sec-promise-reject-functions"><code>reject</code> function</a> from creating <code>p</code>, with argument <code>r</code>.</p>
    <p>If the algorithm using these shorthands is running <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel③">in parallel</a>, the shorthands <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task②">queue a task</a> on <var>p</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object">relevant settings object</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#responsible-event-loop" id="ref-for-responsible-event-loop">responsible event loop</a> to call the stored function.</p>
    <h3 class="heading settled" data-level="5.3" id="shorthand-reacting"><span class="secno">5.3. </span><span class="content">Reacting to Promises</span><a class="self-link" href="#shorthand-reacting"></a></h3>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="upon-fulfillment">Upon fulfillment</dfn> of <var>p</var> with value <var>v</var>" is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>’s argument as <var>v</var>.</p>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="upon-rejection">Upon rejection</dfn> of <var>p</var> with reason <var>r</var>" is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>’s argument as <var>r</var>.</p>
-   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="transforming-by">Transforming</dfn> <var>p</var> with a fulfillment and/or rejection handler" is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="upon-fulfillment">Upon fulfillment</dfn> of <var>p</var> with value <var>v</var>" is shorthand for calling <code>p.then(onFulfilled)</code>, with the successive nested steps comprising the <code>onFulfilled</code> function, and using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onFulfilled</code>’s argument as <var>v</var>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="upon-rejection">Upon rejection</dfn> of <var>p</var> with reason <var>r</var>" is shorthand for calling <code>p.then(undefined, onRejected)</code>, with the successive nested steps comprising the <code>onRejected</code> function, and using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>. The steps then have access to <code>onRejected</code>’s argument as <var>r</var>.</p>
+   <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="transforming-by">Transforming</dfn> <var>p</var> with a fulfillment and/or rejection handler" is shorthand for calling <code>p.then(fulfillmentHandler, rejectionHandler)</code>, using the initial value of <a href="https://tc39.github.io/ecma262/#sec-promise.prototype.then"><code>Promise.prototype.then</code></a>.</p>
    <div class="example" id="example-199490f9">
     <a class="self-link" href="#example-199490f9"></a> Some examples of the latter phrase would be 
     <ol>
@@ -1753,7 +1753,7 @@ It also includes a series of prose shorthands you can use in your specification 
     <p>respectively. (More complicated transforms are of course possible as well, as shown in the <a href="#example-resource-open"><code>resource.open</code> example</a> below.)</p>
    </div>
    <h3 class="heading settled" data-level="5.4" id="aggregating-promises"><span class="secno">5.4. </span><span class="content">Aggregating Promises</span><a class="self-link" href="#aggregating-promises"></a></h3>
-   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-export data-lt="wait for all|waiting for all" id="waiting-for-all">wait for all</dfn> of a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list">list</a> of promises <var>promises</var>, with success steps <var>successSteps</var> that take a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①">list</a> of JavaScript values and failure steps <var>failureSteps</var> that take a rejection reason JavaScript value, perform the following steps:</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="wait for all|waiting for all" data-noexport id="waiting-for-all">wait for all</dfn> of a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list">list</a> of promises <var>promises</var>, with success steps <var>successSteps</var> that take a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①">list</a> of JavaScript values and failure steps <var>failureSteps</var> that take a rejection reason JavaScript value, perform the following steps:</p>
    <ol>
     <li data-md>
      <p>Let <var>fullfilledCount</var> be 0.</p>
@@ -1805,7 +1805,7 @@ It also includes a series of prose shorthands you can use in your specification 
      </ol>
    </ol>
    <p>This phrase is useful when you wish to aggregate the result of multiple promises, and react to them all together, in the same way that <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-promise.all" id="ref-for-sec-promise.all">Promise.all()</a></code> functions for JavaScript code.</p>
-   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-export data-lt="get a promise to wait for all|getting a promise to wait for all" id="waiting-for-all-promise">get a promise for waiting for all</dfn> of a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list③">list</a> of promises <var>promises</var>, with success steps <var>successSteps</var> that take a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list④">list</a> of JavaScript values and optional failure steps <var>failureSteps</var> that take a rejection reason JavaScript value, perform the following steps:</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="get a promise to wait for all|getting a promise to wait for all" data-noexport id="waiting-for-all-promise">get a promise for waiting for all</dfn> of a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list③">list</a> of promises <var>promises</var>, with success steps <var>successSteps</var> that take a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list④">list</a> of JavaScript values and optional failure steps <var>failureSteps</var> that take a rejection reason JavaScript value, perform the following steps:</p>
    <ol>
     <li data-md>
      <p>Let <var>promise</var> be <a data-link-type="dfn" href="#a-new-promise" id="ref-for-a-new-promise②">a new promise</a>.</p>
@@ -1835,7 +1835,7 @@ It also includes a series of prose shorthands you can use in your specification 
    <p>This phrase is useful when you wish to aggregate the results of multiple promises, and then produce another promise from them.</p>
    <p>An example usage of this phrase is found in <a href="#example-batch-request">§ 6.7 batchRequest(urls)</a>.</p>
    <h3 class="heading settled" data-level="5.5" id="shorthand-promise-calling"><span class="secno">5.5. </span><span class="content">Promise-Calling</span><a class="self-link" href="#shorthand-promise-calling"></a></h3>
-   <p>The result of <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="promise-calling">promise-calling</dfn> <var>f</var>(...<var>args</var>) is:</p>
+   <p>The result of <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="promise-calling">promise-calling</dfn> <var>f</var>(...<var>args</var>) is:</p>
    <ul>
     <li data-md>
      <p>If the call returns a value <var>v</var>, the result of <a href="#resolved-as-a-promise" id="ref-for-resolved-as-a-promise">resolving</a> <var>v</var> as a promise.</p>
