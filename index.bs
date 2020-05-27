@@ -5,7 +5,8 @@ Shortname: promises-guide
 Status: DRAFT-FINDING
 TR: https://www.w3.org/2001/tag/doc/promises-guide
 ED: https://w3ctag.github.io/promises-guide/
-Editor: Domenic Denicola, Google https://www.google.com/, https://domenic.me/, d@domenic.me
+Editor: Rossen Atanassov, Microsoft, ratan@microsoft.com, w3cid 49885
+Former Editor: Domenic Denicola, Google https://www.google.com/, https://domenic.me/, d@domenic.me
 Abstract: This document gives guidance on how to write specifications that create, accept, or manipulate promises.
 Boilerplate: omit conformance
 Default Biblio Status: current
